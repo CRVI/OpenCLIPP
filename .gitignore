@@ -11,3 +11,24 @@
 *.lai
 *.la
 *.a
+
+#Visual Studio temp files
+*.sdf
+*.suo
+*.tlog
+*.log
+*.obj
+*.idb
+*.lastbuildstate
+*.ilk
+*.opensdf
+
+#Visual Studio binary files
+*.exe
+*.dll
+*.lib
+*.exp
+*.pdb
+
+#Merge bakup files
+*.bak

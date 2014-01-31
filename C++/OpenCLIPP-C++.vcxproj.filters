@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Programs">
+      <UniqueIdentifier>{761201f0-607e-48c4-8335-bd9445663167}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenCL Files">
+      <UniqueIdentifier>{360b34c0-9123-429a-872c-4fd2c072aeb6}</UniqueIdentifier>
+      <Extensions>cl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="preprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="programs\kernel_helpers.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="programs\StatisticsHelpers.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\OpenCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Arithmetic.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\ArithmeticVector.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Blob.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Color.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Filters.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Histogram.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Integral.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Logic.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\LogicVector.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Lut.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\LutVector.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Morphology.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Program.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Statistics.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\StatisticsVector.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Transform.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="programs\CustomKernel.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\MorphologyBuffer.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Tresholding.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Conversions.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Basic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenCLIPP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="programs\WorkGroup.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\FiltersVector.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenCL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Blob.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Color.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Filters.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Histogram.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Morphology.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Program.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Lut.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Statistics.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Arithmetic.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Logic.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\ArithmeticVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\LogicVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\LutVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Transform.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\StatisticsVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Integral.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\StatisticsHelpers.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\MorphologyBuffer.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Conversions.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Tresholding.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\FiltersVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <none Include="../cl files/Arithmetic.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Integral.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Transform.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Vector_Arithmetic.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Blob.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Color.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Convert.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Filters.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Histogram.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Logic.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Lut.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Morphology.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Statistics.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Treshold.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Vector_Logic.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Vector_Lut.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <none Include="../cl files/Vector_Statistics.cl">
+      <Filter>OpenCL Files</Filter>
+    </none>
+    <None Include="..\cl files\Morphology_Buffer.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl files\Vector_Filters.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
