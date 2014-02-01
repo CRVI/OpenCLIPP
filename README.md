@@ -191,13 +191,21 @@ Authors
 
 - [Antoine W. Campagna](mailto:antoine.campagna@crvi.ca)
 
+Comments or questions
+---------------------
+
+- [Computer Vision Team](mailto:vision@crvi.ca)
+
 License
 -------
 
 The OpenCLIPP is free for personal and commercial use.
 It is released under the LGPL license, see the file named 'LICENSE' for details.
 
-Comments or questions
----------------------
+Publications
+------------
 
-- [Computer Vision Team](mailto:vision@crvi.ca)
+If you are using the library in published work, please refer to the following paper:
+
+M. Akhloufi, A. Campagna, "OpenCLIPP: OpenCL Integrated Performance Primitives library for computer vision applications", Proc. SPIE Electronic Imaging 2014, Intelligent Robots and Computer Vision XXXI: Algorithms and Techniques, P. 9025-31, San Francisco, CA, USA, February 2014.
+
