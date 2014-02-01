@@ -1,16 +1,16 @@
 OpenCLIPP - OpenCL Integrated Performance Primitives
 =========================================================
 
-OpenCLIPP is a library providing image processing primitives implemented with OpenCL for fast execution on dedicated computing devices like GPUs.
+OpenCLIPP is a library providing processing primitives (image processing primitives in the first version) implemented with OpenCL for fast execution on dedicated computing devices like GPUs.
 
-It is designed to be simple to use and to have low overhead.
+It was designed to be simple to use and to have low overhead.
 
 Two interfaces are provided :
 
  - C Interface similar to the Intel IPP and NVIDIA NPP libraries      
-      Useable by applications written in C or in any language that supports C libraries
+      
  - C++ Interface
-      Useable by C++ applications
+      
 
 Requirements
 ------------
@@ -23,13 +23,13 @@ How to build
 ------------
 
  - On Windows : Use the .sln file with Visual Studio 2012
- - Other platforms : Use make with the provided makefiles, like this :
+ - Other platforms : Use make with the provided makefiles:
 ```
 user@machine ~/OpenCLIPP# make
 ```
 
-How to use - C++
-----------------
+How to use it - C++
+-------------------
 
 ``` C++
 #include "OpenCLIPP.hpp"
@@ -64,8 +64,8 @@ Img2.Read(true);
 // The image now contains the result of the addition
 ```
 
-How to use - C
---------------
+How to use it - C
+-----------------
 
 ``` C
 #include <OpenCLIPP.h>
@@ -121,10 +121,10 @@ Error handling - C
 Most functions of the C interface return a ocipError.
 When no error occured, the value returned will be CL_SUCCESS (0). When an error occurs, a negative value will be returned. The error value can be translated to text using ocipGetErrorName().
 
-Comparison with IPP & NPP
+Benchmarking with IPP & NPP
 -------------------------
 
-The OpenCLIPP library tracks images in the computing device using objects that know about the size, datatype and number of channels of their image. This leads to simpler function signatures than IPP and NPP (no need for complex suffixes and less arguments).
+The OpenCLIPP library tracks images in the computing device using objects that know size, datatype and number of channels of the image. This leads to simpler function signatures than IPP and NPP (no need for complex suffixes and less arguments).
 
 Typical primitive signature
 ``` C
@@ -137,12 +137,12 @@ Typical primitive signature
 Supported image types
 ---------------------
 
-The library supports images having :
+The library supports the following image types:
 
-- 2 dimentions, no size restrictions (size restrictions may be present on some hardware, like <8192x8192)
+- 2 dimensions, no size restrictions (size restrictions may be present on some hardware, e.g. < 8192x8192)
 - Signed or Unsigned integer of 8, 16 or 32 bits
 - Floating point of 32 bits
-- 1, 2, 3 or 4 channels (all channels must be of the same type)
+- 1, 2, 3 or 4 channels (all channels must be the same type)
 	
 Supported platforms
 -------------------
@@ -177,7 +177,7 @@ Currently implemented primitives
 Performance
 -----------
 
-Performance is significantly better than IPP when operating on big (2048x2048+) images and using a high end GPU (expect 3 to 10x faster for most operations).
+Performance is significantly higher than IPP when operating on big (2048x2048+) images and using a high end GPU (expect 3 to 10x faster for most operations).
 Performance is comparable and often slightly better than NPP on the same GPU (sometimes as much as 2x faster).
 No device specific optimization has been done so performance of many primitives can be further improved.
 
@@ -196,3 +196,8 @@ License
 
 The OpenCLIPP is free for personal and commercial use.
 It is released under the LGPL license, see the file named 'LICENSE' for details.
+
+Comments or questions
+---------------------
+
+- [Computer Vision Team](mailto:vision@crvi.ca)
