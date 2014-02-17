@@ -60,7 +60,7 @@ COpenCL::COpenCL(const char * PreferredPlatform, cl_device_type deviceType)
 
    m_Device = devices[0];
 
-   m_Context = cl::Context(devices);
+   m_Context = cl::Context(m_Device);
 
    m_Queue = cl::CommandQueue(m_Context, devices[0]);
 
