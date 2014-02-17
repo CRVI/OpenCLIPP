@@ -29,6 +29,7 @@ public:
    void RunCUDA();
    void RunCL();
    void RunNPP();
+   void RunCV();
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 void CONCATENATE(BENCH_NAME, Bench)::RunIPP()
@@ -72,3 +73,11 @@ void CONCATENATE(BENCH_NAME, Bench)::RunNPP()
          (Npp8u*) m_NPPSrc, m_NPPSrcStep, (Npp8u*) m_NPPDst, m_NPPDstStep, m_NPPRoi);
       )
 }
+//-----------------------------------------------------------------------------------------------------------------------------
+void CONCATENATE(BENCH_NAME, Bench)::RunCV()
+{
+   CV_CODE(CV_NAME(m_CVSrc, m_CVDst, Mat());)
+}
+
+#undef CV_NAME
+#undef BENCH_NAME

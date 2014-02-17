@@ -29,6 +29,7 @@ public:
    void RunCUDA();
    void RunCL();
    void RunNPP();
+   void RunCV();
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 void BlackHatBench::RunIPP()
@@ -80,4 +81,9 @@ void BlackHatBench::RunNPP()
       // Close(Tmp) - Src
       nppiSub_8u_C1RSfs((Npp8u*) m_NPPSrc, m_NPPSrcStep, m_NPPTmp, m_NPPTmpStep, (Npp8u*) m_NPPDst, m_NPPDstStep, m_NPPRoi, 0);
       )
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+void BlackHatBench::RunCV()
+{
+   CV_CODE(morphologyEx(m_CVSrc, m_CVDst, CV_MOP_BLACKHAT, Mat());)
 }

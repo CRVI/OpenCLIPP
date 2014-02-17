@@ -29,6 +29,7 @@ public:
    void RunCUDA();
    void RunCL();
    void RunNPP();
+   void RunCV();
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 void GradientBench::RunIPP()
@@ -79,4 +80,9 @@ void GradientBench::RunNPP()
       // Dilate(Tmp) - Erode(Dst)
       nppiSub_8u_C1RSfs((Npp8u*) m_NPPDst, m_NPPDstStep, m_NPPTmp, m_NPPTmpStep, (Npp8u*) m_NPPDst, m_NPPDstStep, m_NPPRoi, 0);
       )
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+void GradientBench::RunCV()
+{
+   CV_CODE(morphologyEx(m_CVSrc, m_CVDst, CV_MOP_GRADIENT, Mat());)
 }

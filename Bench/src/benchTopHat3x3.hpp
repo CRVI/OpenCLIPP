@@ -29,6 +29,7 @@ public:
    void RunCUDA();
    void RunCL();
    void RunNPP();
+   void RunCV();
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 void TopHatBench::RunIPP()
@@ -80,4 +81,9 @@ void TopHatBench::RunNPP()
       // Src - Open(Tmp)
       nppiSub_8u_C1RSfs(m_NPPTmp, m_NPPTmpStep, (Npp8u*) m_NPPSrc, m_NPPSrcStep, (Npp8u*) m_NPPDst, m_NPPDstStep, m_NPPRoi, 0);
       )
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+void TopHatBench::RunCV()
+{
+   CV_CODE(morphologyEx(m_CVSrc, m_CVDst, CV_MOP_TOPHAT, Mat(3, 3, CV_8UC1));)
 }

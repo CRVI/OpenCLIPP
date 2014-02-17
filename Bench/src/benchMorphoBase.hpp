@@ -22,6 +22,8 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 #define MORPHO_USES_BUFFER true
 
 class MorphoBenchBase : public IBench1in1out
@@ -107,9 +109,9 @@ inline void MorphoBenchBase::Free()
 
 // Erode and Dilate benches
 #define BENCH_NAME Erode
+#define CV_NAME erode
 #include "benchMorpho.hpp"
-#undef BENCH_NAME
 
 #define BENCH_NAME Dilate
+#define CV_NAME dilate
 #include "benchMorpho.hpp"
-#undef BENCH_NAME

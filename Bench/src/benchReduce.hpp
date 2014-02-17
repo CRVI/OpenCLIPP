@@ -36,6 +36,11 @@ public:
    void RunCUDA();
    void RunCL();
    void RunNPP();
+   void RunCV();
+
+#ifndef CV_OPERATION
+   bool HasCVTest() const { return false; }
+#endif
 
    float CompareTolerance() const { return REDUCE_CMP_TOLERANCE; }
 };
@@ -131,3 +136,14 @@ void CONCATENATE(BENCH_NAME, Bench)<float>::RunNPP()
          (Npp32f*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst);
    )
 }
+//-----------------------------------------------------------------------------------------------------------------------------
+template<typename DataType>
+void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCV()
+{
+#ifdef CV_OPERATION
+   CV_CODE(CV_OPERATION(m_CVSrc, m_DstCV);)
+#endif
+}
+
+#undef BENCH_NAME
+#undef CV_OPERATION

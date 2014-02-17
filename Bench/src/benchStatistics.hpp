@@ -30,20 +30,18 @@
 #define CUDA_REDUCE_SAME_TYPE
 
 #define BENCH_NAME Min
+#define CV_OPERATION(src, dst) minMax(src, &dst[0])
 #include "benchReduce.hpp"
-#undef BENCH_NAME
 
 #define BENCH_NAME Max
+#define CV_OPERATION(src, dst) minMax(src, nullptr, &dst[0])
 #include "benchReduce.hpp"
-#undef BENCH_NAME
 
 /*#define BENCH_NAME MinAbs
 #include "benchReduce.hpp"
-#undef BENCH_NAME
 
 #define BENCH_NAME MaxAbs
-#include "benchReduce.hpp"
-#undef BENCH_NAME*/
+#include "benchReduce.hpp"*/
 
 #undef IPP_REDUCE_HINT
 #undef REDUCE_DST_TYPE
@@ -61,16 +59,15 @@
 #define REDUCE_CMP_TOLERANCE 0.001f
 
 #define BENCH_NAME Sum
+#define CV_OPERATION(src, dst) dst = sum(src)
 #include "benchReduce.hpp"
-#undef BENCH_NAME
 
 #define BENCH_NAME Mean
+#define CV_OPERATION(src, dst) { Scalar StdDev = 0; meanStdDev(src, dst, StdDev); }
 #include "benchReduce.hpp"
-#undef BENCH_NAME
 
 /*#define BENCH_NAME MeanSqr
-#include "benchReduce.hpp"
-#undef BENCH_NAME*/
+#include "benchReduce.hpp"*/
 
 #undef IPP_REDUCE_HINT
 #undef REDUCE_DST_TYPE

@@ -41,6 +41,7 @@ public:
    bool CompareCL(BenchReduceBase * This);
    bool CompareNPP(BenchReduceBase * This);
    bool CompareCUDA(BenchReduceBase * This);
+   bool CompareCV(BenchReduceBase * This);
 
    bool Compare(double V1, double V2);
 
@@ -56,6 +57,7 @@ protected:
 
    DstT m_DstIPP;
    double m_DstCL;
+   CV_CODE(Scalar m_DstCV;)
 
    DstT * m_NPPDst;
 
@@ -155,6 +157,16 @@ bool BenchReduceBase<DataType, DstT>::CompareNPP(BenchReduceBase *)
    NPP_CODE(cudaMemcpy(&NPP, m_NPPDst, sizeof(DstT), cudaMemcpyDeviceToHost);)
 
    return Compare(NPP, m_DstIPP);
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+template<typename DataType, typename DstT>
+bool BenchReduceBase<DataType, DstT>::CompareCV(BenchReduceBase *)
+{
+#ifdef HAS_CV
+   return Compare(m_DstCV[0], m_DstIPP);
+#else
+   return false;
+#endif
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType, typename DstT>
