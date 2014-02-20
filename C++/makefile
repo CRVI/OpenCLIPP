@@ -1,7 +1,7 @@
 
 LIBNAME := OpenCLIPP-C++
 TARGET := ../lib$(LIBNAME).so
-INC := -I../include -I../include/c++
+INC := -I../include -I../include/c++ -I/usr/include
 LIBS := -lOpenCL
 SRCEXT := cpp
 SRCDIR := .

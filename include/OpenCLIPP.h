@@ -22,7 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cl/opencl.h>
+#include <CL/opencl.h>
 
 // Definition of ocip_API - used by Microsoft compiler to generate a DLL
 #ifdef _MSC_VER

@@ -100,7 +100,11 @@ void Conversions::Copy(IImage& Source, IImage& Dest)
 
    Source.SendIfNeeded();
 
-   cl::size_t<3> Origin, Region(Source.Width(), Source.Height(), 1);
+   cl::size_t<3> Origin;
+   cl::size_t<3> Region;
+   Region[0] = Source.Width();
+   Region[1] = Source.Height();
+   Region[2] = 1;
 
    m_CL->GetQueue().enqueueCopyImage(Source, Dest, Origin, Origin, Region);
 
@@ -134,7 +138,11 @@ void Conversions::Copy(IImage& Source, ImageBuffer& Dest)
 
    Source.SendIfNeeded();
 
-   cl::size_t<3> Origin, Region(Source.Width(), Source.Height(), 1);
+   cl::size_t<3> Origin;
+   cl::size_t<3> Region;
+   Region[0] = Source.Width();
+   Region[1] = Source.Height();
+   Region[2] = 1;
 
    m_CL->GetQueue().enqueueCopyImageToBuffer(Source, Dest, Origin, Region, 0);
 
@@ -152,7 +160,11 @@ void Conversions::Copy(ImageBuffer& Source, IImage& Dest)
 
    Source.SendIfNeeded();
 
-   cl::size_t<3> Origin, Region(Source.Width(), Source.Height(), 1);
+   cl::size_t<3> Origin;
+   cl::size_t<3> Region;
+   Region[0] = Source.Width();
+   Region[1] = Source.Height();
+   Region[2] = 1;
 
    m_CL->GetQueue().enqueueCopyBufferToImage(Source, Dest, 0, Origin, Region);
 

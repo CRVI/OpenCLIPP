@@ -68,28 +68,28 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../include/;$(IncludePath);$(INCLUDE);</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../include/;$(IncludePath);$(INCLUDE);</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>../include/;$(IncludePath);$(INCLUDE);</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>../include/;$(IncludePath);$(INCLUDE);</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>

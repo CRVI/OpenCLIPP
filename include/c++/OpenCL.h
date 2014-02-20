@@ -27,10 +27,20 @@
 
 #include "Basic.h"
 
+
+// Include C interface of OpenCL
+// NVIDIA does not currently support OpenCL 1.2 in its drivers
+// So we force usage of the OpenCL 1.1 API
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
+#include <CL/opencl.h>
+#undef CL_VERSION_1_2
+
+
 // We are working with exceptions instead of having error checking on every cl api call
 #define __CL_ENABLE_EXCEPTIONS
 
-#include <cl/cl.hpp>
+// Include C++ interface of OpenCL
+#include <CL/cl.hpp>
 
 
 #include <memory>

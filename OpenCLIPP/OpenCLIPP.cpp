@@ -29,6 +29,10 @@
 /// In this file, preprocessor macros are used to reduce the amount of repeated code.
 
 
+// This needs to be defined before including <cl/cl.h> because we use OpenCL API version 1.1
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
+
+
 #include "OpenCLIPP.h"
 #include "OpenCLIPP.hpp"
 

@@ -70,11 +70,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>../include/;$(IncludePath);$(CUDA_PATH)\include;$(INCLUDE);$(OPENCV_DIR)\include</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\Win32;$(IPP_LIB32);$(XE_LIB32);$(OPENCV_DIR)\x86\vc11\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>../include/;$(IncludePath);$(CUDA_PATH)\include;$(INCLUDE);$(OPENCV_DIR)\include</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\x64;$(IPP_LIB64);$(XE_LIB64);$(OPENCV_DIR)\x64\vc11\lib</LibraryPath>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
@@ -83,14 +83,14 @@
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>../include/;$(IncludePath);$(CUDA_PATH)\include;$(INCLUDE);$(OPENCV_DIR)\include</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\Win32;$(IPP_LIB32);$(XE_LIB32);$(OPENCV_DIR)\x86\vc11\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>../include/;$(IncludePath);$(CUDA_PATH)\include;$(INCLUDE);$(OPENCV_DIR)\include</IncludePath>
+    <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\x64;$(IPP_LIB64);$(XE_LIB64);$(OPENCV_DIR)\x64\vc11\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
