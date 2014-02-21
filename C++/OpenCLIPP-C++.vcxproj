@@ -277,7 +277,7 @@
     <none Include="../cl files/Statistics.cl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </none>
-    <none Include="../cl files/Treshold.cl">
+    <none Include="..\cl files\Tresholding.cl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </none>
     <none Include="../cl files/Vector_Logic.cl">
