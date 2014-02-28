@@ -44,6 +44,10 @@
 #include "benchTransform.hpp"
 #include "benchResize.hpp"
 #include "benchFilters.hpp"
+#include "benchThreshold.hpp"
+#include "benchThresholdGTLT.hpp"
+#include "benchCompare.hpp"
+#include "benchThresholdImg.hpp"
 
 void RunBench()
 {
@@ -159,6 +163,74 @@ void RunBench()
    Bench(Laplace5Bench);
    Bench(SobelCross3Bench);
    Bench(SobelCross5Bench);
+	
+   Bench(CompareLTBenchU8);
+   Bench(CompareLTBenchU16);
+   Bench(CompareLTBenchF32);
+
+   Bench(CompareGTBenchU8);
+   Bench(CompareGTBenchU16);
+   Bench(CompareGTBenchF32);
+
+   Bench(CompareEQBenchU8);
+   Bench(CompareEQBenchU16);
+   Bench(CompareEQBenchF32);
+
+   Bench(CompareGQBenchU8);
+   Bench(CompareGQBenchU16);
+   Bench(CompareGQBenchF32);
+
+   Bench(CompareGTBenchU8);
+   Bench(CompareGTBenchU16);
+   Bench(CompareGTBenchF32);
+
+   Bench(Compare_ImgLTBenchU8);
+   Bench(Compare_ImgLTBenchU16);
+   Bench(Compare_ImgLTBenchF32);
+
+   Bench(Compare_ImgGTBenchU8);
+   Bench(Compare_ImgGTBenchU16);
+   Bench(Compare_ImgGTBenchF32);
+
+   Bench(Compare_ImgEQBenchU8);
+   Bench(Compare_ImgEQBenchU16);
+   Bench(Compare_ImgEQBenchF32);
+
+   Bench(Compare_ImgGQBenchU8);
+   Bench(Compare_ImgGQBenchU16);
+   Bench(Compare_ImgGQBenchF32);
+
+   Bench(Compare_ImgGTBenchU8);
+   Bench(Compare_ImgGTBenchU16);
+   Bench(Compare_ImgGTBenchF32);
+
+   Bench(ThresholdGTBenchU8);
+   Bench(ThresholdGTBenchU16);
+   Bench(ThresholdGTBenchF32);
+
+   Bench(ThresholdLTBenchU8);
+   Bench(ThresholdLTBenchU16);
+   Bench(ThresholdLTBenchF32);
+   
+   Bench(ThresholdGTLTBenchU8);
+   Bench(ThresholdGTLTBenchU16);
+   Bench(ThresholdGTLTBenchF32);
+
+   /*Bench(Threshold_ImgLTBenchU8);
+   Bench(Threshold_ImgLTBenchU16);
+   Bench(Threshold_ImgLTBenchF32);
+
+   Bench(Threshold_ImgGTBenchU8);
+   Bench(Threshold_ImgGTBenchU16);
+   Bench(Threshold_ImgGTBenchF32);
+
+   Bench(Threshold_ImgEQBenchU8);
+   Bench(Threshold_ImgEQBenchU16);
+   Bench(Threshold_ImgEQBenchF32);
+
+   Bench(Threshold_ImgGQBenchU8);
+   Bench(Threshold_ImgGQBenchU16);
+   Bench(Threshold_ImgGQBenchF32);*/
 
 #else // FULL_TESTS
    // Benchmark mode

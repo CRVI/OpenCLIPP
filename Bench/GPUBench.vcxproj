@@ -213,6 +213,9 @@
     <ClInclude Include="src\benchArithmeticBinary.hpp" />
     <ClInclude Include="src\benchBase.hpp" />
     <ClInclude Include="src\benchBinary.hpp" />
+    <ClInclude Include="src\benchCompare.hpp" />
+    <ClInclude Include="src\benchCompareBase.hpp" />
+    <ClInclude Include="src\benchCompareImgBase.hpp" />
     <ClInclude Include="src\benchConvert.hpp" />
     <ClInclude Include="src\benchFilters.hpp" />
     <ClInclude Include="src\benchGradient.hpp" />
@@ -227,6 +230,10 @@
     <ClInclude Include="src\benchResize.hpp" />
     <ClInclude Include="src\benchScale.hpp" />
     <ClInclude Include="src\benchStatistics.hpp" />
+    <ClInclude Include="src\benchThreshold.hpp" />
+    <ClInclude Include="src\benchThresholdBase.hpp" />
+    <ClInclude Include="src\benchThresholdImgBase.hpp" />
+    <ClInclude Include="src\benchThresholdGTLT.hpp" />
     <ClInclude Include="src\benchTransfer.hpp" />
     <ClInclude Include="src\benchArithmeticUnary.hpp" />
     <ClInclude Include="src\benchTransform.hpp" />
