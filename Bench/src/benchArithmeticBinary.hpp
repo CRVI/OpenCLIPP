@@ -27,8 +27,8 @@
 template<typename DataType> class CLASS_NAME;
 
 typedef CLASS_NAME<unsigned char>   CONCATENATE(BENCH_NAME, BenchU8);
-typedef CLASS_NAME<unsigned short>  CONCATENATE(BENCH_NAME, BencU16);
-typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BencF32);
+typedef CLASS_NAME<unsigned short>  CONCATENATE(BENCH_NAME, BenchU16);
+typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BenchF32);
 
 template<typename DataType>
 class CLASS_NAME : public BenchBinaryBase<DataType, USE_BUFFER>

@@ -27,9 +27,9 @@
 template<typename DataType> class CLASS_NAME;
 
 typedef CLASS_NAME<unsigned char>   CONCATENATE(BENCH_NAME, BenchU8);
-typedef CLASS_NAME<unsigned short>  CONCATENATE(BENCH_NAME, BencU16);
+typedef CLASS_NAME<unsigned short>  CONCATENATE(BENCH_NAME, BenchU16);
 #ifdef HAS_FLOAT
-typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BencF32);
+typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BenchF32);
 #endif // HAS_FLOAT
 
 template<typename DataType>

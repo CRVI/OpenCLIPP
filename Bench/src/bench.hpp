@@ -242,13 +242,13 @@ void RunBench()
    Bench(MaxBenchU8);
    Bench(MeanBenchU8);
 
-   Bench(AbsDiffCBencU16);
-   Bench(AbsDiffBencU16);
+   Bench(AbsDiffCBenchU16);
+   Bench(AbsDiffBenchU16);
    Bench(MaxBenchU16);
    Bench(MeanBenchU16);
 
-   Bench(AbsDiffCBencF32);
-   Bench(AbsDiffBencF32);
+   Bench(AbsDiffCBenchF32);
+   Bench(AbsDiffBenchF32);
    Bench(MaxBenchF32);
    Bench(MeanBenchF32);
 
