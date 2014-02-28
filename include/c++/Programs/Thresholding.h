@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: Tresholding.h
+//! @file	: Thresholding.h
 //! @date   : Jul 2013
 //!
-//! @brief  : Image tresholding
+//! @brief  : Image thresholding
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -29,22 +29,22 @@
 namespace OpenCLIPP
 {
 
-/// A program that does image tresholding
-class CL_API Tresholding : public ImageProgram
+/// A program that does image thresholding
+class CL_API Thresholding : public ImageProgram
 {
 public:
-   Tresholding(COpenCL& CL)
-   :  ImageProgram(CL, "Tresholding.cl")
+   Thresholding(COpenCL& CL)
+   :  ImageProgram(CL, "Thresholding.cl")
    { }
 
-   /// D = (S > Tresh ? valueHigher : S)
-   void TresholdGT(IImage& Source, IImage& Dest, float Tresh, float valueHigher = 255);
+   /// D = (S > Thresh ? valueHigher : S)
+   void ThresholdGT(IImage& Source, IImage& Dest, float Thresh, float valueHigher = 255);
 
-   /// D = (S < Tresh ? valueLower : S)
-   void TresholdLT(IImage& Source, IImage& Dest, float Tresh, float valueLower = 0);
+   /// D = (S < Thresh ? valueLower : S)
+   void ThresholdLT(IImage& Source, IImage& Dest, float Thresh, float valueLower = 0);
 
-   /// D = (S > Tresh ? valueHigher : (S < Tresh ? valueLower : S) )
-   void TresholdGTLT(IImage& Source, IImage& Dest, float threshLT, float valueLower, float treshGT, float valueHigher);
+   /// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
+   void ThresholdGTLT(IImage& Source, IImage& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
    enum ECompareOperation
    {
@@ -56,12 +56,14 @@ public:
    };
 
    /// D = (S1 Op S2 ? S1 : S2)
-   void treshold(IImage& Source1, IImage& Source2, IImage& Dest, ECompareOperation Op = GT);
+   void Threshold(IImage& Source1, IImage& Source2, IImage& Dest, ECompareOperation Op = GT);
 
-   /// D = (S Op V)  - D will be 0 or 1
+   /// D = (S Op V)  - D will be 0 or 255
+   /// Dest must be a 8U image
    void Compare(IImage& Source, IImage& Dest, float Value, ECompareOperation Op = GT);
 
-   /// D = (S1 Op S2) - D will be 0 or 1
+   /// D = (S1 Op S2) - D will be 0 or 255
+   /// Dest must be a 8U image
    void Compare(IImage& Source1, IImage& Source2, IImage& Dest, ECompareOperation Op = GT);
 };
 

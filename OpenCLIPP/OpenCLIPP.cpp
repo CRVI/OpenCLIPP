@@ -58,7 +58,7 @@ struct SProgramList
       morphology(CL),
       morphologyBuffer(CL),
       transform(CL),
-      tresholding(CL)
+      thresholding(CL)
    { }
 
    Arithmetic arithmetic;
@@ -74,7 +74,7 @@ struct SProgramList
    Morphology morphology;
    MorphologyBuffer morphologyBuffer;
    Transform transform;
-   Tresholding tresholding;
+   Thresholding thresholding;
 };
 
 // List of program for each context
@@ -350,7 +350,7 @@ PREPARE(ocipPrepareImageLUT, lut)
 PREPARE(ocipPrepareMorphology, morphology)
 PREPARE(ocipPrepareTransform, transform)
 PREPARE(ocipPrepareConversion, conversions)
-PREPARE(ocipPrepareTresholding, tresholding)
+PREPARE(ocipPrepareThresholding, thresholding)
 PREPARE(ocipPrepareFilters, filters)
 PREPARE(ocipPrepareHistogram, histogram)
 
@@ -514,36 +514,36 @@ ocipError ocip_API ocipSelectChannel(ocipImage Source, ocipImage Dest, int Chann
 
 
 #undef CLASS
-#define CLASS GetList().tresholding
+#define CLASS GetList().thresholding
 
-ocipError ocip_API ocipTresholdGT(ocipImage Source, ocipImage Dest, float Tresh, float valueHigher)
+ocipError ocip_API ocipThresholdGT(ocipImage Source, ocipImage Dest, float Thresh, float valueHigher)
 {
-   H( CLASS.TresholdGT(Img(Source), Img(Dest), Tresh, valueHigher) )
+   H( CLASS.ThresholdGT(Img(Source), Img(Dest), Thresh, valueHigher) )
 }
 
-ocipError ocip_API ocipTresholdLT(ocipImage Source, ocipImage Dest, float Tresh, float valueLower)
+ocipError ocip_API ocipThresholdLT(ocipImage Source, ocipImage Dest, float Thresh, float valueLower)
 {
-   H( CLASS.TresholdLT(Img(Source), Img(Dest), Tresh, valueLower) )
+   H( CLASS.ThresholdLT(Img(Source), Img(Dest), Thresh, valueLower) )
 }
 
-ocipError ocip_API ocipTresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float treshGT, float valueHigher)
+ocipError ocip_API ocipThresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
-   H( CLASS.TresholdGTLT(Img(Source), Img(Dest), threshLT, valueLower, treshGT, valueHigher) )
+   H( CLASS.ThresholdGTLT(Img(Source), Img(Dest), threshLT, valueLower, threshGT, valueHigher) )
 }
 
-ocipError ocip_API ocipTreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
+ocipError ocip_API ocipThreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
 {
-   H( CLASS.treshold(Img(Source1), Img(Source2), Img(Dest), (Tresholding::ECompareOperation) Op) )
+   H( CLASS.Threshold(Img(Source1), Img(Source2), Img(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipCompare_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
 {
-   H( CLASS.Compare(Img(Source1), Img(Source2), Img(Dest), (Tresholding::ECompareOperation) Op) )
+   H( CLASS.Compare(Img(Source1), Img(Source2), Img(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipCompare(ocipImage Source, ocipImage Dest, float Value, ECompareOperation Op)
 {
-   H( CLASS.Compare(Img(Source), Img(Dest), Value, (Tresholding::ECompareOperation) Op) )
+   H( CLASS.Compare(Img(Source), Img(Dest), Value, (Thresholding::ECompareOperation) Op) )
 }
 
 
@@ -575,7 +575,7 @@ CONSTANT_OP(ocipLaplace, Laplace, int)
 
 REDUCE_OP(ociphistogram_1C, Histogram1C, uint *)
 REDUCE_OP(ociphistogram_4C, Histogram4C, uint *)
-REDUCE_RETURN_OP(ocipOtsuTreshold, OtsuTreshold, uint)
+REDUCE_RETURN_OP(ocipOtsuThreshold, OtsuThreshold, uint)
 
 
 // Begin programs that can have more than 1 instances per context

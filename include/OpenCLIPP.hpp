@@ -43,4 +43,4 @@
 #include "c++/Programs/Statistics.h"
 #include "c++/Programs/StatisticsVector.h"
 #include "c++/Programs/Transform.h"
-#include "c++/Programs/Tresholding.h"
+#include "c++/Programs/Thresholding.h"

@@ -46,10 +46,10 @@ public:
    void Histogram4C(IImage& Source, uint * Histogram);
 
    /// Calculates the Otsu threshold given an histogram
-   static uint OtsuTreshold(uint Histogram[256], uint NbPixels);
+   static uint OtsuThreshold(uint Histogram[256], uint NbPixels);
 
-   /// Calculates the Otsu treshold for the image
-   uint OtsuTreshold(IImage& Source);
+   /// Calculates the Otsu threshold for the image
+   uint OtsuThreshold(IImage& Source);
 };
 
 }

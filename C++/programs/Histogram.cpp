@@ -62,7 +62,7 @@ void Histogram::Histogram4C(IImage& Source, uint * Histogram)
    Buffer.Read(true);
 }
 
-uint Histogram::OtsuTreshold(uint Histogram[256], uint NbPixels)
+uint Histogram::OtsuThreshold(uint Histogram[256], uint NbPixels)
 {
    double sum = 0;
    for (int i = 0; i < 256; i++)
@@ -70,7 +70,7 @@ uint Histogram::OtsuTreshold(uint Histogram[256], uint NbPixels)
 
    int wB = 0;
    int wF = 0;
-   uint treshold = 0;
+   uint threshold = 0;
    double sumB = 0;
    double maxVariance = 0;
    for (uint i = 0; i < 256; i++)
@@ -95,20 +95,20 @@ uint Histogram::OtsuTreshold(uint Histogram[256], uint NbPixels)
       if (variance > maxVariance)
       {
          maxVariance = variance;
-         treshold = i;
+         threshold = i;
       }
       
    }
 
-   return treshold;
+   return threshold;
 }
 
-uint Histogram::OtsuTreshold(IImage& Source)
+uint Histogram::OtsuThreshold(IImage& Source)
 {
    uint Histogram[256];
    Histogram1C(Source, Histogram);
 
-   return OtsuTreshold(Histogram, Source.Width() * Source.Height());
+   return OtsuThreshold(Histogram, Source.Width() * Source.Height());
 }
 
 }

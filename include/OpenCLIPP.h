@@ -453,26 +453,28 @@ ocipError ocip_API ocipToColor(  ocipImage Source, ocipImage Dest);
 
 
 
-// Tresholding ----------------------------------------------------------------------------------------
-ocipError ocip_API ocipPrepareTresholding(ocipImage Image); ///< See ocipPrepareExample
+// Thresholding ----------------------------------------------------------------------------------------
+ocipError ocip_API ocipPrepareThresholding(ocipImage Image); ///< See ocipPrepareExample
 enum ECompareOperation { LT, LQ, EQ, GQ, GT, };
 
-/// D = (S > Tresh ? valueHigher : S)
-ocipError ocip_API ocipTresholdGT(  ocipImage Source, ocipImage Dest, float Tresh, float valueHigher);
+/// D = (S > Thresh ? valueHigher : S)
+ocipError ocip_API ocipThresholdGT(  ocipImage Source, ocipImage Dest, float Thresh, float valueHigher);
 
-/// D = (S < Tresh ? valueLower : S)
-ocipError ocip_API ocipTresholdLT(  ocipImage Source, ocipImage Dest, float Tresh, float valueLower);
+/// D = (S < Thresh ? valueLower : S)
+ocipError ocip_API ocipThresholdLT(  ocipImage Source, ocipImage Dest, float Thresh, float valueLower);
 
-/// D = (S > Tresh ? valueHigher : (S < Tresh ? valueLower : S) )
-ocipError ocip_API ocipTresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float treshGT, float valueHigher);
+/// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
+ocipError ocip_API ocipThresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
 /// D = (S1 Op S2 ? S1 : S2)
-ocipError ocip_API ocipTreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
+ocipError ocip_API ocipThreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
 
-/// D = (S Op V)  - D will be 0 or 1
+/// D = (S Op S2)  - D will be 0 or 1
+/// Dest must be U8 and 1 channel
 ocipError ocip_API ocipCompare_Img( ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
 
-/// D = (S1 Op S2) - D will be 0 or 1
+/// D = (S1 Op V) - D will be 0 or 1
+/// Dest must be U8 and 1 channel
 ocipError ocip_API ocipCompare(     ocipImage Source, ocipImage Dest, float Value, enum ECompareOperation Op);
 
 
@@ -566,7 +568,7 @@ ocipError ocip_API ociphistogram_1C(ocipImage Source, uint * Histogram);
 ocipError ocip_API ociphistogram_4C(ocipImage Source, uint * Histogram);
 
 /// Calculates the Otsu threshold given an histogram
-ocipError ocip_API ocipOtsuTreshold(ocipImage Source, uint * Value);
+ocipError ocip_API ocipOtsuThreshold(ocipImage Source, uint * Value);
 
 
 // Statistics --------------------------------------------------------------------------------------
