@@ -45,3 +45,5 @@
 #include <assert.h>
 
 typedef unsigned int uint;
+
+//#define USE_CLFFT  // Uncomment to enable using clFFT library to compute Fast Fourrier Transform

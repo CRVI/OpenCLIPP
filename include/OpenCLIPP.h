@@ -803,6 +803,30 @@ ocipError ocip_API ocipMean_V(   ocipProgram Program, ocipBuffer Source, double 
 ocipError ocip_API ocipMeanSqr_V(ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean of the square of all pixel values
 
 
+// FFT on image buffers ----------------------------------------------------------------------------
+ocipError ocip_API ocipPrepareFFT(  ocipProgram * ProgramPtr,   ocipBuffer RealImage,       ocipBuffer ComplexImage);   ///< See ocipPrepareExample2
+
+ocipBool  ocip_API ocipIsFFTAvailable();  ///< Returns true if the library has been compiled with FFT
+
+/// Forward Fast Fourrier Transform.
+/// Executes a fast fourrier transform on the given image
+/// The size of RealSource is used as the dimention for the transformation.
+/// \param Program : The FFT program prepared by ocipPrepareFFT
+/// \param RealSource : An image buffer containing a 1 channel image of F32 real values
+/// \param ComplexDest : An image buffer that will received the transformed image as complex numbers.
+///                      It must be 2 channels of F32 and its width must be >= Width(RealSource)/2+1\n
+///                      First channel is Real and second channel is Imaginary
+ocipError ocip_API ocipFFTForward(  ocipProgram Program,        ocipBuffer RealSource,      ocipBuffer ComplexDest);
+
+/// Inverse (Backward) Fast Fourrier Transform.
+/// Executes an inverse fast fourrier transform on the given complex image
+/// The size of RealDest is used as the dimention for the transformation.
+/// \param Program : The FFT program prepared by ocipPrepareFFT
+/// \param ComplexSource : An image buffer containing a 2 channel image of F32 as complex numbers. First channel is Real and second channel is Imaginary.
+///                        Its width must be >= Width(RealDest)/2+1.
+/// \param RealDest : An image buffer containing a 1 channel image of F32. Will receive the transformed image as real numbers only (no imaginary part).
+ocipError ocip_API ocipFFTInverse( ocipProgram Program,        ocipBuffer ComplexSource,   ocipBuffer RealDest);
+
 #ifdef __cplusplus
 }
 #endif

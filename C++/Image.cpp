@@ -438,6 +438,8 @@ cl::ImageFormat FormatFromImage(const SImage& image)
    case 1:
       format.image_channel_order = CL_R;
       break;
+   case 2:
+      format.image_channel_order = CL_RA;
    case 3:
       // NOTE : 3 channel images are not supported on the devices - they need to be converted to 4 channels
       // we allow it here to mark this image as a 3 channel buffer

@@ -68,29 +68,29 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86</LibraryPath>
+    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(CLFFT_DIR)\include</IncludePath>
+    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86;$(CLFFT_DIR)\library\Release</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64</LibraryPath>
+    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(CLFFT_DIR)\include</IncludePath>
+    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64;$(CLFFT_DIR)\library\Release</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86</LibraryPath>
+    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(CLFFT_DIR)\include</IncludePath>
+    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86;$(CLFFT_DIR)\library\Release</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64</LibraryPath>
+    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;../include/C++;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(CLFFT_DIR)\include</IncludePath>
+    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64;$(CLFFT_DIR)\library\Release</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -176,6 +176,7 @@
     <ClInclude Include="..\include\c++\Programs\Blob.h" />
     <ClInclude Include="..\include\c++\Programs\Color.h" />
     <ClInclude Include="..\include\c++\Programs\Conversions.h" />
+    <ClInclude Include="..\include\c++\Programs\FFT.h" />
     <ClInclude Include="..\include\c++\Programs\Filters.h" />
     <ClInclude Include="..\include\c++\Programs\FiltersVector.h" />
     <ClInclude Include="..\include\c++\Programs\Histogram.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="programs\Blob.cpp" />
     <ClCompile Include="programs\Color.cpp" />
     <ClCompile Include="programs\Conversions.cpp" />
+    <ClCompile Include="programs\FFT.cpp" />
     <ClCompile Include="programs\Filters.cpp" />
     <ClCompile Include="programs\FiltersVector.cpp" />
     <ClCompile Include="programs\Histogram.cpp" />

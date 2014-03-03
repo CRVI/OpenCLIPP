@@ -783,6 +783,57 @@ REDUCE_RETURN_OP(ocipMean_V, Mean, double)
 REDUCE_RETURN_OP(ocipMeanSqr_V, MeanSqr, double)
 
 
+#ifdef USE_CLFFT
+
+#undef CLASS
+#define CLASS (*(FFT*)Program)
+
+ocipError ocip_API ocipPrepareFFT(ocipProgram * ProgramPtr, ocipBuffer RealImage, ocipBuffer ComplexImage)
+{
+   H(
+      if (g_CurrentContext == nullptr)
+         return CL_INVALID_CONTEXT;
+      FFT * Ptr = new FFT(*g_CurrentContext);
+      *ProgramPtr = (ocipProgram) Ptr;
+      if (RealImage != nullptr && ComplexImage != nullptr)
+         Ptr->PrepareFor(CONV(RealImage), CONV(ComplexImage));
+   )
+}
+
+UNARY_OP(ocipFFTForward, Forward)
+UNARY_OP(ocipFFTInverse, Inverse)
+
+ocipBool  ocip_API ocipIsFFTAvailable()
+{
+   return 1;
+}
+
+#else // USE_CLFFT
+
+#ifndef _MSC_VER  // Visual Studio does not support #warning
+#warning "OpenCLIPP is not being built with clFFT - FFT operations will not be available"
+#endif
+
+// Library was not built with clFFT, FFT operations will not be supported
+ocipBool  ocip_API ocipIsFFTAvailable()
+{
+   return 0;
+}
+ocipError ocip_API ocipPrepareFFT(ocipProgram *, ocipBuffer, ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+ocipError ocip_API ocipFFTForward(ocipProgram, ocipBuffer, ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+ocipError ocip_API ocipFFTBackward(ocipProgram, ocipBuffer, ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+
+#endif // USE_CLFFT
+
 
 // Helpers
 SProgramList& GetList()

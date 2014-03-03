@@ -115,6 +115,9 @@
     <ClInclude Include="..\include\c++\Programs\Thresholding.h">
       <Filter>Programs</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\FFT.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -190,6 +193,9 @@
       <Filter>Programs</Filter>
     </ClCompile>
     <ClCompile Include="programs\FiltersVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\FFT.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
   </ItemGroup>
