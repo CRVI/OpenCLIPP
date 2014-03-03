@@ -217,6 +217,7 @@
     <ClInclude Include="src\benchCompareBase.hpp" />
     <ClInclude Include="src\benchCompareImgBase.hpp" />
     <ClInclude Include="src\benchConvert.hpp" />
+    <ClInclude Include="src\benchFFT.hpp" />
     <ClInclude Include="src\benchFilters.hpp" />
     <ClInclude Include="src\benchGradient.hpp" />
     <ClInclude Include="src\benchImageTransfer.hpp" />

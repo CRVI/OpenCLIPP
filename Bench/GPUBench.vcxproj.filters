@@ -142,5 +142,8 @@
     <ClInclude Include="src\benchCompareImgBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\benchFFT.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

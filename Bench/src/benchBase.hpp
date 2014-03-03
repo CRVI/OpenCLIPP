@@ -262,37 +262,37 @@ CV_CODE(
    template<>
    int GetCVType<unsigned char>(int NbChannels)
    {
-      return CV_8UC1;
+      return CV_MAKETYPE(CV_8U, NbChannels);
    }
 
    template<>
    int GetCVType<char>(int NbChannels)
    {
-      return CV_8SC1;
+      return CV_MAKETYPE(CV_8S, NbChannels);
    }
 
    template<>
    int GetCVType<unsigned short>(int NbChannels)
    {
-      return CV_16UC1;
+      return CV_MAKETYPE(CV_16U, NbChannels);
    }
 
    template<>
    int GetCVType<short>(int NbChannels)
    {
-      return CV_16SC1;
+      return CV_MAKETYPE(CV_16S, NbChannels);
    }
 
    template<>
    int GetCVType<int>(int NbChannels)
    {
-      return CV_32SC1;
+      return CV_MAKETYPE(CV_32S, NbChannels);
    }
 
    template<>
    int GetCVType<float>(int NbChannels)
    {
-      return CV_32FC1;
+      return CV_MAKETYPE(CV_32F, NbChannels);
    }
 
    int ToCVType(SImage::EDataType Type, int NbChannels = 1)
@@ -321,7 +321,7 @@ CV_CODE(
 
    Mat toMat(const CSimpleImage& Img)
    {
-      return Mat(Img.Height, Img.Width, ToCVType(Img.Type), (void *) Img.Data(), Img.Step);
+      return Mat(Img.Height, Img.Width, ToCVType(Img.Type, Img.Channels), (void *) Img.Data(), Img.Step);
    }
 
    )

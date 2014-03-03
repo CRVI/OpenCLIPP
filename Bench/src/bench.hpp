@@ -48,6 +48,7 @@
 #include "benchThresholdGTLT.hpp"
 #include "benchCompare.hpp"
 #include "benchThresholdImg.hpp"
+#include "benchFFT.hpp"
 
 void RunBench()
 {
@@ -163,7 +164,7 @@ void RunBench()
    Bench(Laplace5Bench);
    Bench(SobelCross3Bench);
    Bench(SobelCross5Bench);
-	
+   
    Bench(CompareLTBenchU8);
    Bench(CompareLTBenchU16);
    Bench(CompareLTBenchF32);
@@ -231,6 +232,12 @@ void RunBench()
    Bench(Threshold_ImgGQBenchU8);
    Bench(Threshold_ImgGQBenchU16);
    Bench(Threshold_ImgGQBenchF32);*/
+
+   if (ocipIsFFTAvailable())
+   {
+      Bench(FFTForwardBench);
+      Bench(FFTBackwardBench);
+   }
 
 #else // FULL_TESTS
    // Benchmark mode

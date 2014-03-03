@@ -30,7 +30,10 @@ bool AbsDiff(const CSimpleImage& Source1, const CSimpleImage& Source2, CSimpleIm
    if (Source1.Type != Dest.Type)
       return false;
 
-   IppiSize Roi = {Dest.Width, Dest.Height};
+   if (Source1.Channels != Source2.Channels)
+      return false;
+
+   IppiSize Roi = {Dest.Width * Source1.Channels, Dest.Height};
 
    switch (Source1.Type)
    {

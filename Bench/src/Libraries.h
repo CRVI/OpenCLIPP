@@ -47,6 +47,7 @@
 #pragma comment ( lib , "ipps" )
 #pragma comment ( lib , "ippi" )
 #pragma comment ( lib , "ippcv" )
+#pragma warning ( disable : 4996 )  // Disable deprecated warnings - we use IPP functions that are marked as deprecated but still supported
 #endif _MSC_VER
 #define IPP_AVAILABLE true
 #define IPP_CODE(code) code
