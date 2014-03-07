@@ -169,9 +169,9 @@ void RunBench()
    Bench(CompareLTBenchU16);
    Bench(CompareLTBenchF32);
 
-   Bench(CompareGTBenchU8);
-   Bench(CompareGTBenchU16);
-   Bench(CompareGTBenchF32);
+   Bench(CompareLQBenchU8);
+   Bench(CompareLQBenchU16);
+   Bench(CompareLQBenchF32);
 
    Bench(CompareEQBenchU8);
    Bench(CompareEQBenchU16);

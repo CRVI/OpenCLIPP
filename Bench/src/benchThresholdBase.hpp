@@ -43,7 +43,7 @@ typedef CLASS_NAME<float>           CONCATENATE(CONCATENATE(BENCH_NAME,THRESHOLD
 
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, false>
+class CLASS_NAME : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
 {
 public:
    void RunIPP();
@@ -155,7 +155,10 @@ void CLASS_NAME<DataType>::RunCL()
 		valueLT = FLOAT_VALUELT;
 	}
 
-	CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE))(m_CLSrc, m_CLDst, thresh, CONCATENATE(value,THRESHOLD_TYPE));
+   if (m_UsesBuffer)
+      CONCATENATE(CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE)), _V)(m_CLBufferSrc, m_CLBufferDst, thresh, CONCATENATE(value,THRESHOLD_TYPE));
+   else
+      CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE))(m_CLSrc, m_CLDst, thresh, CONCATENATE(value,THRESHOLD_TYPE));
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>

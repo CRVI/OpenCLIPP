@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 //enum ECompareOperation { LT, LQ, EQ, GQ, GT, };
+#define COMPARE_USE_BUFFER true
 
 #define VALUE 100
 #define USHORT_VALUE 5000

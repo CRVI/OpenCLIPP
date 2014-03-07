@@ -32,7 +32,7 @@ typedef CLASS_NAME<float>           CONCATENATE(CONCATENATE(BENCH_NAME, COMPARE_
 
 
 template<typename DataType>
-class CLASS_NAME : public BenchBinaryBase<DataType, false>
+class CLASS_NAME : public BenchBinaryBase<DataType, COMPARE_USE_BUFFER>
 {
 public:
    void RunIPP();
@@ -211,7 +211,10 @@ void CLASS_NAME<DataType>::RunCUDA()
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-	CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLSrcB, this->m_CLDst, COMPARE_TYPE);
+   if (m_UsesBuffer)
+      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(m_CLBufferSrc, m_CLBufferSrcB, m_CLBufferDst, COMPARE_TYPE);
+   else
+      CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLSrcB, m_CLDst, COMPARE_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -33,7 +33,7 @@ typedef CLASS_NAME<float>           CONCATENATE(CONCATENATE(BENCH_NAME, COMPARE_
 
 
 template<typename DataType>
-class CLASS_NAME : public BenchBinaryBase<DataType, false>
+class CLASS_NAME : public BenchBinaryBase<DataType, THRESHOLD_USE_BUFFER>
 {
 public:
    void RunIPP();

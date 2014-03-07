@@ -31,7 +31,7 @@ typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BenchF32);
 
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, false>
+class CLASS_NAME : public BenchUnaryBase<DataType, COMPARE_USE_BUFFER>
 {
 public:
    void RunIPP();
@@ -168,7 +168,10 @@ void CLASS_NAME<DataType>::RunCL()
 	if (is_same<DataType, float>::value)
 		value = FLOAT_VALUE;
 
-	ocipCompare(m_CLSrc, m_CLDst, value, COMPARE_TYPE);
+   if (m_UsesBuffer)
+      ocipCompare_V(m_CLBufferSrc, m_CLBufferDst, value, COMPARE_TYPE);
+   else
+      ocipCompare(m_CLSrc, m_CLDst, value, COMPARE_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

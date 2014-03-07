@@ -44,7 +44,7 @@ typedef CLASS_NAME<unsigned short>  ThresholdGTLTBenchU16;
 typedef CLASS_NAME<float>           ThresholdGTLTBenchF32;
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, false>
+class CLASS_NAME : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
 {
 public:
 	void RunIPP();
@@ -112,5 +112,8 @@ void CLASS_NAME<DataType>::RunCL()
 	    valueLT = FLOAT_VALUELOWER;
 	}
 
-	ocipThresholdGTLT(m_CLSrc, m_CLDst, threshLT, valueLT, threshGT, valueGT);
+   if (m_UsesBuffer)
+      ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferDst, threshLT, valueLT, threshGT, valueGT);
+   else
+      ocipThresholdGTLT(m_CLSrc, m_CLDst, threshLT, valueLT, threshGT, valueGT);
 }
