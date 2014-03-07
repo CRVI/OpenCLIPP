@@ -58,7 +58,8 @@ struct SProgramList
       morphology(CL),
       morphologyBuffer(CL),
       transform(CL),
-      thresholding(CL)
+      thresholding(CL),
+      thresholdingVector(CL)
    { }
 
    Arithmetic arithmetic;
@@ -75,6 +76,7 @@ struct SProgramList
    MorphologyBuffer morphologyBuffer;
    Transform transform;
    Thresholding thresholding;
+   ThresholdingVector thresholdingVector;
 };
 
 // List of program for each context
@@ -629,6 +631,7 @@ PREPARE(ocipPrepareImageBufferLogic, logicVector)
 PREPARE(ocipPrepareImageBufferLUT, lutVector)
 PREPARE(ocipPrepareImageBufferMorphology, morphologyBuffer)
 PREPARE(ocipPrepareImageBufferFilters, morphologyBuffer)
+PREPARE(ocipPrepareImageBufferThresholding, thresholdingVector)
 
 PREPARE2(ocipPrepareImageBufferStatistics, StatisticsVector)
 
@@ -781,6 +784,40 @@ REDUCE_RETURN_OP(ocipMaxAbs_V, MaxAbs, double)
 REDUCE_RETURN_OP(ocipSum_V, Sum, double)
 REDUCE_RETURN_OP(ocipMean_V, Mean, double)
 REDUCE_RETURN_OP(ocipMeanSqr_V, MeanSqr, double)
+
+
+#undef CLASS
+#define CLASS GetList().thresholdingVector
+
+ocipError ocip_API ocipThresholdGT_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueHigher)
+{
+   H( CLASS.ThresholdGT(Buf(Source), Buf(Dest), Thresh, valueHigher) )
+}
+
+ocipError ocip_API ocipThresholdLT_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueLower)
+{
+   H( CLASS.ThresholdLT(Buf(Source), Buf(Dest), Thresh, valueLower) )
+}
+
+ocipError ocip_API ocipThresholdGTLT_V(ocipBuffer Source, ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
+{
+   H( CLASS.ThresholdGTLT(Buf(Source), Buf(Dest), threshLT, valueLower, threshGT, valueHigher) )
+}
+
+ocipError ocip_API ocipThreshold_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
+{
+   H( CLASS.Threshold(Buf(Source1), Buf(Source2), Buf(Dest), (ThresholdingVector::ECompareOperation) Op) )
+}
+
+ocipError ocip_API ocipCompare_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
+{
+   H( CLASS.Compare(Buf(Source1), Buf(Source2), Buf(Dest), (ThresholdingVector::ECompareOperation) Op) )
+}
+
+ocipError ocip_API ocipCompare_V(ocipBuffer Source, ocipBuffer Dest, float Value, ECompareOperation Op)
+{
+   H( CLASS.Compare(Buf(Source), Buf(Dest), Value, (ThresholdingVector::ECompareOperation) Op) )
+}
 
 
 #ifdef USE_CLFFT

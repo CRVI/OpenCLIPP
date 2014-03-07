@@ -118,6 +118,9 @@
     <ClInclude Include="..\include\c++\Programs\FFT.h">
       <Filter>Programs</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\ThresholdingVector.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -192,6 +195,9 @@
     <ClCompile Include="programs\Thresholding.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
+    <ClCompile Include="programs\ThresholdingVector.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
     <ClCompile Include="programs\FiltersVector.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
@@ -257,5 +263,8 @@
     <none Include="..\cl files\Thresholding.cl">
       <Filter>OpenCL Files</Filter>
     </none>
+    <None Include="..\cl files\Vector_Thresholding.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

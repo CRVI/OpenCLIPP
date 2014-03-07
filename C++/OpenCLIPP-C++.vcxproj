@@ -190,6 +190,7 @@
     <ClInclude Include="..\include\c++\Programs\Program.h" />
     <ClInclude Include="..\include\c++\Programs\Statistics.h" />
     <ClInclude Include="..\include\c++\Programs\StatisticsVector.h" />
+    <ClInclude Include="..\include\c++\Programs\ThresholdingVector.h" />
     <ClInclude Include="..\include\c++\Programs\Transform.h" />
     <ClInclude Include="..\include\c++\Programs\Thresholding.h" />
     <ClInclude Include="..\include\OpenCLIPP.hpp" />
@@ -238,6 +239,7 @@
     <ClCompile Include="programs\Statistics.cpp" />
     <ClCompile Include="programs\StatisticsHelpers.cpp" />
     <ClCompile Include="programs\StatisticsVector.cpp" />
+    <ClCompile Include="programs\ThresholdingVector.cpp" />
     <ClCompile Include="programs\Transform.cpp" />
     <ClCompile Include="programs\Thresholding.cpp" />
   </ItemGroup>
@@ -291,6 +293,7 @@
     <None Include="..\cl files\Morphology_Buffer.cl" />
     <None Include="..\cl files\Thresholding.cl" />
     <None Include="..\cl files\Vector_Filters.cl" />
+    <None Include="..\cl files\Vector_Thresholding.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -802,6 +802,28 @@ ocipError ocip_API ocipSum_V(    ocipProgram Program, ocipBuffer Source, double 
 ocipError ocip_API ocipMean_V(   ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean value of all pixel values
 ocipError ocip_API ocipMeanSqr_V(ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean of the square of all pixel values
 
+// Thresholding on image buffers --------------------------------------------------------------------
+ocipError ocip_API ocipPrepareImageBufferThresholding(ocipBuffer Image); ///< See ocipPrepareExample
+/// D = (S > Thresh ? valueHigher : S)
+ocipError ocip_API ocipThresholdGT_V( ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueHigher);
+
+/// D = (S < Thresh ? valueLower : S)
+ocipError ocip_API ocipThresholdLT_V( ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueLower);
+
+/// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
+ocipError ocip_API ocipThresholdGTLT_V( ocipBuffer Source, ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
+
+/// D = (S1 Op S2 ? S1 : S2)
+ocipError ocip_API ocipThreshold_Img_V( ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, enum ECompareOperation Op);
+
+/// D = (S Op S2)  - D will be 0 or 1
+/// Dest must be U8 and 1 channel
+ocipError ocip_API ocipCompare_Img_V( ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, enum ECompareOperation Op);
+
+/// D = (S1 Op V) - D will be 0 or 1
+/// Dest must be U8 and 1 channel
+ocipError ocip_API ocipCompare_V( ocipBuffer Source, ocipBuffer Dest, float Value, enum ECompareOperation Op);
+
 
 // FFT on image buffers ----------------------------------------------------------------------------
 ocipError ocip_API ocipPrepareFFT(  ocipProgram * ProgramPtr,   ocipBuffer RealImage,       ocipBuffer ComplexImage);   ///< See ocipPrepareExample2
