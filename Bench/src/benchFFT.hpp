@@ -175,22 +175,8 @@ void FFTBackwardBench::Create(uint Width, uint Height)
    // Source image
    uint SrcWidth = Width / 2 + 1;
    m_ImgSrc.Create<float>(SrcWidth, Height, 2);
-   //FillRandomImg(m_ImgSrc);
+   FillRandomImg(m_ImgSrc);
 
-   {
-      /*ocipImage Image = nullptr;
-      ocipCreateImage(&Image, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
-      ocipSet(Image, 0);
-      ocipReadImage(Image);
-      ocipReleaseImage(Image);*/
-
-      for (int y = 0; y < Height; y++)
-         for (int x = 0; x < SrcWidth; x++)
-            *((float*)m_ImgSrc.Data(x, y)) = 0;
-
-      for (int i = 0; i < 100; i++)
-         *((float*)m_ImgSrc.Data(rand() % SrcWidth, rand() % Height)) = 1;
-   }
 
    // CL
    if (m_UsesBuffer)
@@ -328,12 +314,6 @@ void FFTForwardBench::RunIPP()
 void FFTForwardBench::RunCL()
 {
    ocipFFTForward(m_Program, m_CLBufferSrc, m_CLBufferDst);
-
-   /*ocipFFTInverse(m_Program, m_CLBufferDst, m_CLBufferSrc);
-
-   ocipDivC_V(m_CLBufferSrc, m_CLBufferSrc, 1000000);
-
-   ocipReadImageBuffer(m_CLBufferSrc);*/
 }
 
 void FFTForwardBench::RunCV()

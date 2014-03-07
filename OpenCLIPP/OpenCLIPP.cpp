@@ -827,7 +827,7 @@ ocipError ocip_API ocipFFTForward(ocipProgram, ocipBuffer, ocipBuffer)
 {
    return CL_INVALID_OPERATION;
 }
-ocipError ocip_API ocipFFTBackward(ocipProgram, ocipBuffer, ocipBuffer)
+ocipError ocip_API ocipFFTInverse(ocipProgram, ocipBuffer, ocipBuffer)
 {
    return CL_INVALID_OPERATION;
 }
