@@ -294,10 +294,10 @@ int VectorProgram::GetVectorWidth(SImage::EDataType Type)
 
 bool VectorProgram::IsImageFlush(const ImageBase& Source)
 {
-   if (Source.ElementStep() != Source.Step())
+   if (Source.Width() * Source.NbChannels() * Source.DepthBytes() != Source.Step())
       return false;  // Image has padding
 
-   if ((Source.Width() * Source.NbChannels()) % GetVectorWidth(Source.DataType()) == 0)
+   if ((Source.Width() * Source.NbChannels()) % GetVectorWidth(Source.DataType()) != 0)
       return false;  // width is not a multiple of VectorWidth
 
    return true;
