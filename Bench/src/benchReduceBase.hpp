@@ -97,18 +97,40 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
    {
       // To prevent float values from overflowing, we divide the values to get them smaller
 
-      // Create temporary image
-      ocipBuffer TempBuffer = nullptr;
-      ocipCreateImageBuffer(&TempBuffer, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
+      if (USE_BUFFER)
+      {
+         // Create temporary image
+         ocipBuffer TempImage = nullptr;
+         ocipCreateImageBuffer(&TempImage, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
 
-      // Divide into temp
-      ocipDivC_V(m_CLBufferSrc, TempBuffer, 1000000);
+         // Divide into temp
+         ocipDivC_V(m_CLBufferSrc, TempImage, 1000000);
 
-      // Copy temp to source image
-      ocipCopy_V(TempBuffer, m_CLBufferSrc);
+         // Copy temp to source image
+         ocipCopy_V(TempImage, m_CLBufferSrc);
 
-      // Read into host
-      ocipReadImageBuffer(m_CLBufferSrc);
+         // Read into host
+         ocipReadImageBuffer(m_CLBufferSrc);
+
+         ocipReleaseImageBuffer(TempImage);
+      }
+      else
+      {
+         // Create temporary image
+         ocipImage TempImage = nullptr;
+         ocipCreateImage(&TempImage, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
+
+         // Divide into temp
+         ocipDivC(m_CLSrc, TempImage, 1000000);
+
+         // Copy temp to source image
+         ocipCopy(TempImage, m_CLSrc);
+
+         // Read into host
+         ocipReadImage(m_CLSrc);
+
+         ocipReleaseImage(TempImage);
+      }
 
       // Resend the image
       CUDA_CODE(
@@ -120,8 +142,7 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
          cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
             m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
          )
-
-      ocipReleaseImageBuffer(TempBuffer);
+      
    }
 
 }
