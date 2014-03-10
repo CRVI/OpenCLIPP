@@ -244,56 +244,26 @@
     <ClCompile Include="programs\Thresholding.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <none Include="../cl files/Arithmetic.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Integral.cl" />
-    <none Include="../cl files/Transform.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Vector_Arithmetic.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Blob.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Color.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Convert.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Filters.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Histogram.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Logic.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Lut.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Morphology.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Statistics.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Vector_Logic.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Vector_Lut.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <none Include="../cl files/Vector_Statistics.cl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </none>
-    <None Include="..\cl files\Morphology_Buffer.cl" />
-    <None Include="..\cl files\Thresholding.cl" />
-    <None Include="..\cl files\Vector_Filters.cl" />
-    <None Include="..\cl files\Vector_Thresholding.cl" />
+    <None Include="..\cl-files\Arithmetic.cl" />
+    <None Include="..\cl-files\Blob.cl" />
+    <None Include="..\cl-files\Color.cl" />
+    <None Include="..\cl-files\Convert.cl" />
+    <None Include="..\cl-files\Filters.cl" />
+    <None Include="..\cl-files\Histogram.cl" />
+    <None Include="..\cl-files\Integral.cl" />
+    <None Include="..\cl-files\Logic.cl" />
+    <None Include="..\cl-files\Lut.cl" />
+    <None Include="..\cl-files\Morphology.cl" />
+    <None Include="..\cl-files\Morphology_Buffer.cl" />
+    <None Include="..\cl-files\Statistics.cl" />
+    <None Include="..\cl-files\Thresholding.cl" />
+    <None Include="..\cl-files\Transform.cl" />
+    <None Include="..\cl-files\Vector_Arithmetic.cl" />
+    <None Include="..\cl-files\Vector_Filters.cl" />
+    <None Include="..\cl-files\Vector_Logic.cl" />
+    <None Include="..\cl-files\Vector_Lut.cl" />
+    <None Include="..\cl-files\Vector_Statistics.cl" />
+    <None Include="..\cl-files\Vector_Thresholding.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

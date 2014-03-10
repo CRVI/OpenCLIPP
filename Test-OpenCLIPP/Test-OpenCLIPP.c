@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 
 
    // Tell where the .cl files are
-   ocipSetCLFilesPath("D:/OpenCLIPP/cl files/");
+   ocipSetCLFilesPath("D:/OpenCLIPP/cl-files/");
 
 
    // Initialize

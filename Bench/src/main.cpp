@@ -363,7 +363,7 @@ int main()
    ocipInitialize(&CLContext, "", CL_DEVICE_TYPE_ALL);
    //ocipInitialize(&CLContext, "Intel", CL_DEVICE_TYPE_CPU);   // Use this to use the Intel OpenCL debugger
 
-   ocipSetCLFilesPath("D:/OpenCLIPP/cl files/");
+   ocipSetCLFilesPath("D:/OpenCLIPP/cl-files/");
 
 #ifdef FULL_TESTS
    printf("Running unit tests using randomly generated images\n");
