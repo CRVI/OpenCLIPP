@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program that does image thresholding
-class CL_API ThresholdingVector : public ImageBufferProgram
+class CL_API ThresholdingVector : public VectorProgram
 {
 public:
    ThresholdingVector(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Vector_Thresholding.cl")
+   :  VectorProgram(CL, "Vector_Thresholding.cl")
    { }
 
    /// D = (S > Thresh ? valueHigher : S)

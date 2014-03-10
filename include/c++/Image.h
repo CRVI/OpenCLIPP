@@ -65,8 +65,8 @@ struct CL_API SSize
 class CL_API ImageBase
 {
 public:
-   cl::NDRange FullRange();         ///< Returns a 2D global range for 1 worker per pixel
-   cl::NDRange VectorRange(int NbElementsPerWorker);  ///< Returns a 2D global range for multiple pixels per worker
+   cl::NDRange FullRange() const;         ///< Returns a 2D global range for 1 worker per pixel
+   cl::NDRange VectorRange(int NbElementsPerWorker) const;  ///< Returns a 2D global range for multiple pixels per worker
 
    uint Width() const;        ///< Width of the image, in pixels
    uint Height() const;       ///< Height of the image, in pixels

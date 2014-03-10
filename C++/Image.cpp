@@ -41,12 +41,12 @@ ImageBase::ImageBase(const SImage& Image)
 :  m_Img(Image)
 { }
 
-cl::NDRange ImageBase::FullRange()
+cl::NDRange ImageBase::FullRange() const
 {
    return cl::NDRange(Width(), Height(), 1);
 }
 
-cl::NDRange ImageBase::VectorRange(int NbElementsPerWorker)
+cl::NDRange ImageBase::VectorRange(int NbElementsPerWorker) const
 {
    return cl::NDRange(Width() * NbChannels() / NbElementsPerWorker, Height(), 1);
 }

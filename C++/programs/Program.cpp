@@ -31,6 +31,8 @@ using namespace std;
 namespace OpenCLIPP
 {
 
+const char ** GetDataTypeList();
+
 Program::Program(COpenCL& CL, const char * Path, const char * options)
 :  m_CL(&CL),
    m_Path(Path),
@@ -117,26 +119,20 @@ MultiProgram::MultiProgram(COpenCL& CL)
 :  m_CL(&CL)
 { }
 
-void MultiProgram::SetProgramInfo(const char * Path, uint NbPrograms, const char ** Defines)
+void MultiProgram::SetProgramInfo(const char * Path, const vector<string>& Options)
 {
-   SetProgramInfo(false, "", NbPrograms, Defines, Path);
+   SetProgramInfo(false, "", Options, Path);
 }
 
-void MultiProgram::SetProgramInfo(bool /*fromSource*/, const char * Source,
-                                         uint NbPrograms, const char ** Defines, const char * Path)
+void MultiProgram::SetProgramInfo(bool /*fromSource*/, const char * Source, const vector<string>& Options, const char * Path)
 {
-   m_Programs.assign(NbPrograms, nullptr);
+   m_Programs.assign(Options.size(), nullptr);
 
-   for (uint i = 0; i < NbPrograms; i++)
-   {
-      string option = "-D ";
-      option += Defines[i];
+   for (size_t i = 0; i < Options.size(); i++)
       if (string(Source) != "")
-         m_Programs[i] = make_shared<Program>(*m_CL, true, Source, option.c_str());
+         m_Programs[i] = make_shared<Program>(*m_CL, true, Source, Options[i].c_str());
       else
-         m_Programs[i] = make_shared<Program>(*m_CL, Path, option.c_str());
-   }
-
+         m_Programs[i] = make_shared<Program>(*m_CL, Path, Options[i].c_str());
 }
 
 Program& MultiProgram::GetProgram(uint Id)
@@ -157,23 +153,36 @@ void MultiProgram::PrepareProgram(uint Id)
 ImageProgram::ImageProgram(COpenCL& CL, const char * Path)
 :  MultiProgram(CL)
 {
-   const char * Defines[NbPixelTypes] = {"I", "UI", "F"};    // Keep in synch with EPixelTypes
-   SetProgramInfo(Path, NbPixelTypes, Defines);
+   const vector<string> Options = GetOptions();
+
+   SetProgramInfo(Path, Options);
 }
 
 ImageProgram::ImageProgram(COpenCL& CL, bool fromSource, const char * Source)
 :  MultiProgram(CL)
 {
-   const char * Defines[NbPixelTypes] = {"I", "UI", "F"};    // Keep in synch with EPixelTypes
-   SetProgramInfo(fromSource, Source, NbPixelTypes, Defines);
+   const vector<string> Options = GetOptions();
+
+   SetProgramInfo(fromSource, Source, Options);
 }
 
-void ImageProgram::PrepareFor(ImageBase& Source)
+const vector<string> ImageProgram::GetOptions()
+{
+   const char * Defines[NbPixelTypes] = {"I", "UI", "F"};    // Keep in synch with EPixelTypes
+
+   vector<string> Options(NbPixelTypes);
+   for (int i = 0; i < NbPixelTypes; i++)
+      Options[i] = string("-D ") + Defines[i];
+
+   return Options;
+}
+
+void ImageProgram::PrepareFor(const ImageBase& Source)
 {
    SelectProgram(Source).Build();
 }
 
-Program& ImageProgram::SelectProgram(ImageBase& Source)
+Program& ImageProgram::SelectProgram(const ImageBase& Source)
 {
    if (Source.IsFloat())
       return GetProgram(Float);
@@ -189,34 +198,147 @@ Program& ImageProgram::SelectProgram(ImageBase& Source)
 ImageBufferProgram::ImageBufferProgram(COpenCL& CL, const char * Path)
 :  MultiProgram(CL)
 {
-   const char * Defines[NbPixelTypes] = {"U8", "S8", "U16", "S16", "U32", "S32", "F32"};    // Keep in synch with EPixelTypes
+   const vector<string> Options = GetOptions();
 
-   SetProgramInfo(Path, NbPixelTypes, Defines);
+   SetProgramInfo(Path, Options);
 }
 
 ImageBufferProgram::ImageBufferProgram(COpenCL& CL, bool fromSource, const char * Source)
 :  MultiProgram(CL)
 {
-   const char * Defines[NbPixelTypes] = {"U8", "S8", "U16", "S16", "U32", "S32", "F32"};    // Keep in synch with EPixelTypes
+   const vector<string> Options = GetOptions();
 
-   SetProgramInfo(fromSource, Source, NbPixelTypes, Defines);
+   SetProgramInfo(fromSource, Source, Options);
 }
 
-void ImageBufferProgram::PrepareFor(ImageBase& Source)
+const vector<string> ImageBufferProgram::GetOptions()
+{
+   vector<string> Options(SImage::NbDataTypes);
+
+   for (int i = 0; i < SImage::NbDataTypes; i++)
+      Options[i] = string("-D ") + GetDataTypeList()[i];
+
+   return Options;
+}
+
+void ImageBufferProgram::PrepareFor(const ImageBase& Source)
 {
    SelectProgram(Source).Build();
 }
 
-Program& ImageBufferProgram::SelectProgram(ImageBase& Source)
+Program& ImageBufferProgram::SelectProgram(const ImageBase& Source)
 {
-   if (Source.DataType() < 0 || Source.DataType() >= NbPixelTypes)
+   if (Source.DataType() < 0 || Source.DataType() >= SImage::NbDataTypes)
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageBufferProgram");
 
    return GetProgram(Source.DataType());
 }
 
 
+// VectorProgram
+VectorProgram::VectorProgram(COpenCL& CL, const char * Path)
+:  MultiProgram(CL)
+{
+   const vector<string> Options = GetOptions();
+
+   SetProgramInfo(Path, Options);
+}
+
+VectorProgram::VectorProgram(COpenCL& CL, bool fromSource, const char * Source)
+:  MultiProgram(CL)
+{
+   const vector<string> Options = GetOptions();
+
+   SetProgramInfo(fromSource, Source, Options);
+}
+
+const vector<string> VectorProgram::GetOptions()
+{
+   vector<string> Options(SImage::NbDataTypes * 2);
+
+   for (int i = 0; i < SImage::NbDataTypes; i++)
+   {
+      int VectorWidth = GetVectorWidth(SImage::EDataType(i));
+
+      Options[i] = string("-D VEC_WIDTH=") + to_string(VectorWidth) + " -D " + GetDataTypeList()[i];
+   }
+
+   for (int i = 0; i < SImage::NbDataTypes; i++)
+      Options[SImage::NbDataTypes + i] = Options[i] + " -D WITH_PADDING";
+
+   return Options;
+}
+
+int VectorProgram::GetVectorWidth(SImage::EDataType Type)
+{
+   // NOTE : This could be customized depending on the hardware for best performance
+   switch (Type)
+   {
+   case SImage::U8:
+   case SImage::S8:
+      return 8;
+   case SImage::U16:
+   case SImage::S16:
+      return 4;
+   case SImage::U32:
+   case SImage::S32:
+   case SImage::F32:
+      return 2;
+   case SImage::NbDataTypes:
+   default:
+      assert(false); // wrong enum value
+      return 2;
+   }
+
+}
+
+bool VectorProgram::IsImageFlush(const ImageBase& Source)
+{
+   if (Source.ElementStep() != Source.Step())
+      return false;  // Image has padding
+
+   if ((Source.Width() * Source.NbChannels()) % GetVectorWidth(Source.DataType()) == 0)
+      return false;  // width is not a multiple of VectorWidth
+
+   return true;
+}
+
+cl::NDRange VectorProgram::GetRange(const ImageBase& Source)
+{
+   if (IsImageFlush(Source))
+   {
+      // The fast version uses a simpler 1D range
+      return cl::NDRange(Source.Width() * Source.Height() * Source.NbChannels() / GetVectorWidth(Source.DataType()), 1, 1);
+   }
+
+   return Source.VectorRange(GetVectorWidth(Source.DataType()));
+}
+
+void VectorProgram::PrepareFor(const ImageBase& Source)
+{
+   SelectProgram(Source).Build();
+}
+
+Program& VectorProgram::SelectProgram(const ImageBase& Source)
+{
+   if (Source.DataType() < 0 || Source.DataType() >= SImage::NbDataTypes)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageBufferProgram");
+
+   if (IsImageFlush(Source))
+      return GetProgram(Source.DataType());  // Use fast version
+
+   // Use slower WITH_PADDING version
+   return GetProgram(Source.DataType() + SImage::NbDataTypes);
+}
+
+
 // Helper functions for programs
+
+const char ** GetDataTypeList()
+{
+   static const char * PixelTypes[SImage::NbDataTypes] = {"U8", "S8", "U16", "S16", "U32", "S32", "F32"};    // Keep in synch with EPixelTypes
+   return PixelTypes;
+}
 
 bool SameType(const ImageBase& Img1, const ImageBase& Img2)
 {

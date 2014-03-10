@@ -26,7 +26,9 @@
 
 // Optimization note : On my GTX 680 - fastest version is with no WITH_PADDING and VEC_WIDTH==8
 
+#ifndef VEC_WIDTH
 #define VEC_WIDTH 8    // Number of items done in parralel per worker - Can be 4, 8 or 16
+#endif VEC_WIDTH
 
 #ifdef S8
 #define SCALAR char
@@ -107,7 +109,7 @@
    dst_step /= sizeof(uchar);
 
 
-#define WITH_PADDING
+//#define WITH_PADDING
 
 #ifdef WITH_PADDING
 // This versions is capable of handling all types of image, including :
@@ -265,15 +267,6 @@ kernel void name(INPUT_SPACE const TYPE * source1, INPUT_SPACE const TYPE * sour
    VECTOR_OP(code);\
 }
 
-/*#define CONSTANT_OP(name, code) \
-__attribute__(( vec_type_hint(TYPE) ))\
-kernel void name(INPUT_SPACE const TYPE * source, global TYPE * dest, int src_step, int dst_step, int width, float value)\
-{\
-   BEGIN\
-   LAST_WORKER(code)\
-   PREPARE_VECTOR\
-   VECTOR_OP(code);\
-}*/
 
 BINARY_OP(img_thresh_LT, (src1 < src2 ? src1 : src2))
 BINARY_OP(img_thresh_LQ, (src1 <= src2 ? src1 : src2))
@@ -288,9 +281,6 @@ BINARY_OP(img_thresh_GT, (src1 > src2 ? src1 : src2))
 #define WHITE ((CONCATENATE(uint, VEC_WIDTH))(255))
 #define BLACK ((CONCATENATE(uint, VEC_WIDTH))(0))
 
-//#undef VECTOR_OP
-
-//#define VECTOR_OP(code) dest[gx] = CONCATENATE(CONCATENATE(convert_, TYPE_U8), _sat)(code)
 
 //-------------------------------------------------------------------------------------------------
 

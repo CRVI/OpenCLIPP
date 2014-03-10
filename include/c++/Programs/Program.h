@@ -98,21 +98,17 @@ protected:
 
    /// Sets the information about a .cl program file
    /// \param Path : Path of the .cl file - must be relative to the path given by COpenCL::SetClFilesPath()
-   /// \param NbPrograms : Number of different versions of the same program to create
-   /// \param Defines : An array of NbPrograms strings that contain the defines (pre-defined preprocessor macros)
-   ///   to use for each versions of the program
-   void SetProgramInfo(const char * Path, uint NbPrograms, const char ** Defines);
+   /// \param Options : A list containing the options to give when building the different versions of the program
+   void SetProgramInfo(const char * Path, const std::vector<std::string>& Options);
 
    /// Sets the information about a program
    /// \param fromSource : Indicates wether a .cl file is used or if source code is supplied
    /// \param Source : Source code (used if fromSource is true)
-   /// \param NbPrograms : Number of different versions of the same program to create
-   /// \param Defines : An array of NbPrograms strings that contain the defines (pre-defined preprocessor macros)
-   ///   to use for each versions of the program
+   /// \param Options : A list containing the options to give when building the different versions of the program
    /// \param Path : Path of the .cl file - must be relative to the path given by COpenCL::SetClFilesPath().
    ///   used if fromSource is false
-   void SetProgramInfo(bool fromSource, const char * Source, uint NbPrograms,
-      const char ** Defines, const char * Path = "");
+   void SetProgramInfo(bool fromSource, const char * Source,
+      const std::vector<std::string>& Options, const char * Path = "");
 
    Program& GetProgram(uint Id);    ///< Builds the program specified by Id and returns a reference to it
 
@@ -159,11 +155,14 @@ public:
    /// Build the version of the program appropriate for this image.
    /// Building can take a lot of time (100+ms) so it is better to build
    /// the program during when starting so it will be ready when needed.
-   void PrepareFor(ImageBase& Source);
+   void PrepareFor(const ImageBase& Source);
 
    /// Selects the appropriate program version for this image.
    /// Also builds the program version if it was not already built.
-   Program& SelectProgram(ImageBase& Source);
+   Program& SelectProgram(const ImageBase& Source);
+
+private:
+   static const std::vector<std::string> GetOptions();
 };
 
 
@@ -191,13 +190,61 @@ public:
    /// Build the version of the program appropriate for this image.
    /// Building can take a lot of time (100+ms) so it is better to build
    /// the program during when starting so it will be ready when needed.
-   void PrepareFor(ImageBase& Source);
+   void PrepareFor(const ImageBase& Source);
 
    /// Selects the appropriate program version for this image.
    /// Also builds the program version if it was not already built.
-   Program& SelectProgram(ImageBase& Source);
+   Program& SelectProgram(const ImageBase& Source);
 
-   const static int NbPixelTypes = SImage::NbDataTypes;  ///< Number of possible pixel types
+private:
+   static const std::vector<std::string> GetOptions();
+};
+
+
+/// A program that operates on ImageBuffers using vector operations.
+/// Contains two program versions for each data type : S8, U8, S16, U16, S32, U32, F32
+/// One standard version that can operate on images of any sizes and on images with padding
+/// And one faster version that can operate on images with no padding and a width that is 
+/// a multiple of the vector width.
+class CL_API VectorProgram : public MultiProgram
+{
+public:
+
+   /// Initialize the program with a .cl file.
+   /// Program is not built by the constructor, it will be built when needed.
+   /// Call PrepareFor() to have the program ready for later use.
+   /// \param CL : A COpenCL instance
+   /// \param Path : Path of the .cl file - must be relative to the path given by COpenCL::SetClFilesPath()
+   VectorProgram(COpenCL& CL, const char * Path);
+
+   /// Initialize the program with source code.
+   /// Program is not built by the constructor, it will be built when needed.
+   /// Call PrepareFor() to have the program ready for later use.
+   /// \param CL : A COpenCL instance
+   /// \param fromSource : Indicates that source code is directly specified (instead of using a .cl file)
+   /// \param Source : OpenCL C source code of the program
+   VectorProgram(COpenCL& CL, bool fromSource, const char * Source);
+
+   /// Build the version of the program appropriate for this image.
+   /// Building can take a lot of time (100+ms) so it is better to build
+   /// the program during when starting so it will be ready when needed.
+   void PrepareFor(const ImageBase& Source);
+
+   /// Selects the appropriate program version for this image.
+   /// Also builds the program version if it was not already built.
+   Program& SelectProgram(const ImageBase& Source);
+
+   /// Returns true if the image has no padding and has a width that is a multiple
+   /// of the vector width
+   static bool IsImageFlush(const ImageBase& Source);
+
+   static cl::NDRange GetRange(const ImageBase& Source);
+
+   ///< Returns the vector operation width to use for the given data type
+   static int GetVectorWidth(SImage::EDataType Type);
+
+private:
+   static const std::vector<std::string> GetOptions();
 };
 
 // Helper functions for programs

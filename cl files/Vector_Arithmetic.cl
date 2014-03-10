@@ -27,7 +27,9 @@
 
 // Optimization note : On my GTX 680 - fastest version is with no WITH_PADDING and VEC_WIDTH==8
 
+#ifndef VEC_WIDTH
 #define VEC_WIDTH 8    // Number of items done in parralel per worker - Can be 4, 8 or 16
+#endif VEC_WIDTH
 
 #ifdef S8
 #define SCALAR char
@@ -94,7 +96,7 @@
    dst_step /= sizeof(SCALAR);
 
 
-#define WITH_PADDING
+//#define WITH_PADDING
 
 #ifdef WITH_PADDING
 // This versions is capable of handling all types of image, including :
