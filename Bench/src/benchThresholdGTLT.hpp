@@ -37,83 +37,112 @@
 #define FLOAT_THRESHGT 0.2f
 #define FLOAT_VALUEHIGHER 0.5f
 
-template<typename DataType> class CLASS_NAME;
+template<typename DataType> class ThresholdGTLTBench;
 
-typedef CLASS_NAME<unsigned char>   ThresholdGTLTBenchU8;
-typedef CLASS_NAME<unsigned short>  ThresholdGTLTBenchU16;
-typedef CLASS_NAME<float>           ThresholdGTLTBenchF32;
+typedef ThresholdGTLTBench<unsigned char>   ThresholdGTLTBenchU8;
+typedef ThresholdGTLTBench<unsigned short>  ThresholdGTLTBenchU16;
+typedef ThresholdGTLTBench<float>           ThresholdGTLTBenchF32;
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
+class ThresholdGTLTBench : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
 {
 public:
 	void RunIPP();
-	//void RunCUDA();
+   void RunNPP();
 	void RunCL();
-	//void RunCV();
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CLASS_NAME<unsigned char>::RunIPP()
+void ThresholdGTLTBench<unsigned char>::RunIPP()
 {
    IPP_CODE(
-	   ippiThreshold_LTValGTVal_8u_C1R( this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									this->m_IPPRoi, 
+	   ippiThreshold_LTValGTVal_8u_C1R( m_ImgSrc.Data(), m_ImgSrc.Step,
+									m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
+									m_IPPRoi, 
 									THRESHLT, VALUELOWER, THRESHGT, VALUEHIGHER);
    )
 }
-//-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CLASS_NAME<unsigned short>::RunIPP()
+void ThresholdGTLTBench<unsigned short>::RunIPP()
 {
    IPP_CODE(
-      ippiThreshold_LTValGTVal_16u_C1R( (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									 (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									 this->m_IPPRoi, 
+      ippiThreshold_LTValGTVal_16u_C1R( (Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step,
+									 (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
+									 m_IPPRoi, 
 									 USHORT_THRESHLT, USHORT_VALUELOWER, USHORT_THRESHGT, USHORT_VALUEHIGHER);
    )
 }
-//-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CLASS_NAME<float>::RunIPP()
+void ThresholdGTLTBench<float>::RunIPP()
 {
    IPP_CODE(
-      ippiThreshold_LTValGTVal_32f_C1R( (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									 (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									 this->m_IPPRoi, 
+      ippiThreshold_LTValGTVal_32f_C1R( (Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step,
+									 (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
+									 m_IPPRoi, 
 									 FLOAT_THRESHLT, FLOAT_VALUELOWER, FLOAT_THRESHGT, FLOAT_VALUEHIGHER);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void CLASS_NAME<DataType>::RunCL()
+void ThresholdGTLTBench<DataType>::RunCL()
 {
 	float threshLT = THRESHLT;
 	float threshGT = THRESHGT;
-	float valueGT = VALUEHIGHER;
-	float valueLT = VALUELOWER;
+	float valueGT  = VALUEHIGHER;
+	float valueLT  = VALUELOWER;
 
 	if (is_same<DataType, unsigned short>::value)
 	{
-		threshLT = USHORT_THRESHLT;
-	    threshGT = USHORT_THRESHGT;
-	    valueGT = USHORT_VALUEHIGHER;
-	    valueLT = USHORT_VALUELOWER;
+      threshLT = USHORT_THRESHLT;
+	   threshGT = USHORT_THRESHGT;
+	   valueGT  = USHORT_VALUEHIGHER;
+	   valueLT  = USHORT_VALUELOWER;
 	}
 		
 
 	if (is_same<DataType, float>::value)
 	{
 		threshLT = FLOAT_THRESHLT;
-	    threshGT = FLOAT_THRESHGT;
-	    valueGT = FLOAT_VALUEHIGHER;
-	    valueLT = FLOAT_VALUELOWER;
+	   threshGT = FLOAT_THRESHGT;
+	   valueGT  = FLOAT_VALUEHIGHER;
+	   valueLT  = FLOAT_VALUELOWER;
 	}
 
    if (m_UsesBuffer)
       ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferDst, threshLT, valueLT, threshGT, valueGT);
    else
       ocipThresholdGTLT(m_CLSrc, m_CLDst, threshLT, valueLT, threshGT, valueGT);
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------
+template<>
+void ThresholdGTLTBench<unsigned char>::RunNPP()
+{
+   NPP_CODE(
+      nppiThreshold_LTValGTVal_8u_C1R( (Npp8u*) m_NPPSrc, m_NPPSrcStep,
+                           (Npp8u*) m_NPPDst, m_NPPDstStep,
+									m_NPPRoi, 
+									THRESHLT, VALUELOWER, THRESHGT, VALUEHIGHER);
+   )
+}
+template<>
+void ThresholdGTLTBench<unsigned short>::RunNPP()
+{
+   NPP_CODE(
+      nppiThreshold_LTValGTVal_16u_C1R( (Npp16u*) m_NPPSrc, m_NPPSrcStep,
+									 (Npp16u*) m_NPPDst, m_NPPDstStep,
+									 m_NPPRoi, 
+									 USHORT_THRESHLT, USHORT_VALUELOWER, USHORT_THRESHGT, USHORT_VALUEHIGHER);
+   )
+}
+template<>
+void ThresholdGTLTBench<float>::RunNPP()
+{
+   NPP_CODE(
+      nppiThreshold_LTValGTVal_32f_C1R( (Ipp32f*) m_NPPSrc, m_NPPSrcStep,
+									 (Ipp32f*) m_NPPDst, m_NPPDstStep,
+									 m_NPPRoi, 
+									 FLOAT_THRESHLT, FLOAT_VALUELOWER, FLOAT_THRESHGT, FLOAT_VALUEHIGHER);
+   )
 }

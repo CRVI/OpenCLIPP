@@ -21,7 +21,23 @@
 //! along with OpenCLIPP.  If not, see <http://www.gnu.org/licenses/>.
 //! 
 ////////////////////////////////////////////////////////////////////////////////
+
 #define THRESHOLD_USE_BUFFER USE_BUFFER
+
+IPP_CODE(IppCmpOp GetIppCmpOp(ECompareOperation Op) { return IppCmpOp(Op); } )   // Same numerical value
+NPP_CODE(NppCmpOp GetNppCmpOp(ECompareOperation Op) { return NppCmpOp(Op); } )   // Same numerical value
+
+#define THRESH 100
+#define VALUEGT 180
+#define VALUELT 50
+
+#define USHORT_THRESH 5000
+#define USHORT_VALUEGT 6000
+#define USHORT_VALUELT 2000
+
+#define FLOAT_THRESH 0.2f
+#define FLOAT_VALUEGT 0.7f
+#define FLOAT_VALUELT -0.2f
 
 #define THRESHOLD_TYPE GT
 #define BENCH_NAME Threshold

@@ -56,105 +56,23 @@ void CLASS_NAME<DataType>::Create(uint Width, uint Height)
 template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
-	if(COMPARE_TYPE == LT)
-	{
-		IPP_CODE(
-			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpLess);
+   IPP_CODE(
+			ippiCompareC_8u_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, VALUE, m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
 		)
-	}
-	if(COMPARE_TYPE == LQ)
-	{
-		IPP_CODE(
-			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpLessEq);
-		)
-	}
-	if(COMPARE_TYPE == EQ)
-	{
-		IPP_CODE(
-			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpEq);
-		)
-	}
-	if(COMPARE_TYPE == GT)
-	{
-		IPP_CODE(
-			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpGreater);
-		)
-	}
-	if(COMPARE_TYPE == GQ)
-	{
-		IPP_CODE(
-			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpGreaterEq);
-		)
-	}
 }
-//-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
-	if(COMPARE_TYPE == LT)
-	{
-		IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpLess);
+   IPP_CODE(
+			ippiCompareC_16u_C1R((Ipp16u*)m_ImgSrc.Data(), m_ImgSrc.Step, USHORT_VALUE, m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
 		)
-	}
-	if(COMPARE_TYPE == LQ)
-	{
-		IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpLessEq);
-		)
-	}
-	if(COMPARE_TYPE == EQ)
-	{
-		IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpEq);
-		)
-	}
-	if(COMPARE_TYPE == GT)
-	{
-		IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpGreater);
-		)
-	}
-	if(COMPARE_TYPE == GQ)
-	{
-		IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpGreaterEq);
-		)
-	}
 }
 template<>
 void CLASS_NAME<float>::RunIPP()
 {
-	if(COMPARE_TYPE == LT)
-	{
-		IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpLess);
+   IPP_CODE(
+			ippiCompareC_32f_C1R((Ipp32f*)m_ImgSrc.Data(), m_ImgSrc.Step, FLOAT_VALUE, m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
 		)
-	}
-	if(COMPARE_TYPE == LQ)
-	{
-		IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpLessEq);
-		)
-	}
-	if(COMPARE_TYPE == EQ)
-	{
-		IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpEq);
-		)
-	}
-	if(COMPARE_TYPE == GT)
-	{
-		IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpGreater);
-		)
-	}
-	if(COMPARE_TYPE == GQ)
-	{
-		IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippCmpGreaterEq);
-		)
-	}
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -175,10 +93,26 @@ void CLASS_NAME<DataType>::RunCL()
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunNPP()
+template<>
+void CLASS_NAME<unsigned char>::RunNPP()
 {
-
+   NPP_CODE(
+      nppiCompareC_8u_C1R((Npp8u*)m_NPPSrc, m_NPPSrcStep, VALUE, (Npp8u*)m_NPPDst, m_NPPDstStep, m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+		)
+}
+template<>
+void CLASS_NAME<unsigned short>::RunNPP()
+{
+   NPP_CODE(
+      nppiCompareC_16u_C1R((Npp16u*)m_NPPSrc, m_NPPSrcStep, USHORT_VALUE, (Npp8u*)m_NPPDst, m_NPPDstStep, m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+		)
+}
+template<>
+void CLASS_NAME<float>::RunNPP()
+{
+   NPP_CODE(
+      nppiCompareC_32f_C1R((Npp32f*)m_NPPSrc, m_NPPSrcStep, FLOAT_VALUE, (Npp8u*)m_NPPDst, m_NPPDstStep, m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+		)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>

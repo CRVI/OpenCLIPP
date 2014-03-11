@@ -22,8 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-//#define BENCH_NAME ThresholdGT  _Img
-
 #define CLASS_NAME CONCATENATE(BENCH_NAME, CONCATENATE(COMPARE_TYPE, Bench))
 template<typename DataType> class CLASS_NAME;
 
@@ -37,10 +35,11 @@ class CLASS_NAME : public BenchBinaryBase<DataType, THRESHOLD_USE_BUFFER>
 {
 public:
    void RunIPP();
-   void RunCUDA();
    void RunCL();
-   void RunNPP();
-   void RunCV();
+
+   bool HasNPPTest()  const { return false; }
+   bool HasCVTest()   const { return false; }
+   bool HasCUDATest() const { return false; }
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -52,33 +51,12 @@ void CLASS_NAME<DataType>::RunIPP()
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void CLASS_NAME<DataType>::RunCUDA()
-{
-
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
    if (UseBuffer())
 	   CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLSrcB, m_CLDst, COMPARE_TYPE);
    else
       CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(m_CLBufferSrc, m_CLBufferSrcB, m_CLBufferDst, COMPARE_TYPE);
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunNPP()
-{
-
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunCV()
-{
-
 }
 
 #undef CLASS_NAME

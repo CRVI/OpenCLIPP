@@ -22,18 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define THRESH 100
-#define VALUEGT 180
-#define VALUELT 50
-
-#define USHORT_THRESH 5000
-#define USHORT_VALUEGT 6000
-#define USHORT_VALUELT 2000
-
-#define FLOAT_THRESH 0.2f
-#define FLOAT_VALUEGT 0.7f
-#define FLOAT_VALUELT -0.2f
-
 #define CLASS_NAME CONCATENATE(CONCATENATE(BENCH_NAME,THRESHOLD_TYPE), Bench)
 template<typename DataType> class CLASS_NAME;
 
@@ -47,91 +35,47 @@ class CLASS_NAME : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
 {
 public:
    void RunIPP();
-   void RunCUDA();
-   void RunCL();
    void RunNPP();
-   void RunCV();
+   void RunCL();
+
+   bool HasCVTest()   const { return false; }
+   bool HasCUDATest() const { return false; }
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
-   if(THRESHOLD_TYPE == LT)
-	{
-		IPP_CODE(
-			ippiThreshold_Val_8u_C1R( this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									  this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									  this->m_IPPRoi, THRESH, 
-									  CONCATENATE(VALUE,THRESHOLD_TYPE),ippCmpLess);
+   IPP_CODE(
+			ippiThreshold_Val_8u_C1R( m_ImgSrc.Data(), m_ImgSrc.Step,
+									  m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
+									  m_IPPRoi, THRESH, 
+									  CONCATENATE(VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
 		)
-	}
-
-	if(THRESHOLD_TYPE == GT)
-	{
-		IPP_CODE(
-			ippiThreshold_Val_8u_C1R( this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									  this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									  this->m_IPPRoi, THRESH, 
-									  CONCATENATE(VALUE,THRESHOLD_TYPE), ippCmpGreater);
-		)
-	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
-   if(THRESHOLD_TYPE == LT)
-	{
-		IPP_CODE(
-			ippiThreshold_Val_16u_C1R( (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									   (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									   this->m_IPPRoi, USHORT_THRESH, 
-									   CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE),ippCmpLess);
+   IPP_CODE(
+			ippiThreshold_Val_16u_C1R( (Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step,
+									   (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
+									   m_IPPRoi, USHORT_THRESH, 
+									   CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
 		)
-	}
-
-	if(THRESHOLD_TYPE == GT)
-	{
-		IPP_CODE(
-			ippiThreshold_Val_16u_C1R( (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									   (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									   this->m_IPPRoi, USHORT_THRESH, 
-									   CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), ippCmpGreater);
-		)
-	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<float>::RunIPP()
 {
-   if(THRESHOLD_TYPE == LT)
-	{
-		IPP_CODE(
-			ippiThreshold_Val_32f_C1R( (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									   (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									   this->m_IPPRoi, FLOAT_THRESH, 
-									   CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE),ippCmpLess);
+   IPP_CODE(
+			ippiThreshold_Val_32f_C1R( (Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step,
+									   (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
+									   m_IPPRoi, FLOAT_THRESH, 
+									   CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
 		)
-	}
-
-	if(THRESHOLD_TYPE == GT)
-	{
-		IPP_CODE(
-			ippiThreshold_Val_32f_C1R( (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
-									   (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
-									   this->m_IPPRoi, FLOAT_THRESH, 
-									   CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), ippCmpGreater);
-		)
-	}
 }
 
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunCUDA()
-{
-
-}
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
@@ -160,22 +104,42 @@ void CLASS_NAME<DataType>::RunCL()
    else
       CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE))(m_CLSrc, m_CLDst, thresh, CONCATENATE(value,THRESHOLD_TYPE));
 }
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunNPP()
-{
 
+//-----------------------------------------------------------------------------------------------------------------------------
+template<>
+void CLASS_NAME<unsigned char>::RunNPP()
+{
+   NPP_CODE(
+         nppiThreshold_Val_8u_C1R( (Npp8u*) m_NPPSrc, m_NPPSrcStep,
+                             (Npp8u*) m_NPPDst, m_NPPDstStep,
+									  m_NPPRoi, THRESH, 
+									  CONCATENATE(VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
+		)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunCV()
+template<>
+void CLASS_NAME<unsigned short>::RunNPP()
 {
-
+   NPP_CODE(
+			nppiThreshold_Val_16u_C1R( (Ipp16u*) m_NPPSrc, m_NPPSrcStep,
+									   (Ipp16u*) m_NPPDst, m_NPPDstStep,
+									   m_NPPRoi, USHORT_THRESH, 
+									   CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
+		)
 }
+//-----------------------------------------------------------------------------------------------------------------------------
+template<>
+void CLASS_NAME<float>::RunNPP()
+{
+   NPP_CODE(
+			nppiThreshold_Val_32f_C1R( (Ipp32f*) m_NPPSrc, m_NPPSrcStep,
+									   (Ipp32f*) m_NPPDst, m_NPPDstStep,
+									   m_NPPRoi, FLOAT_THRESH, 
+									   CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
+		)
+}
+
 
 #undef CLASS_NAME
 #undef THRESHOLD_TYPE
 #undef BENCH_NAME
-#undef THRESH 
-#undef VALUEGT 
-#undef VALUELT 
