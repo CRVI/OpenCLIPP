@@ -78,6 +78,10 @@ bool Program::Build()
       optionStr += " -g -s \"" + Path + "\"";
    }
 
+
+   // Add include path
+   optionStr += " -I " + m_CL->GetClFilePath();    // The path must not have spaces if using NVIDIA platform
+
    // Try to build
    try
    {

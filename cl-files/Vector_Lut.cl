@@ -22,45 +22,12 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "Buffers.h"
+
 // Assumes vector size of VEC_WIDTH - must be called with img_type.VectorRange(VEC_WIDTH)
 // Type must be specified when compiling this file, example : for unsigned 8 bit "-D U8"
 
 #define VEC_WIDTH 4
-
-#ifdef S8
-#define SCALAR char
-#endif
-
-#ifdef U8
-#define SCALAR uchar
-#endif
-
-#ifdef S16
-#define SCALAR short
-#endif
-
-#ifdef U16
-#define SCALAR ushort
-#endif
-
-#ifdef S32
-#define SCALAR int
-#endif
-
-#ifdef U32
-#define SCALAR uint
-#endif
-
-#ifdef F32
-#define SCALAR float
-#define FLOAT
-#endif
-
-#ifndef SCALAR
-#define SCALAR uchar
-#endif
-
-#define INPUT_SPACE global    // If input images are read only, they can be set to be in "constant" memory space, with possible speed improvements
 
 #define BEGIN  \
    const int gx = get_global_id(0) * VEC_WIDTH;\

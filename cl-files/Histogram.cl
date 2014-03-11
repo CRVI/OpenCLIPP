@@ -22,43 +22,14 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) convert_uint4(read_imagei(img, sampler, pos))
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) convert_uint4(read_imagef(img, sampler, pos))
-
-   #endif // UI
-
-#endif // I
-
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
+#include "Images.h"
 
 
 #define HIST_SIZE 256
 
 // Histogram on a 1 channel image that has a range of 0-255
 //    hist must be an array of 256 32b integers, all initialized to 0
-kernel void histogram_1C(read_only image2d_t source, global uint * hist)
+kernel void histogram_1C(INPUT source, global uint * hist)
 {
    BEGIN
 
@@ -93,7 +64,7 @@ kernel void histogram_1C(read_only image2d_t source, global uint * hist)
 
 // Histogram on a 4 channel image that has a range of 0-255
 //    hist must be an array of 256*4 32b integers, all initialized to 0
-kernel void histogram_4C(read_only image2d_t source, global uint * hist)
+kernel void histogram_4C(INPUT source, global uint * hist)
 {
    BEGIN
 

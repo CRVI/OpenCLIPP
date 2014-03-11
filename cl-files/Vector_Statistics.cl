@@ -22,53 +22,8 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "Buffers.h"
 
-#ifdef S8
-#define SCALAR char
-#endif
-
-#ifdef U8
-#define SCALAR uchar
-#endif
-
-#ifdef S16
-#define SCALAR short
-#endif
-
-#ifdef U16
-#define SCALAR ushort
-#endif
-
-#ifdef S32
-#define SCALAR int
-#endif
-
-#ifdef U32
-#define SCALAR uint
-#endif
-
-#ifdef F32
-#define SCALAR float
-#define FLOAT
-#endif
-
-#ifndef SCALAR
-#define SCALAR uchar
-#endif
-
-#define INPUT_SPACE global    // If input images are read only, they can be set to be in "constant" memory space, with possible speed improvements
-
-#define CONCATENATE(a, b) _CONCATENATE(a, b)
-#define _CONCATENATE(a, b) a ## b
-
-#ifdef FLOAT
-   #define ABS fabs
-#else  // FLOAT
-   #define ABS abs
-#endif // FLOAT
-
-#define CONCATENATE(a, b) _CONCATENATE(a, b)
-#define _CONCATENATE(a, b) a ## b
 
 #define BUFFER_LENGTH 256
 

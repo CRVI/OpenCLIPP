@@ -71,6 +71,13 @@ COpenCL::COpenCL(const char * PreferredPlatform, cl_device_type deviceType)
 void COpenCL::SetClFilesPath(const char * Path) 
 {
    m_ClFilesPath = Path;
+   if (m_ClFilesPath[m_ClFilesPath.size() - 1] != '\\' && 
+      m_ClFilesPath[m_ClFilesPath.size() - 1] != '/')
+   {
+      // Missing trailing slash
+      m_ClFilesPath += "/";
+   }
+
 }
 
 const string& COpenCL::GetClFilePath()

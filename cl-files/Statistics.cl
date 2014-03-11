@@ -22,50 +22,9 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) read_imagei(img, sampler, pos)
-   #define WRITE_IMAGE(img, pos, px) write_imagei(img, pos, px)
-   #define TYPE int4
-   #define SCALAR int
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, px)
-      #define TYPE uint4
-      #define SCALAR uint
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) read_imagef(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imagef(img, pos, px)
-      #define TYPE float4
-      #define SCALAR float
-      #define FLOAT
-
-   #endif // UI
-
-#endif // I
+#include "Images.h"
 
 
-#ifdef FLOAT
-   #define ABS fabs
-#else  // FLOAT
-   #define ABS abs
-#endif // FLOAT
-
-#define CONCATENATE(a, b) _CONCATENATE(a, b)
-#define _CONCATENATE(a, b) a ## b
 
 #define BUFFER_LENGTH 256
 
@@ -83,7 +42,7 @@ constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_
 // This version handles images of any size - it will be a bit slower
 #define REDUCE(name, type, preop, fun1, postop1, fun2, postop2) \
 __attribute__((reqd_work_group_size(16, 16, 1)))\
-kernel void name(read_only image2d_t source, global float * result, int img_width, int img_height)\
+kernel void name(INPUT source, global float * result, int img_width, int img_height)\
 {\
    local type buffer[BUFFER_LENGTH];\
    local int  nb_pixels[BUFFER_LENGTH];/*BUG : For some reason, the kernel does not run (error -5) on Intel platform when this second buffer is there*/\
@@ -156,7 +115,7 @@ kernel void name(read_only image2d_t source, global float * result, int img_widt
 // This version is for images that have a Width that is a multiple of 16*WIDTH1 and a height that is a multiple of 16
 #define REDUCE_FLUSH(name, type, preop, fun1, postop1, fun2, postop2) \
 __attribute__((reqd_work_group_size(16, 16, 1)))\
-kernel void name(read_only image2d_t source, global float * result, int img_width, int img_height)\
+kernel void name(INPUT source, global float * result, int img_width, int img_height)\
 {\
    local type buffer[BUFFER_LENGTH];\
    const int gx = get_global_id(0) * WIDTH1;\
@@ -272,12 +231,12 @@ REDUCE_KERNEL(reduce_mean_sqr, float,  SQR,  SUM,  DIV,   MEAN2, store_value)
 
 
 // Initialize result to a valid value
-kernel void init(read_only image2d_t source, global float * result)
+kernel void init(INPUT source, global float * result)
 {
    *result = READ_IMAGE(source, (int2)(0, 0)).x;
 }
 
-kernel void init_abs(read_only image2d_t source, global float * result)
+kernel void init_abs(INPUT source, global float * result)
 {
    *result = ABS(READ_IMAGE(source, (int2)(0, 0)).x);
 }

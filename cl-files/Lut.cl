@@ -22,45 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) read_imagei(img, sampler, pos)
-   #define WRITE_IMAGE(img, pos, px) write_imagei(img, pos, px)
-   #define TYPE int4
-   #define SCALAR int
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, px)
-      #define TYPE uint4
-      #define SCALAR uint
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) read_imagef(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imagef(img, pos, px)
-      #define TYPE float4
-      #define SCALAR float
-
-   #endif // UI
-
-#endif // I
-
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
+#include "Images.h"
 
 
 SCALAR lut(SCALAR input, constant const uint * levels, constant const uint * values, int nb)
@@ -101,7 +63,7 @@ SCALAR lut_linear(SCALAR input, constant const float * levels, constant const fl
    return values[k] + Diff;
 }
 
-kernel void lut_1C(read_only image2d_t source, write_only image2d_t dest, constant const uint * levels, constant const uint * values, int nb)
+kernel void lut_1C(INPUT source, OUTPUT dest, constant const uint * levels, constant const uint * values, int nb)
 {
    BEGIN
 
@@ -112,7 +74,7 @@ kernel void lut_1C(read_only image2d_t source, write_only image2d_t dest, consta
    WRITE_IMAGE(dest, pos, color);
 }
 
-kernel void lut_4C(read_only image2d_t source, write_only image2d_t dest, constant const uint * levels, constant const uint * values, int nb)
+kernel void lut_4C(INPUT source, OUTPUT dest, constant const uint * levels, constant const uint * values, int nb)
 {
    BEGIN
 
@@ -126,7 +88,7 @@ kernel void lut_4C(read_only image2d_t source, write_only image2d_t dest, consta
    WRITE_IMAGE(dest, pos, color);
 }
 
-kernel void lut_linear_1C(read_only image2d_t source, write_only image2d_t dest, constant const float * levels, constant const float * values, int nb)
+kernel void lut_linear_1C(INPUT source, OUTPUT dest, constant const float * levels, constant const float * values, int nb)
 {
    BEGIN
 
@@ -137,7 +99,7 @@ kernel void lut_linear_1C(read_only image2d_t source, write_only image2d_t dest,
    WRITE_IMAGE(dest, pos, color);
 }
 
-kernel void lut_linear_4C(read_only image2d_t source, write_only image2d_t dest, constant const float * levels, constant const float * values, int nb)
+kernel void lut_linear_4C(INPUT source, OUTPUT dest, constant const float * levels, constant const float * values, int nb)
 {
    BEGIN
 

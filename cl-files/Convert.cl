@@ -22,46 +22,11 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) read_imagei(img, sampler, pos)
-   #define WRITE_IMAGE(img, pos, px) write_imagei(img, pos, px)
-   #define TYPE int4
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, px)
-      #define TYPE uint4
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) read_imagef(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imagef(img, pos, px)
-      #define TYPE float4
-
-   #endif // UI
-
-#endif // I
-
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
+#include "Images.h"
 
 
 // Conversions
-kernel void to_float(read_only image2d_t source, write_only image2d_t dest)
+kernel void to_float(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -72,7 +37,7 @@ kernel void to_float(read_only image2d_t source, write_only image2d_t dest)
    write_imagef(dest, pos, convert_float4(src));
 }
 
-kernel void to_int(read_only image2d_t source, write_only image2d_t dest)
+kernel void to_int(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -83,7 +48,7 @@ kernel void to_int(read_only image2d_t source, write_only image2d_t dest)
    write_imagei(dest, pos, convert_int4_sat(src));
 }
 
-kernel void to_uint(read_only image2d_t source, write_only image2d_t dest)
+kernel void to_uint(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -95,7 +60,7 @@ kernel void to_uint(read_only image2d_t source, write_only image2d_t dest)
 }
 
 // Convert & scale
-kernel void scale_to_float(read_only image2d_t source, write_only image2d_t dest, float offset, float ratio)
+kernel void scale_to_float(INPUT source, OUTPUT dest, float offset, float ratio)
 {
    BEGIN
 
@@ -106,7 +71,7 @@ kernel void scale_to_float(read_only image2d_t source, write_only image2d_t dest
    write_imagef(dest, pos, src * ratio + offset);
 }
 
-kernel void scale_to_int(read_only image2d_t source, write_only image2d_t dest, int offset, float ratio)
+kernel void scale_to_int(INPUT source, OUTPUT dest, int offset, float ratio)
 {
    BEGIN
 
@@ -117,7 +82,7 @@ kernel void scale_to_int(read_only image2d_t source, write_only image2d_t dest, 
    write_imagei(dest, pos, convert_int4_sat(src) + offset);
 }
 
-kernel void scale_to_uint(read_only image2d_t source, write_only image2d_t dest, int offset, float ratio)
+kernel void scale_to_uint(INPUT source, OUTPUT dest, int offset, float ratio)
 {
    BEGIN
 
@@ -128,7 +93,7 @@ kernel void scale_to_uint(read_only image2d_t source, write_only image2d_t dest,
    write_imageui(dest, pos, convert_uint4_sat(convert_int4_sat(src) + offset));
 }
 
-kernel void to_gray(read_only image2d_t source, write_only image2d_t dest)
+kernel void to_gray(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -142,7 +107,7 @@ kernel void to_gray(read_only image2d_t source, write_only image2d_t dest)
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel1(read_only image2d_t source, write_only image2d_t dest, int channel_no)
+kernel void select_channel1(INPUT source, OUTPUT dest, int channel_no)
 {
    BEGIN
 
@@ -156,7 +121,7 @@ kernel void select_channel1(read_only image2d_t source, write_only image2d_t des
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel2(read_only image2d_t source, write_only image2d_t dest, int channel_no)
+kernel void select_channel2(INPUT source, OUTPUT dest, int channel_no)
 {
    BEGIN
 
@@ -170,7 +135,7 @@ kernel void select_channel2(read_only image2d_t source, write_only image2d_t des
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel3(read_only image2d_t source, write_only image2d_t dest, int channel_no)
+kernel void select_channel3(INPUT source, OUTPUT dest, int channel_no)
 {
    BEGIN
 
@@ -184,7 +149,7 @@ kernel void select_channel3(read_only image2d_t source, write_only image2d_t des
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel4(read_only image2d_t source, write_only image2d_t dest, int channel_no)
+kernel void select_channel4(INPUT source, OUTPUT dest, int channel_no)
 {
    BEGIN
 

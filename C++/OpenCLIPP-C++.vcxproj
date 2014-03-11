@@ -167,6 +167,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\cl-files\Base.h" />
+    <ClInclude Include="..\cl-files\Buffers.h" />
+    <ClInclude Include="..\cl-files\Images.h" />
+    <ClInclude Include="..\cl-files\Vector.h" />
     <ClInclude Include="..\include\c++\Buffer.h" />
     <ClInclude Include="..\include\c++\Basic.h" />
     <ClInclude Include="..\include\c++\Image.h" />

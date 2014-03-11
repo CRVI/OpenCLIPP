@@ -23,45 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) read_imagei(img, sampler, pos)
-   #define WRITE_IMAGE(img, pos, px) write_imagei(img, pos, px)
-   #define TYPE int4
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, px)
-      #define TYPE uint4
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) read_imagef(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imagef(img, pos, px)
-      #define TYPE float4
-      #define FLOAT
-
-   #endif // UI
-
-#endif // I
-
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
-
-#define CONCATENATE(a, b) _CONCATENATE(a, b)
-#define _CONCATENATE(a, b) a ## b
+#include "Images.h"
 
 
 #define ERODE(color, new_pixel) min(color, new_pixel)
@@ -80,7 +42,7 @@ constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_
    break;
 
 #define NEIGHBOUR_KERNEL(name, operation) \
-kernel void name(read_only image2d_t source, write_only image2d_t dest, int width)\
+kernel void name(INPUT source, OUTPUT dest, int width)\
 {\
    BEGIN\
    TYPE color = READ_IMAGE(source, pos);\
@@ -121,7 +83,7 @@ kernel void name(read_only image2d_t source, write_only image2d_t dest, int widt
    }\
    WRITE_IMAGE(dest, pos, color);\
 }\
-kernel void CONCATENATE(name, 3) (read_only image2d_t source, write_only image2d_t dest)\
+kernel void CONCATENATE(name, 3) (INPUT source, OUTPUT dest)\
 {\
    BEGIN\
    TYPE color = READ_IMAGE(source,             (int2)(gx - 1, gy - 1));\
@@ -140,7 +102,7 @@ NEIGHBOUR_KERNEL(erode, ERODE)
 NEIGHBOUR_KERNEL(dilate, DILATE)
 
 
-kernel void sub_images(read_only image2d_t source1, read_only image2d_t source2, write_only image2d_t dest)
+kernel void sub_images(INPUT source1, INPUT source2, OUTPUT dest)
 {
    BEGIN
    TYPE src1 = READ_IMAGE(source1, pos);

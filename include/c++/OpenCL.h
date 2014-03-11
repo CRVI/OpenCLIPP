@@ -74,8 +74,9 @@ public:
    static const char * ErrorName(cl_int status);
 
    /// Tells COpenCL where the .cl files are located.
-   /// It must be called with the full path of "CL/CL/cl files".
+   /// It must be called with the full path of "OpenCLIPP/cl-files/".
    /// .cl file location must be specified before creating any program.
+   /// The path must not contain spaces
    /// \param Path : Full path where the .cl files are located
    static void SetClFilesPath(const char * Path);
 

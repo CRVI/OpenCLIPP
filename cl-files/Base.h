@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: Vector_Logic.cl
-//! @date   : Jul 2013
+//! @file	: Base.h
+//! @date   : Mar 2014
 //!
-//! @brief  : Logic (bitwise) operations on image buffers
+//! @brief  : Basic declarations
 //! 
-//! Copyright (C) 2013 - CRVI
+//! Copyright (C) 2014 - CRVI
 //!
 //! This file is part of OpenCLIPP.
 //! 
@@ -22,23 +22,26 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ARG_TYPE int
+#ifdef __NV_CL_C_VERSION
+#define NVIDIA_PLATFORM
+#endif
 
-#include "Vector.h"
+#ifdef _AMD_OPENCL
+#define AMD_PLATFORM
+#endif
 
+#ifdef NVIDIA_PLATFORM
+   #define CONST static constant const
+   #define CONST_ARG constant const
+#else
+   #ifdef AMD_PLATFORM
+      #define CONST const
+      #define CONST_ARG const
+   #else
+      #define CONST constant const
+      #define CONST_ARG constant const
+   #endif
+#endif
 
-// Bitwise operations - float not allowed
-#ifndef FLOAT
-
-BINARY_OP(and_images, src1 & src2)
-BINARY_OP(or_images, src1 | src2)
-BINARY_OP(xor_images, src1 ^ src2)
-// image and value
-CONSTANT_OP(and_constant, src & value)
-CONSTANT_OP(or_constant, src | value)
-CONSTANT_OP(xor_constant, src ^ value)
-
-// Unary
-UNARY_OP(not_image, ~src)
-
-#endif   // not FLOAT
+#define CONCATENATE(a, b) _CONCATENATE(a, b)
+#define _CONCATENATE(a, b) a ## b

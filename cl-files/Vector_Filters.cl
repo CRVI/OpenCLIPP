@@ -22,66 +22,9 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Make at least a 4C version of the filters
+// TODO : Make a 4C version of the filters
 
-// Type must be specified when compiling this file, example : for unsigned 8 bit "-D U8"
-#ifdef S8
-#define SCALAR char
-#endif
-
-#ifdef U8
-#define SCALAR uchar
-#endif
-
-#ifdef S16
-#define SCALAR short
-#endif
-
-#ifdef U16
-#define SCALAR ushort
-#endif
-
-#ifdef S32
-#define SCALAR int
-#endif
-
-#ifdef U32
-#define SCALAR uint
-#endif
-
-#ifdef F32
-#define SCALAR float
-#define FLOAT
-#endif
-
-#ifndef SCALAR
-#define SCALAR uchar
-#endif
-
-#define INPUT_SPACE global    // If input images are read only, they can be set to be in "constant" memory space, with possible speed improvements
-
-
-#ifdef __NV_CL_C_VERSION
-#define NVIDIA_PLATFORM
-#endif
-
-#ifdef _AMD_OPENCL
-#define AMD_PLATFORM
-#endif
-
-#ifdef NVIDIA_PLATFORM
-   #define CONST static constant const
-   #define CONST_ARG constant const
-#else
-   #ifdef AMD_PLATFORM
-      #define CONST const
-      #define CONST_ARG const
-   #else
-      #define CONST constant const
-      #define CONST_ARG constant const
-   #endif
-#endif
-
+#include "Buffers.h"
 
 #define BEGIN \
    const int gx = get_global_id(0);\
@@ -89,24 +32,8 @@
    const int2 pos = { gx, gy };\
    src_step /= sizeof(SCALAR);
 
-
-#define CONCATENATE(a, b) _CONCATENATE(a, b)
-#define _CONCATENATE(a, b) a ## b
-
-#ifndef FLOAT
-#define CONVERT_SCALAR(val) CONCATENATE(CONCATENATE(convert_, SCALAR), _sat) (val)  // Example : convert_uchar_sat(val)
-#else
-#define CONVERT_SCALAR(val) val
-#endif
-
 #define READ_IMAGE_1C(img, step, pos) (float)(img[(pos).y * step + (pos).x])
 #define WRITE_IMAGE_1C(img, step, val) img[get_global_id(1) * step / sizeof(SCALAR) + get_global_id(0)] = CONVERT_SCALAR(val)
-
-
-
-#define TYPE2 CONCATENATE(SCALAR, 2)          // Example : uchar2
-#define TYPE3 CONCATENATE(SCALAR, 3)          // Example : uchar3
-#define TYPE4 CONCATENATE(SCALAR, 4)          // Example : uchar4
 
 
 #define CONVOLUTION_CASE(size)\

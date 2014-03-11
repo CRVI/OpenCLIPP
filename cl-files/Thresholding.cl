@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: Threshold.cl
+//! @file	: Thresholding.cl
 //! @date   : Jul 2013
 //!
 //! @brief  : Image thresholding
@@ -22,47 +22,10 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) read_imagei(img, sampler, pos)
-   #define WRITE_IMAGE(img, pos, px) write_imagei(img, pos, px)
-   #define TYPE int4
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, px)
-	  #define TYPE uint4
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) read_imagef(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imagef(img, pos, px)
-      #define TYPE float4
-      #define FLOAT
-
-   #endif // UI
-
-#endif // I
-
-#define DST_TYPE TYPE
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
+#include "Images.h"
 
 
-kernel void thresholdLT(read_only image2d_t source, write_only image2d_t dest, float thresh, float valueLower)
+kernel void thresholdLT(INPUT source, OUTPUT dest, float thresh, float valueLower)
 {
    BEGIN
 
@@ -70,13 +33,13 @@ kernel void thresholdLT(read_only image2d_t source, write_only image2d_t dest, f
    TYPE color = READ_IMAGE(source, pos);
 
    // Modify color
-   TYPE dst_color = (color < thresh ? (TYPE)(valueLower, valueLower, valueLower, valueLower) : color);
+   TYPE dst_color = (color < (TYPE)(thresh) ? (TYPE)(valueLower) : color);
 
    // Write pixel
    WRITE_IMAGE(dest, pos, dst_color);
 }
 
-kernel void thresholdGT(read_only image2d_t source, write_only image2d_t dest, float thresh, float valueHigher)
+kernel void thresholdGT(INPUT source, OUTPUT dest, float thresh, float valueHigher)
 {
    BEGIN
 
@@ -84,13 +47,13 @@ kernel void thresholdGT(read_only image2d_t source, write_only image2d_t dest, f
    TYPE color = READ_IMAGE(source, pos);
 
    // Modify color
-   TYPE dst_color = (color > thresh ? (TYPE)(valueHigher, valueHigher, valueHigher, valueHigher) : color);
+   TYPE dst_color = (color > (TYPE)(thresh) ? (TYPE)(valueHigher) : color);
 
    // Write pixel
    WRITE_IMAGE(dest, pos, dst_color);
 }
 
-kernel void thresholdGTLT(read_only image2d_t source, write_only image2d_t dest, float threshLT,
+kernel void thresholdGTLT(INPUT source, OUTPUT dest, float threshLT,
                          float valueLower, float threshGT, float valueHigher)
 {
    BEGIN
@@ -99,15 +62,19 @@ kernel void thresholdGTLT(read_only image2d_t source, write_only image2d_t dest,
    TYPE src_color = READ_IMAGE(source, pos);
 
    // Modify color
-   TYPE dst_color = (src_color < threshLT ? (TYPE)(valueLower, valueLower, valueLower, valueLower) : src_color);
-   dst_color = (src_color > threshGT ? (TYPE)(valueHigher, valueHigher, valueHigher, valueHigher) : dst_color);
+   TYPE dst_color = (src_color < (TYPE)(threshLT) ? (TYPE)(valueLower) : src_color);
+   dst_color = (src_color > (TYPE)(threshGT) ? (TYPE)(valueHigher) : dst_color);
 
    // Write pixel
    WRITE_IMAGE(dest, pos, dst_color);
 }
 
+
+
+#define DST_TYPE TYPE
+
 #define BINARY_OP(name, code)\
-kernel void name(read_only image2d_t source1, read_only image2d_t source2, write_only image2d_t dest)\
+kernel void name(INPUT source1, INPUT source2, OUTPUT dest)\
 {\
    BEGIN\
    TYPE src1 = READ_IMAGE(source1, pos);\
@@ -117,7 +84,7 @@ kernel void name(read_only image2d_t source1, read_only image2d_t source2, write
 }
 
 #define CONSTANT_OP(name, code)\
-kernel void name(read_only image2d_t source, write_only image2d_t dest, float value)\
+kernel void name(INPUT source, OUTPUT dest, float value)\
 {\
    BEGIN\
    TYPE src = READ_IMAGE(source, pos);\
@@ -126,29 +93,31 @@ kernel void name(read_only image2d_t source, write_only image2d_t dest, float va
 }
 
 
-BINARY_OP(img_thresh_LT, (src1 < src2 ? src1 : src2))
+BINARY_OP(img_thresh_LT, (src1 <  src2 ? src1 : src2))
 BINARY_OP(img_thresh_LQ, (src1 <= src2 ? src1 : src2))
 BINARY_OP(img_thresh_EQ, (src1 == src2 ? src1 : src2))
 BINARY_OP(img_thresh_GQ, (src1 >= src2 ? src1 : src2))
-BINARY_OP(img_thresh_GT, (src1 > src2 ? src1 : src2))
+BINARY_OP(img_thresh_GT, (src1 >  src2 ? src1 : src2))
 
 
+// The following kernels will receive an unsigned integer (U8) image for destination
 #define WHITE ((uint4)(255, 255, 255, 0))
 #define BLACK ((uint4)(0, 0, 0, 0))
 
 #undef WRITE_IMAGE
 #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, px)
 
+#undef DST_TYPE
 #define DST_TYPE uint4
 
-BINARY_OP(img_compare_LT, (src1 < src2 ? WHITE : BLACK))
+BINARY_OP(img_compare_LT, (src1 <  src2 ? WHITE : BLACK))
 BINARY_OP(img_compare_LQ, (src1 <= src2 ? WHITE : BLACK))
 BINARY_OP(img_compare_EQ, (src1 == src2 ? WHITE : BLACK))
 BINARY_OP(img_compare_GQ, (src1 >= src2 ? WHITE : BLACK))
-BINARY_OP(img_compare_GT, (src1 > src2 ? WHITE : BLACK))
+BINARY_OP(img_compare_GT, (src1 >  src2 ? WHITE : BLACK))
 
-CONSTANT_OP(compare_LT, (src < value ? WHITE : BLACK))
-CONSTANT_OP(compare_LQ, (src <= value ? WHITE : BLACK))
-CONSTANT_OP(compare_EQ, (src == value ? WHITE : BLACK))
-CONSTANT_OP(compare_GQ, (src >= value ? WHITE : BLACK))
-CONSTANT_OP(compare_GT, (src > value ? WHITE : BLACK))
+CONSTANT_OP(compare_LT, (src <  (TYPE)(value) ? WHITE : BLACK))
+CONSTANT_OP(compare_LQ, (src <= (TYPE)(value) ? WHITE : BLACK))
+CONSTANT_OP(compare_EQ, (src == (TYPE)(value) ? WHITE : BLACK))
+CONSTANT_OP(compare_GQ, (src >= (TYPE)(value) ? WHITE : BLACK))
+CONSTANT_OP(compare_GT, (src >  (TYPE)(value) ? WHITE : BLACK))

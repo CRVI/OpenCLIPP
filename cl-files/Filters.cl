@@ -22,62 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) convert_float4(read_imagei(img, sampler, pos))
-   #define WRITE_IMAGE(img, pos, px) write_imagei(img, pos, convert_int4_sat(px))
-   #define TYPE int4
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) convert_float4(read_imageui(img, sampler, pos))
-      #define WRITE_IMAGE(img, pos, px) write_imageui(img, pos, convert_uint4_sat(px))
-      #define TYPE uint4
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) read_imagef(img, sampler, pos)
-      #define WRITE_IMAGE(img, pos, px) write_imagef(img, pos, px)
-      #define TYPE float4
-
-   #endif // UI
-
-#endif // I
-
-#ifdef __NV_CL_C_VERSION
-#define NVIDIA_PLATFORM
-#endif
-
-#ifdef _AMD_OPENCL
-#define AMD_PLATFORM
-#endif
-
-#ifdef NVIDIA_PLATFORM
-   #define CONST static constant const
-   #define CONST_ARG constant const
-#else
-   #ifdef AMD_PLATFORM
-      #define CONST const
-      #define CONST_ARG const
-   #else
-      #define CONST constant const
-      #define CONST_ARG constant const
-   #endif
-#endif
-
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
+#include "Images.h"
 
 
 #define CONVOLUTION_CASE(size)\
@@ -85,7 +30,7 @@ constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_
    {\
       for (int y = -size; y <= size; y++)\
          for (int x = -size; x <= size; x++)\
-            sum += matrix[Index++] * READ_IMAGE(source, pos + (int2)(x, y));\
+            sum += matrix[Index++] * CONVERT_FLOAT(READ_IMAGE(source, pos + (int2)(x, y)));\
    }\
    break;
 
@@ -125,7 +70,7 @@ constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_
    CONVOLUTION_CASE(31) /* 63*/\
    }
 
-float4 Convolution(read_only image2d_t source, CONST_ARG float * matrix, private int matrix_width)
+float4 Convolution(INPUT source, CONST_ARG float * matrix, private int matrix_width)
 {
    BEGIN
 
@@ -138,14 +83,14 @@ float4 Convolution(read_only image2d_t source, CONST_ARG float * matrix, private
    return sum;
 }
 
-void convolution(read_only image2d_t source, write_only image2d_t dest, CONST_ARG float * matrix,
+void convolution(INPUT source, OUTPUT dest, CONST_ARG float * matrix,
    private int matrix_width)
 {
    BEGIN
 
    float4 sum = Convolution(source, matrix, matrix_width);
 
-   WRITE_IMAGE(dest, pos, sum);
+   WRITE_IMAGE(dest, pos, CONVERT(sum));
 }
 
 float4 Combine(float4 color1, float4 color2)
@@ -153,7 +98,7 @@ float4 Combine(float4 color1, float4 color2)
    return sqrt(color1 * color1 + color2 * color2);
 }
 
-kernel void gaussian_blur(read_only image2d_t source, write_only image2d_t dest, constant const float * matrix, private int mask_size)
+kernel void gaussian_blur(INPUT source, OUTPUT dest, constant const float * matrix, private int mask_size)
 {
    // Does gaussian blur on first channel of image - receives a pre-calculated mask
 
@@ -164,10 +109,10 @@ kernel void gaussian_blur(read_only image2d_t source, write_only image2d_t dest,
 
    CONVOLUTION_SWITCH
 
-   WRITE_IMAGE(dest, pos, sum);
+   WRITE_IMAGE(dest, pos, CONVERT(sum));
 }
 
-kernel void gaussian3(read_only image2d_t source, write_only image2d_t dest)
+kernel void gaussian3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       1.f/16, 2.f/16, 1.f/16,
@@ -177,7 +122,7 @@ kernel void gaussian3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void gaussian5(read_only image2d_t source, write_only image2d_t dest)
+kernel void gaussian5(INPUT source, OUTPUT dest)
 {
    CONST float matrix[25] = {
        2.f/571,  7.f/571,  12.f/571,  7.f/571,  2.f/571,
@@ -189,7 +134,7 @@ kernel void gaussian5(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 5);
 }
 
-kernel void sobelH3(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobelH3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -1, -2, -1,
@@ -199,7 +144,7 @@ kernel void sobelH3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void sobelV3(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobelV3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       1, 0, -1,
@@ -209,7 +154,7 @@ kernel void sobelV3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void sobelH5(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobelH5(INPUT source, OUTPUT dest)
 {
    CONST float matrix[25] = {
       -1, -4,  -6, -4, -1,
@@ -221,7 +166,7 @@ kernel void sobelH5(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 5);
 }
 
-kernel void sobelV5(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobelV5(INPUT source, OUTPUT dest)
 {
    CONST float matrix[25] = {
       1,  2, 0,  -2, -1,
@@ -233,7 +178,7 @@ kernel void sobelV5(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 5);
 }
 
-kernel void sobelCross3(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobelCross3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -1, 0,  1,
@@ -243,7 +188,7 @@ kernel void sobelCross3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void sobelCross5(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobelCross5(INPUT source, OUTPUT dest)
 {
    CONST float matrix[25] = {
       -1, -2, 0,  2,  1,
@@ -255,7 +200,7 @@ kernel void sobelCross5(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 5);
 }
 
-kernel void sobel3(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobel3(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -274,10 +219,10 @@ kernel void sobel3(read_only image2d_t source, write_only image2d_t dest)
 
    float4 Result = Combine(sumH, sumV);
 
-   WRITE_IMAGE(dest, pos, Result);
+   WRITE_IMAGE(dest, pos, CONVERT(Result));
 }
 
-kernel void sobel5(read_only image2d_t source, write_only image2d_t dest)
+kernel void sobel5(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -298,10 +243,10 @@ kernel void sobel5(read_only image2d_t source, write_only image2d_t dest)
    float4 sumH = Convolution(source, matrixH, 5);
    float4 sumV = Convolution(source, matrixV, 5);
 
-   WRITE_IMAGE(dest, pos, Combine(sumH, sumV));
+   WRITE_IMAGE(dest, pos, CONVERT(Combine(sumH, sumV)));
 }
 
-kernel void prewittH3(read_only image2d_t source, write_only image2d_t dest)
+kernel void prewittH3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -1, -1, -1,
@@ -311,7 +256,7 @@ kernel void prewittH3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void prewittV3(read_only image2d_t source, write_only image2d_t dest)
+kernel void prewittV3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       1, 0, -1,
@@ -321,7 +266,7 @@ kernel void prewittV3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void prewitt3(read_only image2d_t source, write_only image2d_t dest)
+kernel void prewitt3(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -338,10 +283,10 @@ kernel void prewitt3(read_only image2d_t source, write_only image2d_t dest)
    float4 sumH = Convolution(source, matrixH, 3);
    float4 sumV = Convolution(source, matrixV, 3);
 
-   WRITE_IMAGE(dest, pos, Combine(sumH, sumV));
+   WRITE_IMAGE(dest, pos, CONVERT(Combine(sumH, sumV)));
 }
 
-kernel void scharrH3(read_only image2d_t source, write_only image2d_t dest)
+kernel void scharrH3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -3, -10, -3,
@@ -351,7 +296,7 @@ kernel void scharrH3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void scharrV3(read_only image2d_t source, write_only image2d_t dest)
+kernel void scharrV3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
        -3, 0,  3,
@@ -361,7 +306,7 @@ kernel void scharrV3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void scharr3(read_only image2d_t source, write_only image2d_t dest)
+kernel void scharr3(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -378,10 +323,10 @@ kernel void scharr3(read_only image2d_t source, write_only image2d_t dest)
    float4 sumH = Convolution(source, matrixH, 3);
    float4 sumV = Convolution(source, matrixV, 3);
 
-   WRITE_IMAGE(dest, pos, Combine(sumH, sumV));
+   WRITE_IMAGE(dest, pos, CONVERT(Combine(sumH, sumV)));
 }
 
-kernel void hipass3(read_only image2d_t source, write_only image2d_t dest)
+kernel void hipass3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -1, -1, -1,
@@ -391,7 +336,7 @@ kernel void hipass3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void hipass5(read_only image2d_t source, write_only image2d_t dest)
+kernel void hipass5(INPUT source, OUTPUT dest)
 {
    CONST float matrix[25] = {
       -1, -1, -1, -1, -1,
@@ -403,7 +348,7 @@ kernel void hipass5(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 5);
 }
 
-kernel void laplace3(read_only image2d_t source, write_only image2d_t dest)
+kernel void laplace3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -1, -1, -1,
@@ -413,7 +358,7 @@ kernel void laplace3(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 3);
 }
 
-kernel void laplace5(read_only image2d_t source, write_only image2d_t dest)
+kernel void laplace5(INPUT source, OUTPUT dest)
 {
    CONST float matrix[25] = {
       -1, -3, -4, -3, -1,
@@ -425,7 +370,7 @@ kernel void laplace5(read_only image2d_t source, write_only image2d_t dest)
    convolution(source, dest, matrix, 5);
 }
 
-kernel void sharpen3(read_only image2d_t source, write_only image2d_t dest)
+kernel void sharpen3(INPUT source, OUTPUT dest)
 {
    CONST float matrix[9] = {
       -1.f/8, -1.f/8, -1.f/8,
@@ -442,11 +387,11 @@ kernel void sharpen3(read_only image2d_t source, write_only image2d_t dest)
    {\
       for (int y = -size; y <= size; y++)\
          for (int x = -size; x <= size; x++)\
-            sum += factor * READ_IMAGE(source, pos + (int2)(x, y));\
+            sum += factor * CONVERT_FLOAT(READ_IMAGE(source, pos + (int2)(x, y)));\
    }\
    break;
 
-kernel void smooth(read_only image2d_t source, write_only image2d_t dest, int matrix_width)    // Box filter
+kernel void smooth(INPUT source, OUTPUT dest, int matrix_width)    // Box filter
 {
    BEGIN
 
@@ -456,16 +401,17 @@ kernel void smooth(read_only image2d_t source, write_only image2d_t dest, int ma
 
    CONVOLUTION_SWITCH
 
-   WRITE_IMAGE(dest, pos, sum);
+   WRITE_IMAGE(dest, pos, CONVERT(sum));
 }
+
 
 // Median
 
 //The following macro puts the smallest value in position a and biggest in position b
 #define s2(a, b)                Tmp = values[a]; values[a] = min(values[a], values[b]); values[b] = max(Tmp, values[b]);
 
-//The following min macro make sur the first element is the minimum of a set (the remaining elements are in random order)
-//The following max macro make sure the last element is the maximum of a set (the remaining elements are in random order)
+//The following min macros make sure the first element is the minimum of a set (the remaining elements are in random order)
+//The following max macros make sure the last element is the maximum of a set (the remaining elements are in random order)
 #define min3(a, b, c)           s2(a, b); s2(a, c);
 #define max3(a, b, c)           s2(b, c); s2(a, c);
 #define min4(a,b,c,d)           min3(b, c, d); s2(a, b); 
@@ -477,7 +423,7 @@ kernel void smooth(read_only image2d_t source, write_only image2d_t dest, int ma
 #define min7(a,b,c,d,e,f,g)     min6(b, c, d, e, f, g); s2(a, b);
 #define max7(a,b,c,d,e,f,g)     max6(a, b, c, d, e, f); s2(f, g);
 
-//The following mnmx macro make sure the first element is the minimum and the last element is the maximum (the remaining elements are in random order)
+//The following mnmx macros make sure the first element is the minimum and the last element is the maximum (the remaining elements are in random order)
 #define mnmx3(a, b, c)          max3(a, b, c); s2(a, b);                                    // 3 exchanges
 #define mnmx4(a, b, c, d)       s2(a, b); s2(c, d); s2(a, c); s2(b, d);                     // 4 exchanges
 #define mnmx5(a, b, c, d, e)    s2(a, b); s2(c, d); min3(a, c, e); max3(b, d, e);           // 6 exchanges
@@ -527,7 +473,7 @@ float calculate_median5(float * values)
 #define LW 16  // local width
 #define MW 3   // Matrix width
 __attribute__((reqd_work_group_size(LW, LW, 1)))
-kernel void median3_cached(read_only image2d_t source, write_only image2d_t dest)
+kernel void median3_cached(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -589,7 +535,7 @@ kernel void median3_cached(read_only image2d_t source, write_only image2d_t dest
    WRITE_IMAGE(dest, pos, px);
 }
 
-kernel void median3(read_only image2d_t source, write_only image2d_t dest)
+kernel void median3(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -616,7 +562,7 @@ kernel void median3(read_only image2d_t source, write_only image2d_t dest)
 #undef MW
 #define MW 5   // Matrix width
 
-kernel void median5(read_only image2d_t source, write_only image2d_t dest)
+kernel void median5(INPUT source, OUTPUT dest)
 {
    BEGIN
 

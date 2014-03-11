@@ -20,6 +20,9 @@
       <UniqueIdentifier>{360b34c0-9123-429a-872c-4fd2c072aeb6}</UniqueIdentifier>
       <Extensions>cl</Extensions>
     </Filter>
+    <Filter Include="OpenCL Files\Headers">
+      <UniqueIdentifier>{a3db6a56-a24c-4c71-8fd4-ac16b083c455}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="preprocessor.h">
@@ -120,6 +123,18 @@
     </ClInclude>
     <ClInclude Include="..\include\c++\Programs\ThresholdingVector.h">
       <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cl-files\Base.h">
+      <Filter>OpenCL Files\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cl-files\Buffers.h">
+      <Filter>OpenCL Files\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cl-files\Images.h">
+      <Filter>OpenCL Files\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cl-files\Vector.h">
+      <Filter>OpenCL Files\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
