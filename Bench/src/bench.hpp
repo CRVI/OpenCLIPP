@@ -41,7 +41,6 @@
 #include "benchTransfer.hpp"
 #include "benchImageTransfer.hpp"
 #include "benchIntegral.hpp"
-#include "benchTransform.hpp"
 #include "benchResize.hpp"
 #include "benchFilters.hpp"
 #include "benchThreshold.hpp"
@@ -49,6 +48,7 @@
 #include "benchCompare.hpp"
 #include "benchThresholdImg.hpp"
 #include "benchFFT.hpp"
+#include "benchTransform.hpp"
 
 void RunBench()
 {

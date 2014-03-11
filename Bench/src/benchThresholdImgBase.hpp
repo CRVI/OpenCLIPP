@@ -47,7 +47,7 @@ public:
 template<typename DataType>
 void CLASS_NAME<DataType>::RunIPP()
 {
-	// Nothing to do
+	// IPP does not have this type of primitives
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -61,7 +61,10 @@ void CLASS_NAME<DataType>::RunCUDA()
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-	CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrcB, this->m_CLSrc, this->m_CLDst, COMPARE_TYPE);
+   if (UseBuffer())
+	   CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLSrcB, m_CLDst, COMPARE_TYPE);
+   else
+      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(m_CLBufferSrc, m_CLBufferSrcB, m_CLBufferDst, COMPARE_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,7 @@
 //! along with OpenCLIPP.  If not, see <http://www.gnu.org/licenses/>.
 //! 
 ////////////////////////////////////////////////////////////////////////////////
-#define THRESHOLD_USE_BUFFER true
+#define THRESHOLD_USE_BUFFER USE_BUFFER
 
 #define THRESHOLD_TYPE GT
 #define BENCH_NAME Threshold

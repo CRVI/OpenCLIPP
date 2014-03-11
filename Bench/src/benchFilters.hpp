@@ -23,8 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const static bool FiltersUseBuffer = true;
-
 template<typename DataType>
 float FilterTolerance()
 {
@@ -39,7 +37,7 @@ float FilterTolerance<float>()
 
 
 template<typename DataType, int mask_size = 1>
-class FilterBenchBase : public BenchUnaryBase<DataType, FiltersUseBuffer>
+class FilterBenchBase : public BenchUnaryBase<DataType, USE_BUFFER>
 {
 public:
    void Create(uint Width, uint Height);
@@ -82,7 +80,7 @@ public:\
 template<typename DataType, int mask_size>
 void FilterBenchBase<DataType, mask_size>::Create(uint Width, uint Height)
 {
-   BenchUnaryBase<DataType, FiltersUseBuffer>::Create(Width, Height);
+   BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height);
 
    IPP_CODE(
       m_IPPRoi.width -= mask_size * 2;
