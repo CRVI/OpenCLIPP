@@ -57,21 +57,21 @@ template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
    IPP_CODE(
-			ippiCompareC_8u_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, VALUE, m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
 		)
 }
 template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
    IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)m_ImgSrc.Data(), m_ImgSrc.Step, USHORT_VALUE, m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
 		)
 }
 template<>
 void CLASS_NAME<float>::RunIPP()
 {
    IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)m_ImgSrc.Data(), m_ImgSrc.Step, FLOAT_VALUE, m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
 		)
 }
 
@@ -86,10 +86,10 @@ void CLASS_NAME<DataType>::RunCL()
 	if (is_same<DataType, float>::value)
 		value = FLOAT_VALUE;
 
-   if (m_UsesBuffer)
-      ocipCompare_V(m_CLBufferSrc, m_CLBufferDst, value, COMPARE_TYPE);
+   if (this->m_UsesBuffer)
+      ocipCompare_V(this->m_CLBufferSrc, this->m_CLBufferDst, value, COMPARE_TYPE);
    else
-      ocipCompare(m_CLSrc, m_CLDst, value, COMPARE_TYPE);
+      ocipCompare(this->m_CLSrc, this->m_CLDst, value, COMPARE_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -97,21 +97,21 @@ template<>
 void CLASS_NAME<unsigned char>::RunNPP()
 {
    NPP_CODE(
-      nppiCompareC_8u_C1R((Npp8u*)m_NPPSrc, m_NPPSrcStep, VALUE, (Npp8u*)m_NPPDst, m_NPPDstStep, m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+      nppiCompareC_8u_C1R((Npp8u*)this->m_NPPSrc, this->m_NPPSrcStep, VALUE, (Npp8u*)this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
 		)
 }
 template<>
 void CLASS_NAME<unsigned short>::RunNPP()
 {
    NPP_CODE(
-      nppiCompareC_16u_C1R((Npp16u*)m_NPPSrc, m_NPPSrcStep, USHORT_VALUE, (Npp8u*)m_NPPDst, m_NPPDstStep, m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+      nppiCompareC_16u_C1R((Npp16u*)this->m_NPPSrc, this->m_NPPSrcStep, USHORT_VALUE, (Npp8u*)this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
 		)
 }
 template<>
 void CLASS_NAME<float>::RunNPP()
 {
    NPP_CODE(
-      nppiCompareC_32f_C1R((Npp32f*)m_NPPSrc, m_NPPSrcStep, FLOAT_VALUE, (Npp8u*)m_NPPDst, m_NPPDstStep, m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+      nppiCompareC_32f_C1R((Npp32f*)this->m_NPPSrc, this->m_NPPSrcStep, FLOAT_VALUE, (Npp8u*)this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
 		)
 }
 //-----------------------------------------------------------------------------------------------------------------------------

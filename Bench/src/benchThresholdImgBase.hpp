@@ -46,17 +46,17 @@ public:
 template<typename DataType>
 void CLASS_NAME<DataType>::RunIPP()
 {
-	// IPP does not have this type of primitives
+   // IPP does not have this type of primitives
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   if (UseBuffer())
-	   CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLSrcB, m_CLDst, COMPARE_TYPE);
+   if (this->m_UsesBuffer)
+      CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLSrcB, this->m_CLDst, COMPARE_TYPE);
    else
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(m_CLBufferSrc, m_CLBufferSrcB, m_CLBufferDst, COMPARE_TYPE);
+      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferSrcB, this->m_CLBufferDst, COMPARE_TYPE);
 }
 
 #undef CLASS_NAME

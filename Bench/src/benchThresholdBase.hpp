@@ -47,62 +47,46 @@ template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
    IPP_CODE(
-			ippiThreshold_Val_8u_C1R( m_ImgSrc.Data(), m_ImgSrc.Step,
-									  m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
-									  m_IPPRoi, THRESH, 
-									  CONCATENATE(VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
-		)
+         ippiThreshold_Val_8u_C1R( this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
+                             this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
+                             this->m_IPPRoi, THRESH, 
+                             CONCATENATE(VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
+      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
    IPP_CODE(
-			ippiThreshold_Val_16u_C1R( (Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step,
-									   (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
-									   m_IPPRoi, USHORT_THRESH, 
-									   CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
-		)
+         ippiThreshold_Val_16u_C1R( (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
+                              (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
+                              this->m_IPPRoi, USHORT_THRESH, 
+                              CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
+      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<float>::RunIPP()
 {
    IPP_CODE(
-			ippiThreshold_Val_32f_C1R( (Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step,
-									   (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
-									   m_IPPRoi, FLOAT_THRESH, 
-									   CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
-		)
+         ippiThreshold_Val_32f_C1R( (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
+                              (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
+                              this->m_IPPRoi, FLOAT_THRESH, 
+                              CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), GetIppCmpOp(THRESHOLD_TYPE));
+      )
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-	float thresh = THRESH;
-	float valueGT = VALUEGT;
-	float valueLT = VALUELT;
+   float thresh = GetTreshold<DataType>();
+   float value = GetTresholdValue<DataType>(THRESHOLD_TYPE);
 
-	if (is_same<DataType, unsigned short>::value)
-	{
-		thresh = USHORT_THRESH;
-		valueGT = USHORT_VALUEGT;
-		valueLT = USHORT_VALUELT;
-	}
-		
-
-	if (is_same<DataType, float>::value)
-	{
-		thresh = FLOAT_THRESH;
-		valueGT = FLOAT_VALUEGT;
-		valueLT = FLOAT_VALUELT;
-	}
-
-   if (m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE)), _V)(m_CLBufferSrc, m_CLBufferDst, thresh, CONCATENATE(value,THRESHOLD_TYPE));
+   if (this->m_UsesBuffer)
+      CONCATENATE(CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE)), _V)(this->m_CLBufferSrc, this->m_CLBufferDst, thresh, value);
    else
-      CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE))(m_CLSrc, m_CLDst, thresh, CONCATENATE(value,THRESHOLD_TYPE));
+      CONCATENATE(ocip, CONCATENATE(BENCH_NAME,THRESHOLD_TYPE))(this->m_CLSrc, this->m_CLDst, thresh, value);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -110,33 +94,33 @@ template<>
 void CLASS_NAME<unsigned char>::RunNPP()
 {
    NPP_CODE(
-         nppiThreshold_Val_8u_C1R( (Npp8u*) m_NPPSrc, m_NPPSrcStep,
-                             (Npp8u*) m_NPPDst, m_NPPDstStep,
-									  m_NPPRoi, THRESH, 
-									  CONCATENATE(VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
-		)
+         nppiThreshold_Val_8u_C1R( (Npp8u*) this->m_NPPSrc, this->m_NPPSrcStep,
+                             (Npp8u*) this->m_NPPDst, this->m_NPPDstStep,
+                             this->m_NPPRoi, THRESH, 
+                             CONCATENATE(VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
+      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<unsigned short>::RunNPP()
 {
    NPP_CODE(
-			nppiThreshold_Val_16u_C1R( (Ipp16u*) m_NPPSrc, m_NPPSrcStep,
-									   (Ipp16u*) m_NPPDst, m_NPPDstStep,
-									   m_NPPRoi, USHORT_THRESH, 
-									   CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
-		)
+         nppiThreshold_Val_16u_C1R( (Ipp16u*) this->m_NPPSrc, this->m_NPPSrcStep,
+                              (Ipp16u*) this->m_NPPDst, this->m_NPPDstStep,
+                              this->m_NPPRoi, USHORT_THRESH, 
+                              CONCATENATE(USHORT_VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
+      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CLASS_NAME<float>::RunNPP()
 {
    NPP_CODE(
-			nppiThreshold_Val_32f_C1R( (Ipp32f*) m_NPPSrc, m_NPPSrcStep,
-									   (Ipp32f*) m_NPPDst, m_NPPDstStep,
-									   m_NPPRoi, FLOAT_THRESH, 
-									   CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
-		)
+         nppiThreshold_Val_32f_C1R( (Ipp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
+                              (Ipp32f*) this->m_NPPDst, this->m_NPPDstStep,
+                              this->m_NPPRoi, FLOAT_THRESH, 
+                              CONCATENATE(FLOAT_VALUE,THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
+      )
 }
 
 

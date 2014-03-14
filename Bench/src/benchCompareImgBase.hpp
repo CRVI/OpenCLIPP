@@ -56,10 +56,10 @@ template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
    IPP_CODE(
-         ippiCompare_8u_C1R( m_ImgSrc.Data(), m_ImgSrc.Step,
-                        m_ImgSrcB.Data(), m_ImgSrcB.Step,
-                        m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
-                        m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+         ippiCompare_8u_C1R( this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
+                        this->m_ImgSrcB.Data(), this->m_ImgSrcB.Step,
+                        this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
+                        this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -67,10 +67,10 @@ template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
    IPP_CODE(
-         ippiCompare_16u_C1R( (Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step,
-                         (Ipp16u*) m_ImgSrcB.Data(), m_ImgSrcB.Step,
-                         m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
-                         m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+         ippiCompare_16u_C1R( (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
+                         (Ipp16u*) this->m_ImgSrcB.Data(), this->m_ImgSrcB.Step,
+                         this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
+                         this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -78,10 +78,10 @@ template<>
 void CLASS_NAME<float>::RunIPP()
 {
    IPP_CODE(
-         ippiCompare_32f_C1R( (Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step,
-                         (Ipp32f*) m_ImgSrcB.Data(), m_ImgSrcB.Step,
-                         m_ImgDstIPP.Data(), m_ImgDstIPP.Step, 
-                         m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+         ippiCompare_32f_C1R( (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step,
+                         (Ipp32f*) this->m_ImgSrcB.Data(), this->m_ImgSrcB.Step,
+                         this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, 
+                         this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
       )
 }
 
@@ -89,10 +89,10 @@ void CLASS_NAME<float>::RunIPP()
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   if (m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(m_CLBufferSrc, m_CLBufferSrcB, m_CLBufferDst, COMPARE_TYPE);
+   if (this->m_UsesBuffer)
+      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferSrcB, this->m_CLBufferDst, COMPARE_TYPE);
    else
-      CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLSrcB, m_CLDst, COMPARE_TYPE);
+      CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLSrcB, this->m_CLDst, COMPARE_TYPE);
 }
 
 
@@ -101,10 +101,10 @@ template<>
 void CLASS_NAME<unsigned char>::RunNPP()
 {
    NPP_CODE(
-         nppiCompare_8u_C1R( (Npp8u*) m_NPPSrc, m_NPPSrcStep,
-                        (Npp8u*) m_NPPSrcB, m_NPPSrcBStep,
-                        (Npp8u*) m_NPPDst, m_NPPDstStep,
-                        m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+         nppiCompare_8u_C1R( (Npp8u*) this->m_NPPSrc, this->m_NPPSrcStep,
+                        (Npp8u*) this->m_NPPSrcB, this->m_NPPSrcBStep,
+                        (Npp8u*) this->m_NPPDst, this->m_NPPDstStep,
+                        this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -112,10 +112,10 @@ template<>
 void CLASS_NAME<unsigned short>::RunNPP()
 {
    NPP_CODE(
-         nppiCompare_16u_C1R( (Ipp16u*) m_NPPSrc, m_NPPSrcStep,
-                         (Ipp16u*) m_NPPSrcB, m_NPPSrcBStep,
-                         (Npp8u*) m_NPPDst, m_NPPDstStep,
-                         m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+         nppiCompare_16u_C1R( (Ipp16u*) this->m_NPPSrc, this->m_NPPSrcStep,
+                         (Ipp16u*) this->m_NPPSrcB, this->m_NPPSrcBStep,
+                         (Npp8u*) this->m_NPPDst, this->m_NPPDstStep,
+                         this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -123,10 +123,10 @@ template<>
 void CLASS_NAME<float>::RunNPP()
 {
    NPP_CODE(
-         nppiCompare_32f_C1R( (Ipp32f*) m_NPPSrc, m_NPPSrcStep,
-                         (Ipp32f*) m_NPPSrcB, m_NPPSrcBStep,
-                         (Npp8u*) m_NPPDst, m_NPPDstStep,
-                         m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
+         nppiCompare_32f_C1R( (Ipp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
+                         (Ipp32f*) this->m_NPPSrcB, this->m_NPPSrcBStep,
+                         (Npp8u*) this->m_NPPDst, this->m_NPPDstStep,
+                         this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
       )
 }
 
