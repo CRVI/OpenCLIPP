@@ -107,7 +107,7 @@ kernel void to_gray(INPUT source, OUTPUT dest)
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel1(INPUT source, OUTPUT dest, int channel_no)
+kernel void select_channel1(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -121,7 +121,7 @@ kernel void select_channel1(INPUT source, OUTPUT dest, int channel_no)
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel2(INPUT source, OUTPUT dest, int channel_no)
+kernel void select_channel2(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -135,7 +135,7 @@ kernel void select_channel2(INPUT source, OUTPUT dest, int channel_no)
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel3(INPUT source, OUTPUT dest, int channel_no)
+kernel void select_channel3(INPUT source, OUTPUT dest)
 {
    BEGIN
 
@@ -149,7 +149,7 @@ kernel void select_channel3(INPUT source, OUTPUT dest, int channel_no)
    WRITE_IMAGE(dest, pos, dst);
 }
 
-kernel void select_channel4(INPUT source, OUTPUT dest, int channel_no)
+kernel void select_channel4(INPUT source, OUTPUT dest)
 {
    BEGIN
 

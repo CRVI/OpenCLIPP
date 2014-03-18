@@ -133,7 +133,7 @@ void Conversions::Copy(IImage& Source, ImageBuffer& Dest)
 
    // TODO : Support unaligned image buffers
 
-   if (Dest.ElementStep() != Dest.Width())
+   if (Dest.ElementStep() != Dest.Width() * Dest.NbChannels())
       throw cl::Error(CL_INVALID_VALUE, "When copying an image to an image buffer, the image buffer must not have any padding at the end of the lines");
 
    Source.SendIfNeeded();
@@ -155,7 +155,7 @@ void Conversions::Copy(ImageBuffer& Source, IImage& Dest)
 
    // TODO : Support unaligned image buffers
 
-   if (Source.ElementStep() != Source.Width())
+   if (Source.ElementStep() != Source.Width() * Dest.NbChannels())
       throw cl::Error(CL_INVALID_VALUE, "When copying an image buffer to an image, the image buffer must not have any padding at the end of the lines");
 
    Source.SendIfNeeded();
