@@ -93,6 +93,8 @@ kernel void Convert3CTo4C(global const TYPE * source, write_only image2d_t dest,
 {
    BEGIN
 
+   source_step /= sizeof(TYPE);
+
    int source_index = gx * 3 + gy * source_step;
 
    PIXEL color;
@@ -108,6 +110,8 @@ kernel void Convert3CTo4C(global const TYPE * source, write_only image2d_t dest,
 kernel void Convert4CTo3C(read_only image2d_t source, global TYPE * dest, uint dest_step)
 {
    BEGIN
+
+   dest_step /= sizeof(TYPE);
 
    // Read pixel
    PIXEL color = READ_IMAGE(source, pos);
