@@ -47,14 +47,22 @@ public:
    double Mean(IImage& Source);         ///< Calculates the mean value of all pixel values
    double MeanSqr(IImage& Source);      ///< Calculates the mean of the square of all pixel values
 
+   double Min(IImage& Source, int& outX, int& outY);     ///< Finds the position in the image that has the minimum value
+   double Max(IImage& Source, int& outX, int& outY);     ///< Finds the position in the image that has the maximum value
+   double MinAbs(IImage& Source, int& outX, int& outY);  ///< Finds the position in the image that has the minimum of the absolute values
+   double MaxAbs(IImage& Source, int& outX, int& outY);  ///< Finds the position in the image that has the maximum of the absolute values
+
 protected:
    float m_Result;
    Buffer m_ResultBuffer;
 
-   void PrepareBuffer(const ImageBase& Image);
+   void PrepareBuffer(const ImageBase& Image);  // Prepares m_PartialResult
+   void PrepareCoords(const ImageBase& Image);  // Prepares m_PartialResult and m_PartialCoord
 
-   std::vector<float> m_PartialResult;
-   std::shared_ptr<Buffer> m_PartialResultBuffer;
+   std::vector<float> m_PartialResult;    // CPU buffer that contains the partially calculated result
+   std::vector<int>   m_PartialCoord;     // CPU buffer that contains the coordinates for the partially calculated result
+   std::shared_ptr<Buffer> m_PartialResultBuffer;  // GPU buffer for m_PartialResult
+   std::shared_ptr<Buffer> m_PartialCoordBuffer;   // GPU buffer for m_PartialCoord
 
    void Init(IImage& Source);
    void InitAbs(IImage& Source);

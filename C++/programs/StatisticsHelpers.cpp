@@ -86,4 +86,50 @@ double ReduceMean(std::vector<float>& buffer)
    return MeanSum / Divisor;  // Divide the sum to get the final mean
 }
 
+double ReduceMin(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY)
+{
+   // First half of buffer contains the mean of all pixels
+   // Second half of buffer contains the number of pixels used to generate the mean
+   size_t size = buffer.size() / 2;
+   int x = coords[0];
+   int y = coords[1];
+
+   float v = buffer[0];
+   for (size_t i = 0; i < size; i++)
+      if (buffer[i] < v)
+      {
+         v = buffer[i];
+         x = coords[i * 2];
+         y = coords[i * 2 + 1];
+      }
+
+   outX = x;
+   outY = y;
+
+   return v;
+}
+
+double ReduceMax(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY)
+{
+   // First half of buffer contains the mean of all pixels
+   // Second half of buffer contains the number of pixels used to generate the mean
+   size_t size = buffer.size() / 2;
+   int x = coords[0];
+   int y = coords[1];
+
+   float v = buffer[0];
+   for (size_t i = 0; i < size; i++)
+      if (buffer[i] > v)
+      {
+         v = buffer[i];
+         x = coords[i * 2];
+         y = coords[i * 2 + 1];
+      }
+
+   outX = x;
+   outY = y;
+
+   return v;
+}
+
 }
