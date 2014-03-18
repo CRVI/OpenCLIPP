@@ -38,7 +38,7 @@ using namespace std;
 namespace OpenCLIPP
 {
 
-// Statistics
+// StatisticsVector
 void StatisticsVector::PrepareBuffer(const ImageBase& Image)
 {
    size_t NbGroups = (size_t) GetNbGroups(Image);
@@ -58,6 +58,29 @@ void StatisticsVector::PrepareBuffer(const ImageBase& Image)
    m_PartialResultBuffer.reset();
    m_PartialResultBuffer = make_shared<Buffer>(*m_CL, m_PartialResult.data(), BufferSize);
 }
+
+void StatisticsVector::PrepareCoords(const ImageBase& Image)
+{
+   PrepareBuffer(Image);
+
+   size_t NbGroups = (size_t) GetNbGroups(Image);
+
+   // We are storing X and Y 
+   size_t BufferSize = NbGroups * 2;
+
+   if (m_PartialCoordBuffer != nullptr &&
+      m_PartialCoordBuffer->Size() == BufferSize * sizeof(int) &&
+      m_PartialCoord.size() == BufferSize)
+   {
+      return;
+   }
+
+   m_PartialCoord.assign(BufferSize, 0);
+
+   m_PartialCoordBuffer.reset();
+   m_PartialCoordBuffer = make_shared<Buffer>(*m_CL, m_PartialCoord.data(), BufferSize);
+}
+
 
 // Init
 void StatisticsVector::Init(ImageBuffer& Source)
@@ -164,6 +187,59 @@ double StatisticsVector::MeanSqr(ImageBuffer& Source)
    m_PartialResultBuffer->Read(true);
 
    return ReduceMean(m_PartialResult);
+}
+
+
+#undef SELECT_NAME
+#define SELECT_NAME(name, src_img) #name  // No _flush version for these (yet)
+
+// Reductions that also find the coordinate
+double StatisticsVector::Min(ImageBuffer& Source, int& outX, int& outY)
+{
+   PrepareCoords(Source);
+
+   Kernel(min_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read();
+   m_PartialCoordBuffer->Read(true);
+
+   return ReduceMin(m_PartialResult, m_PartialCoord, outX, outY);
+}
+
+double StatisticsVector::Max(ImageBuffer& Source, int& outX, int& outY)
+{
+   PrepareCoords(Source);
+
+   Kernel(max_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read();
+   m_PartialCoordBuffer->Read(true);
+
+   return ReduceMax(m_PartialResult, m_PartialCoord, outX, outY);
+}
+
+double StatisticsVector::MinAbs(ImageBuffer& Source, int& outX, int& outY)
+{
+   PrepareCoords(Source);
+
+   Kernel(min_abs_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read();
+   m_PartialCoordBuffer->Read(true);
+
+   return ReduceMin(m_PartialResult, m_PartialCoord, outX, outY);
+}
+
+double StatisticsVector::MaxAbs(ImageBuffer& Source, int& outX, int& outY)
+{
+   PrepareCoords(Source);
+
+   Kernel(max_abs_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read();
+   m_PartialCoordBuffer->Read(true);
+
+   return ReduceMax(m_PartialResult, m_PartialCoord, outX, outY);
 }
 
 }
