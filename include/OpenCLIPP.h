@@ -574,13 +574,17 @@ ocipError ocip_API ocipOtsuThreshold(ocipImage Source, uint * Value);
 // Statistics --------------------------------------------------------------------------------------
 // All Statistics operations are Syncrhonous, meaning they block until the value is calculated and set to Result
 ocipError ocip_API ocipPrepareStatistics(ocipProgram * ProgramPtr, ocipImage Image);  ///< See ocipPrepareExample2
-ocipError ocip_API ocipMin(      ocipProgram Program, ocipImage Source, double * Result); ///< Finds the minimum value in the image
-ocipError ocip_API ocipMax(      ocipProgram Program, ocipImage Source, double * Result); ///< Finds the maximum value in the image
-ocipError ocip_API ocipMinAbs(   ocipProgram Program, ocipImage Source, double * Result); ///< Finds the minimum of the absolute of the values in the image
-ocipError ocip_API ocipMaxAbs(   ocipProgram Program, ocipImage Source, double * Result); ///< Finds the maxumum of the absolute of the values in the image
-ocipError ocip_API ocipSum(      ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the sum of all pixel values
-ocipError ocip_API ocipMean(     ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean value of all pixel values
-ocipError ocip_API ocipMeanSqr(  ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean of the square of all pixel values
+ocipError ocip_API ocipMin(         ocipProgram Program, ocipImage Source, double * Result); ///< Finds the minimum value in the image
+ocipError ocip_API ocipMax(         ocipProgram Program, ocipImage Source, double * Result); ///< Finds the maximum value in the image
+ocipError ocip_API ocipMinAbs(      ocipProgram Program, ocipImage Source, double * Result); ///< Finds the minimum of the absolute of the values in the image
+ocipError ocip_API ocipMaxAbs(      ocipProgram Program, ocipImage Source, double * Result); ///< Finds the maxumum of the absolute of the values in the image
+ocipError ocip_API ocipSum(         ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the sum of all pixel values
+ocipError ocip_API ocipMean(        ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean value of all pixel values
+ocipError ocip_API ocipMeanSqr(     ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean of the square of all pixel values
+ocipError ocip_API ocipMinIndx(     ocipProgram Program, ocipImage Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum value in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMaxIndx(     ocipProgram Program, ocipImage Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum value in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMinAbsIndx(  ocipProgram Program, ocipImage Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum of the absolute values in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMaxAbsIndx(  ocipProgram Program, ocipImage Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum of the absolute values in the image and the coordinate (index) of the pixel with that value
 
 
 
@@ -794,13 +798,19 @@ ocipError ocip_API ocipLaplace_V(      ocipBuffer Source, ocipBuffer Dest, int W
 // Statistics on image buffers ---------------------------------------------------------------------
 // All Statistics operations are Syncrhonous, meaning they block until the value is calculated and set to Result
 ocipError ocip_API ocipPrepareImageBufferStatistics(ocipProgram * ProgramPtr, ocipBuffer Image);  ///< See ocipPrepareExample2
-ocipError ocip_API ocipMin_V(    ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the minimum value in the image
-ocipError ocip_API ocipMax_V(    ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the maximum value in the image
-ocipError ocip_API ocipMinAbs_V( ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the minimum of the absolute of the values in the image
-ocipError ocip_API ocipMaxAbs_V( ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the maxumum of the absolute of the values in the image
-ocipError ocip_API ocipSum_V(    ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the sum of all pixel values
-ocipError ocip_API ocipMean_V(   ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean value of all pixel values
-ocipError ocip_API ocipMeanSqr_V(ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean of the square of all pixel values
+ocipError ocip_API ocipMin_V(       ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the minimum value in the image
+ocipError ocip_API ocipMax_V(       ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the maximum value in the image
+ocipError ocip_API ocipMinAbs_V(    ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the minimum of the absolute of the values in the image
+ocipError ocip_API ocipMaxAbs_V(    ocipProgram Program, ocipBuffer Source, double * Result); ///< Finds the maxumum of the absolute of the values in the image
+ocipError ocip_API ocipSum_V(       ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the sum of all pixel values
+ocipError ocip_API ocipMean_V(      ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean value of all pixel values
+ocipError ocip_API ocipMeanSqr_V(   ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean of the square of all pixel values
+ocipError ocip_API ocipMinIndx_V(     ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum value in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMaxIndx_V(     ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum value in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMinAbsIndx_V(  ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum of the absolute values in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMaxAbsIndx_V(  ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum of the absolute values in the image and the coordinate (index) of the pixel with that value
+
+
 
 // Thresholding on image buffers --------------------------------------------------------------------
 ocipError ocip_API ocipPrepareImageBufferThresholding(ocipBuffer Image); ///< See ocipPrepareExample
