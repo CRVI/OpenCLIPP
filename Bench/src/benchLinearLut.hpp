@@ -47,6 +47,8 @@ public:
    void RunCL();
    void RunNPP();
 
+   bool HasCVTest() const { return false; }
+
    typedef DataType dataType;
 
    const static int Length = 5;

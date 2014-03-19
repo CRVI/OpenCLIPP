@@ -34,6 +34,7 @@ public:
    void RunIPP();
    void RunCUDA();
    void RunCL();
+   void RunCV();
    void RunNPP();
 
    bool CompareCUDA(IntegralBench * This);
@@ -109,6 +110,11 @@ void IntegralBench::RunIPP()
 void IntegralBench::RunCL()
 {
    ocipIntegralScan(m_Program, m_CLSrc, m_CLDst);
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+void IntegralBench::RunCV()
+{
+   CV_CODE( integral(m_CVSrc, m_CVDst); )    // This does not work well, it recreates m_CVDst as a 32S image...
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void IntegralBench::RunNPP()

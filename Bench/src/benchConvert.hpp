@@ -44,6 +44,7 @@ public:
    void RunIPP();
    void RunCUDA();
    void RunCL();
+   void RunCV();
    void RunNPP();
 
    float CompareTolerance() const { return 1; }   // Increased tolerance to accept minor rounding errors
@@ -61,6 +62,18 @@ template<typename SrcType, typename DstType>
 void ConvertBench<SrcType, DstType>::RunCL()
 {
    ocipConvert(m_CLSrc, m_CLDst);
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+template<typename SrcType, typename DstType>
+void ConvertBench<SrcType, DstType>::RunCV()
+{
+   CV_CODE( 
+      try
+      {
+         m_CVSrc.convertTo(m_CVDst, m_CVDst.type());
+      }
+      catch (cv::Exception e)
+      { } )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename SrcType, typename DstType>

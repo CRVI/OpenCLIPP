@@ -43,6 +43,8 @@ public:
    void RunCL();
    void RunNPP();
 
+   bool HasCVTest() const { return false; }
+
    typedef DstType dataType;
 };
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -37,7 +37,7 @@
 #define CV_NAME flip
 #define IPP_PARAM_LAST , ippAxsVertical
 #define NPP_PARAM_LAST , NPP_VERTICAL_AXIS
-#define CV_PARAM_LAST , 0
+#define CV_PARAM_LAST , 1
 #include "benchUnary.hpp"
 
 #define BENCH_NAME MirrorY
@@ -45,7 +45,7 @@
 #define CV_NAME flip
 #define IPP_PARAM_LAST , ippAxsHorizontal
 #define NPP_PARAM_LAST , NPP_HORIZONTAL_AXIS
-#define CV_PARAM_LAST , 1
+#define CV_PARAM_LAST , 0
 #include "benchUnary.hpp"
 
 #define BENCH_NAME Flip

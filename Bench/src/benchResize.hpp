@@ -36,9 +36,9 @@ public:
    void Free();
 
    void RunIPP();
-   void RunCUDA() { }
-   void RunCL();
    void RunNPP();
+   void RunCL();
+   void RunCV();
 
    typedef DataType dataType;
 
@@ -185,6 +185,12 @@ template<typename DataType>
 void ResizeBenchBase<DataType>::RunCL()
 {
    ocipResize(m_CLSrc, m_CLDst, m_LinearInterpolation, false);
+}
+
+template<typename DataType>
+void ResizeBenchBase<DataType>::RunCV()
+{
+   CV_CODE( resize(m_CVSrc, m_CVDst, m_CVDst.size(), 0, 0, (m_LinearInterpolation ? INTER_LINEAR : INTER_NEAREST)); )
 }
 
 template<>

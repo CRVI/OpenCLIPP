@@ -46,6 +46,8 @@ public:
    SPoint CompareAnchor() const { return m_MaskAnchor; }
    float CompareTolerance() const { return FilterTolerance<DataType>(); }
 
+   bool HasCVTest() const { return false; }   // API of filters in OpenCV OCL is too different to be easily added here
+
    SSize m_MaskSize;
    SPoint m_MaskAnchor;
 };
