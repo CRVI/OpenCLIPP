@@ -28,6 +28,9 @@
 #define IPP_REDUCE_HINT
 #define REDUCE_CMP_TOLERANCE SUCCESS_EPSILON
 #define CUDA_REDUCE_SAME_TYPE
+#define IPP_ADDITIONAL_PARAMS
+#define CL_ADDITIONAL_PARAMS
+#define NPP_ADDITIONAL_PARAMS
 
 #define BENCH_NAME Min
 #define CV_OPERATION(src, dst) minMax(src, &dst[0])
@@ -43,10 +46,34 @@
 #define BENCH_NAME MaxAbs
 #include "benchReduce.hpp"*/
 
+#undef IPP_ADDITIONAL_PARAMS
+#undef CL_ADDITIONAL_PARAMS
+#undef NPP_ADDITIONAL_PARAMS
+#define IPP_ADDITIONAL_PARAMS , (int*) &m_IndxIPP.X, (int*) &m_IndxIPP.Y
+#define CL_ADDITIONAL_PARAMS  , (int*) &m_IndxCL.X,  (int*) &m_IndxCL.Y
+#define NPP_ADDITIONAL_PARAMS , (int*) &m_IndxNPP->X, (int*) &m_IndxNPP->Y
+
+// NOTE : Coordinates returned are not currently checked
+// custom image generation would be needed for a good check
+
+#define BENCH_NAME MinIndx
+#define CV_OPERATION(src, dst) minMaxLoc(src, &dst[0], &m_CVDummy[0], &m_IndxCV, &m_CVDummyIndx)
+#include "benchReduce.hpp"
+
+#define BENCH_NAME MaxIndx
+#define CV_OPERATION(src, dst) minMaxLoc(src, &m_CVDummy[0], &dst[0], &m_CVDummyIndx, &m_IndxCV)
+#include "benchReduce.hpp"
+
 #undef IPP_REDUCE_HINT
 #undef REDUCE_DST_TYPE
 #undef CUDA_REDUCE_SAME_TYPE
+#undef IPP_ADDITIONAL_PARAMS
+#undef CL_ADDITIONAL_PARAMS
+#undef NPP_ADDITIONAL_PARAMS
 
+#define IPP_ADDITIONAL_PARAMS
+#define CL_ADDITIONAL_PARAMS
+#define NPP_ADDITIONAL_PARAMS
 
 #define REDUCE_DST_TYPE double
 #define IPP_REDUCE_HINT , ippAlgHintNone

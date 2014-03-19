@@ -108,7 +108,11 @@ void RunBench()
    B(Min);
    B(Max);
    B(Sum);
-   B(Mean);
+#ifndef HAS_CV
+   B(Mean);  // mean crashes with NPP
+#endif
+   B(MinIndx);
+   B(MaxIndx);
 
    Bench(ErodeBench);
    Bench(DilateBench);

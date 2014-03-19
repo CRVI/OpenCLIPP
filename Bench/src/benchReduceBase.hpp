@@ -31,6 +31,7 @@ public:
    , m_Program(nullptr)
    , m_DstIPP(0)
    , m_DstCL(0)
+   , m_IndxNPP(nullptr)
    , m_CUDAWorkBuffer(nullptr)
    , m_NPPWorkBuffer(nullptr)
    { }
@@ -56,10 +57,18 @@ protected:
    ocipProgram m_Program;
 
    DstT m_DstIPP;
+   SPoint m_IndxIPP;
+
    double m_DstCL;
+   SPoint m_IndxCL;
+
    CV_CODE(Scalar m_DstCV;)
+   CV_CODE(Scalar m_CVDummy;)
+   CV_CODE(Point m_IndxCV;)
+   CV_CODE(Point m_CVDummyIndx;)
 
    DstT * m_NPPDst;
+   SPoint * m_IndxNPP;
 
    unsigned char* m_CUDAWorkBuffer;
    unsigned char* m_NPPWorkBuffer;
@@ -73,6 +82,10 @@ template<typename DataType, typename DstT>
 void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
 {
    IBench1in0out::Create<DataType>(Width, Height);
+
+   m_IndxCL = m_IndxIPP = SPoint(0, 0);
+
+   CV_CODE( m_IndxCV = Point(0, 0); )
 
    if (CLUsesBuffer())
       ocipPrepareImageBufferStatistics(&m_Program, m_CLBufferSrc);
@@ -91,6 +104,7 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
       nppiMaxGetBufferHostSize_32f_C1R(m_NPPRoi, &BufferSize);
       cudaMalloc((void**) &m_NPPWorkBuffer, BufferSize);
       cudaMalloc((void**) &m_NPPDst, sizeof(DstT));
+      cudaMalloc((void**) &m_IndxNPP, sizeof(m_IndxNPP));
       )
 
    if (std::is_same<float, DataType>::value)
@@ -162,6 +176,7 @@ void BenchReduceBase<DataType, DstT>::Free()
    NPP_CODE(
       cudaFree(m_NPPWorkBuffer);
       cudaFree(m_NPPDst);
+      cudaFree(m_IndxNPP);
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
