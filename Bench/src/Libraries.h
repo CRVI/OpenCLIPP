@@ -28,10 +28,12 @@
 
 #ifdef HAS_NPP
 #include <npp.h>
+#include <cufft.h>
 #ifdef _MSC_VER
 #pragma comment ( lib , "nppi" )
 #pragma comment ( lib , "cuda" )
 #pragma comment ( lib , "cudart" )
+#pragma comment ( lib , "cufft" )
 #endif _MSC_VER
 #define NPP_AVAILABLE true
 #define NPP_CODE(code) code

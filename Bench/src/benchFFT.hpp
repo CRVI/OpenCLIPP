@@ -41,10 +41,10 @@ public:
    void Free();
 
    void RunIPP();
+   void RunNPP();
    void RunCL();
    void RunCV();
 
-   bool HasNPPTest() const { return false; }
    bool HasCUDATest() const { return false; }
 
    float CompareTolerance() const { return 0.005f; }
@@ -58,6 +58,8 @@ private:
       CImage<float> m_IPPPacked;
       CImage<float> m_IPPUnpacked;
    )
+
+   NPP_CODE( cufftHandle m_NPPPlan; )
 };
 
 class FFTBackwardBench : public IBench1in1out
@@ -71,10 +73,10 @@ public:
    void Free();
 
    void RunIPP();
+   void RunNPP();
    void RunCL();
    void RunCV();
 
-   bool HasNPPTest() const { return false; }
    bool HasCUDATest() const { return false; }
 
    float CompareTolerance() const { return 0.005f; }
@@ -87,6 +89,8 @@ private:
       Ipp8u * m_IPPBuffer;
       CImage<float> m_IPPPacked;
    )
+
+   NPP_CODE( cufftHandle m_NPPPlan; )
 };
 
 void FFTForwardBench::Create(uint Width, uint Height)
@@ -148,6 +152,8 @@ void FFTForwardBench::Create(uint Width, uint Height)
 
       m_IPPUnpacked.Create<float>(Width, Height, 2);
       )
+
+   NPP_CODE( cufftPlan2d(&m_NPPPlan, Width, Height, CUFFT_R2C); )
 }
 
 void FFTForwardBench::Free()
@@ -167,6 +173,8 @@ void FFTForwardBench::Free()
       m_IPPPacked.Free();
       m_IPPUnpacked.Free();
       )
+
+   NPP_CODE( cufftDestroy(m_NPPPlan); )
 }
 
 
@@ -275,7 +283,7 @@ void FFTBackwardBench::Create(uint Width, uint Height)
       m_IPPPacked.Create<float>(Width, Height);
       )
 
-
+   NPP_CODE( cufftPlan2d(&m_NPPPlan, Width, Height, CUFFT_C2R); )
 }
 
 void FFTBackwardBench::Free()
@@ -294,6 +302,8 @@ void FFTBackwardBench::Free()
 
       m_IPPPacked.Free();
       )
+
+   NPP_CODE( cufftDestroy(m_NPPPlan); )
 }
 
 void FFTForwardBench::RunIPP()
@@ -308,6 +318,13 @@ void FFTForwardBench::RunIPP()
       CopyRoi.width += 2;
 
       ippiCopy_32f_C1R((float*) m_IPPUnpacked.Data(), m_IPPUnpacked.Step, (float*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, CopyRoi);
+      )
+}
+
+void FFTForwardBench::RunNPP()
+{
+   NPP_CODE(
+      cufftExecR2C(m_NPPPlan, (cufftReal*) m_NPPSrc, (cufftComplex*) m_NPPDst);
       )
 }
 
@@ -330,6 +347,13 @@ void FFTBackwardBench::RunIPP()
       ippiCplxExtendToPack_32fc32f_C1R((Ipp32fc*) m_ImgSrc.Data(), m_ImgSrc.Step, Roi, (float*) m_IPPPacked.Data(), m_IPPPacked.Step);
 
       ippiFFTInv_PackToR_32f_C1R((float*) m_IPPPacked.Data(), m_IPPPacked.Step, (float*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPSpec, m_IPPBuffer);
+      )
+}
+
+void FFTBackwardBench::RunNPP()
+{
+   NPP_CODE(
+      cufftExecC2R(m_NPPPlan, (cufftComplex*) m_NPPSrc, (cufftReal*) m_NPPDst);
       )
 }
 
