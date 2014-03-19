@@ -26,10 +26,10 @@ class ImageTransferBench : public IBench
 {
 public:
    ImageTransferBench()
-   : m_CUDASrc(nullptr)
-   , m_CUDADst(nullptr)
-   , m_CUDASrcStep(0)
-   , m_CUDADstStep(0)
+   : m_NPPSrc(nullptr)
+   , m_NPPDst(nullptr)
+   , m_NPPSrcStep(0)
+   , m_NPPDstStep(0)
    , m_CLSrc(nullptr)
    , m_CLDst(nullptr)
    { }
@@ -38,22 +38,23 @@ public:
    void Free();
 
    void RunIPP();
-   void RunCUDA();
+   void RunNPP();
    void RunCL();
 
-   bool HasNPPTest() { return false; } // NPP will have the same speed as CUDA
+   bool HasCUDATest() { return false; }
+   bool HasCVTest() { return false; }
 
-   bool CompareCUDA(ImageTransferBench*) { return true; }
+   bool CompareNPP(ImageTransferBench*) { return true; }
    bool CompareCL(ImageTransferBench*) { return true; }
 
 protected:
    CSimpleImage m_ImgSrc;
    CSimpleImage m_ImgDst;
 
-   unsigned char * m_CUDASrc;
-   unsigned char * m_CUDADst;
-   uint  m_CUDASrcStep;
-   uint  m_CUDADstStep;
+   unsigned char * m_NPPSrc;
+   unsigned char * m_NPPDst;
+   int  m_NPPSrcStep;
+   int  m_NPPDstStep;
 
    ocipImage m_CLSrc;
    ocipImage m_CLDst;
@@ -65,10 +66,10 @@ void ImageTransferBench::Create(uint Width, uint Height)
    m_ImgDst.Create<unsigned char>(Width, Height);
    FillRandomImg(m_ImgSrc);
 
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc)((unsigned char *&) m_CUDASrc, m_CUDASrcStep, Width, Height);
-      CUDAPP(Malloc)((unsigned char *&) m_CUDADst, m_CUDADstStep, Width, Height);
+   // NPP
+   NPP_CODE(
+      m_NPPSrc = (unsigned char*) NPP_Malloc<1>(Width, Height, m_NPPSrcStep);
+      m_NPPDst = (unsigned char*) NPP_Malloc<1>(Width, Height, m_NPPDstStep);
       )
 
    // CL
@@ -78,10 +79,10 @@ void ImageTransferBench::Create(uint Width, uint Height)
 //-----------------------------------------------------------------------------------------------------------------------------
 void ImageTransferBench::Free()
 {
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Free)(m_CUDASrc);
-      CUDAPP(Free)(m_CUDADst);
+   // NPP
+   NPP_CODE(
+      nppiFree(m_NPPSrc);
+      nppiFree(m_NPPDst);
       )
 
    // CL
@@ -100,14 +101,14 @@ void ImageTransferBench::RunCL()
    ocipReadImage(m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
-void ImageTransferBench::RunCUDA()
+void ImageTransferBench::RunNPP()
 {
-   CUDA_CODE(
-      CUDAPP(Upload)(m_ImgSrc.Data(), m_ImgSrc.Step,
-          m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width, m_ImgSrc.Height);
+   NPP_CODE(
+      cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
+         m_ImgSrc.BytesWidth(), m_ImgSrc.Height, cudaMemcpyHostToDevice);
 
-      CUDAPP(Download)(m_CUDADst, m_CUDADstStep, m_ImgDst.Data(),
-         m_ImgDst.Step, m_ImgDst.Width, m_ImgDst.Height);
+      cudaMemcpy2D(m_ImgDst.Data(), m_ImgDst.Step, m_NPPDst, m_NPPDstStep,
+         m_ImgDst.BytesWidth(), m_ImgDst.Height, cudaMemcpyDeviceToHost);
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
