@@ -457,25 +457,22 @@ ocipError ocip_API ocipToColor(  ocipImage Source, ocipImage Dest);
 ocipError ocip_API ocipPrepareThresholding(ocipImage Image); ///< See ocipPrepareExample
 enum ECompareOperation { LT, LQ, EQ, GQ, GT, };
 
-/// D = (S > Thresh ? valueHigher : S)
-ocipError ocip_API ocipThresholdGT(  ocipImage Source, ocipImage Dest, float Thresh, float valueHigher);
+/// D = (S Op Thresh ? value : S)
+ocipError ocip_API ocipThreshold(      ocipImage Source,  ocipImage Dest, float Thresh, float value, enum ECompareOperation Op);
 
-/// D = (S < Thresh ? valueLower : S)
-ocipError ocip_API ocipThresholdLT(  ocipImage Source, ocipImage Dest, float Thresh, float valueLower);
-
-/// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
-ocipError ocip_API ocipThresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
+/// D = (S > threshGT ? valueHigher : (S < threshLT ? valueLower : S) )
+ocipError ocip_API ocipThresholdGTLT(  ocipImage Source,  ocipImage Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
 /// D = (S1 Op S2 ? S1 : S2)
-ocipError ocip_API ocipThreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
+ocipError ocip_API ocipThreshold_Img(  ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
 
-/// D = (S Op S2)  - D will be 0 or 1
+/// D = (S Op S2) - D will be 0 or 255
 /// Dest must be U8 and 1 channel
-ocipError ocip_API ocipCompare_Img( ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
+ocipError ocip_API ocipCompare(        ocipImage Source1, ocipImage Source2, ocipImage Dest, enum ECompareOperation Op);
 
-/// D = (S1 Op V) - D will be 0 or 1
+/// D = (S1 Op V) - D will be 0 or 255
 /// Dest must be U8 and 1 channel
-ocipError ocip_API ocipCompare(     ocipImage Source, ocipImage Dest, float Value, enum ECompareOperation Op);
+ocipError ocip_API ocipCompareC(       ocipImage Source,  ocipImage Dest, float Value, enum ECompareOperation Op);
 
 
 
@@ -805,34 +802,33 @@ ocipError ocip_API ocipMaxAbs_V(    ocipProgram Program, ocipBuffer Source, doub
 ocipError ocip_API ocipSum_V(       ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the sum of all pixel values
 ocipError ocip_API ocipMean_V(      ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean value of all pixel values
 ocipError ocip_API ocipMeanSqr_V(   ocipProgram Program, ocipBuffer Source, double * Result); ///< Calculates the mean of the square of all pixel values
-ocipError ocip_API ocipMinIndx_V(     ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum value in the image and the coordinate (index) of the pixel with that value
-ocipError ocip_API ocipMaxIndx_V(     ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum value in the image and the coordinate (index) of the pixel with that value
-ocipError ocip_API ocipMinAbsIndx_V(  ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum of the absolute values in the image and the coordinate (index) of the pixel with that value
-ocipError ocip_API ocipMaxAbsIndx_V(  ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum of the absolute values in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMinIndx_V(   ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum value in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMaxIndx_V(   ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum value in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMinAbsIndx_V(ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the minimum of the absolute values in the image and the coordinate (index) of the pixel with that value
+ocipError ocip_API ocipMaxAbsIndx_V(ocipProgram Program, ocipBuffer Source, double * Result, int * IndexX, int * IndexY);   ///< Finds the maximum of the absolute values in the image and the coordinate (index) of the pixel with that value
 
 
 
 // Thresholding on image buffers --------------------------------------------------------------------
 ocipError ocip_API ocipPrepareImageBufferThresholding(ocipBuffer Image); ///< See ocipPrepareExample
-/// D = (S > Thresh ? valueHigher : S)
-ocipError ocip_API ocipThresholdGT_V( ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueHigher);
 
-/// D = (S < Thresh ? valueLower : S)
-ocipError ocip_API ocipThresholdLT_V( ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueLower);
+/// D = (S Op Thresh ? value : S)
+ocipError ocip_API ocipThreshold_V(    ocipBuffer Source,  ocipBuffer Dest, float Thresh, float value, enum ECompareOperation Op);
 
-/// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
-ocipError ocip_API ocipThresholdGTLT_V( ocipBuffer Source, ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
+/// D = (S > threshGT ? valueHigher : (S < threshLT ? valueLower : S) )
+ocipError ocip_API ocipThresholdGTLT_V(ocipBuffer Source,  ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
 /// D = (S1 Op S2 ? S1 : S2)
-ocipError ocip_API ocipThreshold_Img_V( ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, enum ECompareOperation Op);
+ocipError ocip_API ocipThreshold_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, enum ECompareOperation Op);
 
-/// D = (S Op S2)  - D will be 0 or 1
+/// D = (S Op S2) - D will be 0 or 255
 /// Dest must be U8 and 1 channel
-ocipError ocip_API ocipCompare_Img_V( ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, enum ECompareOperation Op);
+ocipError ocip_API ocipCompare_V(      ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, enum ECompareOperation Op);
 
-/// D = (S1 Op V) - D will be 0 or 1
+/// D = (S1 Op V) - D will be 0 or 255
 /// Dest must be U8 and 1 channel
-ocipError ocip_API ocipCompare_V( ocipBuffer Source, ocipBuffer Dest, float Value, enum ECompareOperation Op);
+ocipError ocip_API ocipCompareC_V(      ocipBuffer Source,  ocipBuffer Dest, float Value, enum ECompareOperation Op);
+
 
 
 // FFT on image buffers ----------------------------------------------------------------------------

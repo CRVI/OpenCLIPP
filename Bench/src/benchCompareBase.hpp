@@ -22,12 +22,12 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define CLASS_NAME CONCATENATE(BENCH_NAME, Bench)
+#define CLASS_NAME CONCATENATE(CompareC, CONCATENATE(COMPARE_TYPE, Bench))
 template<typename DataType> class CLASS_NAME;
 
-typedef CLASS_NAME<unsigned char>   CONCATENATE(BENCH_NAME, BenchU8);
-typedef CLASS_NAME<unsigned short>  CONCATENATE(BENCH_NAME, BenchU16);
-typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BenchF32);
+typedef CLASS_NAME<unsigned char>   CONCATENATE(CLASS_NAME, U8);
+typedef CLASS_NAME<unsigned short>  CONCATENATE(CLASS_NAME, U16);
+typedef CLASS_NAME<float>           CONCATENATE(CLASS_NAME, F32);
 
 
 template<typename DataType>
@@ -87,9 +87,9 @@ void CLASS_NAME<DataType>::RunCL()
 		value = FLOAT_VALUE;
 
    if (this->m_UsesBuffer)
-      ocipCompare_V(this->m_CLBufferSrc, this->m_CLBufferDst, value, COMPARE_TYPE);
+      ocipCompareC_V(this->m_CLBufferSrc, this->m_CLBufferDst, value, COMPARE_TYPE);
    else
-      ocipCompare(this->m_CLSrc, this->m_CLDst, value, COMPARE_TYPE);
+      ocipCompareC(this->m_CLSrc, this->m_CLDst, value, COMPARE_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -123,4 +123,3 @@ void CLASS_NAME<DataType>::RunCV()
 
 #undef CLASS_NAME
 #undef COMPARE_TYPE
-#undef BENCH_NAME

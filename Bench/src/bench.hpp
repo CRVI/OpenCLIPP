@@ -22,7 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define USE_BUFFER true // Set to false to use Image mode
+#define USE_BUFFER false // Set to false to use Image mode
 #define HAS_CL_BUFFER
 
 #include "benchBase.hpp"
@@ -169,73 +169,33 @@ void RunBench()
    Bench(SobelCross3Bench);
    Bench(SobelCross5Bench);
    
-   Bench(CompareLTBenchU8);
-   Bench(CompareLTBenchU16);
-   Bench(CompareLTBenchF32);
+   B(CompareCLT);
+   B(CompareCLQ);
+   B(CompareCEQ);
+   B(CompareCGQ);
+   B(CompareCGT);
 
-   Bench(CompareLQBenchU8);
-   Bench(CompareLQBenchU16);
-   Bench(CompareLQBenchF32);
+   B(CompareLT);
+   B(CompareLQ);
+   B(CompareEQ);
+   B(CompareGQ);
+   B(CompareGT);
 
-   Bench(CompareEQBenchU8);
-   Bench(CompareEQBenchU16);
-   Bench(CompareEQBenchF32);
-
-   Bench(CompareGQBenchU8);
-   Bench(CompareGQBenchU16);
-   Bench(CompareGQBenchF32);
-
-   Bench(CompareGTBenchU8);
-   Bench(CompareGTBenchU16);
-   Bench(CompareGTBenchF32);
-
-   Bench(Compare_ImgLTBenchU8);
-   Bench(Compare_ImgLTBenchU16);
-   Bench(Compare_ImgLTBenchF32);
-
-   Bench(Compare_ImgGTBenchU8);
-   Bench(Compare_ImgGTBenchU16);
-   Bench(Compare_ImgGTBenchF32);
-
-   Bench(Compare_ImgEQBenchU8);
-   Bench(Compare_ImgEQBenchU16);
-   Bench(Compare_ImgEQBenchF32);
-
-   Bench(Compare_ImgGQBenchU8);
-   Bench(Compare_ImgGQBenchU16);
-   Bench(Compare_ImgGQBenchF32);
-
-   Bench(Compare_ImgGTBenchU8);
-   Bench(Compare_ImgGTBenchU16);
-   Bench(Compare_ImgGTBenchF32);
-
-   Bench(ThresholdGTBenchU8);
-   Bench(ThresholdGTBenchU16);
-   Bench(ThresholdGTBenchF32);
-
-   Bench(ThresholdLTBenchU8);
-   Bench(ThresholdLTBenchU16);
-   Bench(ThresholdLTBenchF32);
    
-   Bench(ThresholdGTLTBenchU8);
-   Bench(ThresholdGTLTBenchU16);
-   Bench(ThresholdGTLTBenchF32);
+   B(ThresholdLT);
+   B(ThresholdGT);
+   //B(ThresholdLQ); // These 3 are not supported by IPP
+   //B(ThresholdEQ);
+   //B(ThresholdGQ);
+   
+   B(ThresholdGTLT);
 
-   /*Bench(Threshold_ImgLTBenchU8);
-   Bench(Threshold_ImgLTBenchU16);
-   Bench(Threshold_ImgLTBenchF32);
-
-   Bench(Threshold_ImgGTBenchU8);
-   Bench(Threshold_ImgGTBenchU16);
-   Bench(Threshold_ImgGTBenchF32);
-
-   Bench(Threshold_ImgEQBenchU8);
-   Bench(Threshold_ImgEQBenchU16);
-   Bench(Threshold_ImgEQBenchF32);
-
-   Bench(Threshold_ImgGQBenchU8);
-   Bench(Threshold_ImgGQBenchU16);
-   Bench(Threshold_ImgGQBenchF32);*/
+   /* // This is not implemented in IPP
+   B(Threshold_ImgLT);
+   B(Threshold_ImgLQ);
+   B(Threshold_ImgEQ);
+   B(Threshold_ImgGQ);
+   B(Threshold_ImgGT);*/
 
    if (ocipIsFFTAvailable())
    {

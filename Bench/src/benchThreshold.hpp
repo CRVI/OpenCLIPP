@@ -41,7 +41,7 @@ NPP_CODE(NppCmpOp GetNppCmpOp(ECompareOperation Op) { return NppCmpOp(Op); } )  
 
 
 template<typename T>
-float GetTreshold()
+float GetThreshold()
 {
    if (is_same<T, unsigned short>::value)
       return USHORT_THRESH;
@@ -53,7 +53,7 @@ float GetTreshold()
 }
 
 template<typename T>
-float GetTresholdValue(ECompareOperation Op)
+float GetThresholdValue(ECompareOperation Op)
 {
    if (Op < EQ)
    {
@@ -75,13 +75,26 @@ float GetTresholdValue(ECompareOperation Op)
    return VALUEGT;
 }
 
+#define THRESHOLD_TYPE LT
+#define BENCH_NAME Threshold
+#include "benchThresholdBase.hpp"
+
+#define THRESHOLD_TYPE LQ
+#define BENCH_NAME Threshold
+#include "benchThresholdBase.hpp"
+
+#define THRESHOLD_TYPE EQ
+#define BENCH_NAME Threshold
+#include "benchThresholdBase.hpp"
+
+#define THRESHOLD_TYPE GQ
+#define BENCH_NAME Threshold
+#include "benchThresholdBase.hpp"
+
 #define THRESHOLD_TYPE GT
 #define BENCH_NAME Threshold
 #include "benchThresholdBase.hpp"
 
-#define THRESHOLD_TYPE LT
-#define BENCH_NAME Threshold
-#include "benchThresholdBase.hpp"
 
 #define COMPARE_TYPE LT
 #define BENCH_NAME Threshold_Img

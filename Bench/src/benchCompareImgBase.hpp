@@ -23,12 +23,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#define CLASS_NAME CONCATENATE(BENCH_NAME, CONCATENATE(COMPARE_TYPE, Bench))
+#define CLASS_NAME CONCATENATE(Compare, CONCATENATE(COMPARE_TYPE, Bench))
 template<typename DataType> class CLASS_NAME;
 
-typedef CLASS_NAME<unsigned char>   CONCATENATE(CONCATENATE(BENCH_NAME, COMPARE_TYPE), BenchU8);
-typedef CLASS_NAME<unsigned short>  CONCATENATE(CONCATENATE(BENCH_NAME, COMPARE_TYPE), BenchU16);
-typedef CLASS_NAME<float>           CONCATENATE(CONCATENATE(BENCH_NAME, COMPARE_TYPE), BenchF32);
+typedef CLASS_NAME<unsigned char>   CONCATENATE(CLASS_NAME, U8);
+typedef CLASS_NAME<unsigned short>  CONCATENATE(CLASS_NAME, U16);
+typedef CLASS_NAME<float>           CONCATENATE(CLASS_NAME, F32);
 
 
 template<typename DataType>
@@ -90,9 +90,9 @@ template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
    if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferSrcB, this->m_CLBufferDst, COMPARE_TYPE);
+      ocipCompare_V(this->m_CLBufferSrc, this->m_CLBufferSrcB, this->m_CLBufferDst, COMPARE_TYPE);
    else
-      CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLSrcB, this->m_CLDst, COMPARE_TYPE);
+      ocipCompare(this->m_CLSrc, this->m_CLSrcB, this->m_CLDst, COMPARE_TYPE);
 }
 
 
@@ -133,4 +133,3 @@ void CLASS_NAME<float>::RunNPP()
 
 #undef CLASS_NAME
 #undef COMPARE_TYPE
-#undef BENCH_NAME

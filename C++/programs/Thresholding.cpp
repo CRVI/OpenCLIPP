@@ -29,19 +29,8 @@
 namespace OpenCLIPP
 {
 
-void Thresholding::ThresholdGT(IImage& Source, IImage& Dest, float Thresh, float valueHigher)
-{
-   CheckCompatibility(Source, Dest);
+std::string SelectName(const char * name, Thresholding::ECompareOperation Op);
 
-   Kernel(thresholdGT, In(Source), Out(Dest), Thresh, valueHigher);
-}
-
-void Thresholding::ThresholdLT(IImage& Source, IImage& Dest, float Thresh, float valueLower)
-{
-   CheckCompatibility(Source, Dest);
-
-   Kernel(thresholdLT, In(Source), Out(Dest), Thresh, valueLower);
-}
 
 void Thresholding::ThresholdGTLT(IImage& Source, IImage& Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
@@ -50,10 +39,16 @@ void Thresholding::ThresholdGTLT(IImage& Source, IImage& Dest, float threshLT, f
    Kernel(thresholdGTLT, In(Source), Out(Dest), threshLT, valueLower, threshGT, valueHigher);
 }
 
+
 #undef SELECT_NAME
 #define SELECT_NAME(name, src_img) SelectName( #name , Op)
 
-std::string SelectName(const char * name, Thresholding::ECompareOperation Op);
+void Thresholding::Threshold(IImage& Source, IImage& Dest, float Thresh, float value, ECompareOperation Op)
+{
+   CheckCompatibility(Source, Dest);
+
+   Kernel(threshold, In(Source), Out(Dest), Thresh, value);
+}
 
 void Thresholding::Threshold(IImage& Source1, IImage& Source2, IImage& Dest, ECompareOperation Op)
 {
@@ -83,6 +78,7 @@ void Thresholding::Compare(IImage& Source1, IImage& Source2, IImage& Dest, EComp
 
    Kernel(img_compare, In(Source1, Source2), Out(Dest));
 }
+
 
 std::string SelectName(const char * name, Thresholding::ECompareOperation Op)
 {

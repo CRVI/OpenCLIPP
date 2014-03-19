@@ -37,15 +37,6 @@ public:
    :  ImageProgram(CL, "Thresholding.cl")
    { }
 
-   /// D = (S > Thresh ? valueHigher : S)
-   void ThresholdGT(IImage& Source, IImage& Dest, float Thresh, float valueHigher = 255);
-
-   /// D = (S < Thresh ? valueLower : S)
-   void ThresholdLT(IImage& Source, IImage& Dest, float Thresh, float valueLower = 0);
-
-   /// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
-   void ThresholdGTLT(IImage& Source, IImage& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
-
    enum ECompareOperation
    {
       LT,
@@ -54,6 +45,12 @@ public:
       GQ,
       GT,
    };
+
+   /// D = (S Op Thresh ? value : S)
+   void Threshold(IImage& Source, IImage& Dest, float Thresh, float value = 255, ECompareOperation Op = GT);
+
+   /// D = (S > threshGT ? valueHigher : (S < threshLT ? valueLower : S) )
+   void ThresholdGTLT(IImage& Source, IImage& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
    /// D = (S1 Op S2 ? S1 : S2)
    void Threshold(IImage& Source1, IImage& Source2, IImage& Dest, ECompareOperation Op = GT);

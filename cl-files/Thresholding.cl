@@ -25,34 +25,6 @@
 #include "Images.h"
 
 
-kernel void thresholdLT(INPUT source, OUTPUT dest, float thresh, float valueLower)
-{
-   BEGIN
-
-   // Read pixel
-   TYPE color = READ_IMAGE(source, pos);
-
-   // Modify color
-   TYPE dst_color = (color < (TYPE)(thresh) ? (TYPE)(valueLower) : color);
-
-   // Write pixel
-   WRITE_IMAGE(dest, pos, dst_color);
-}
-
-kernel void thresholdGT(INPUT source, OUTPUT dest, float thresh, float valueHigher)
-{
-   BEGIN
-
-   // Read pixel
-   TYPE color = READ_IMAGE(source, pos);
-
-   // Modify color
-   TYPE dst_color = (color > (TYPE)(thresh) ? (TYPE)(valueHigher) : color);
-
-   // Write pixel
-   WRITE_IMAGE(dest, pos, dst_color);
-}
-
 kernel void thresholdGTLT(INPUT source, OUTPUT dest, float threshLT,
                          float valueLower, float threshGT, float valueHigher)
 {
@@ -91,6 +63,24 @@ kernel void name(INPUT source, OUTPUT dest, float value)\
    DST_TYPE dst = code;\
    WRITE_IMAGE(dest, pos, dst);\
 }
+
+#define THRESHOLD_OP(name, code)\
+kernel void name(INPUT source, OUTPUT dest, float thresh_arg, float value_arg)\
+{\
+   BEGIN\
+   SCALAR thresh = thresh_arg;\
+   SCALAR value = value_arg;\
+   TYPE src = READ_IMAGE(source, pos);\
+   DST_TYPE dst = code;\
+   WRITE_IMAGE(dest, pos, dst);\
+}
+
+
+THRESHOLD_OP(threshold_LT, (src <  thresh ? value : src))
+THRESHOLD_OP(threshold_LQ, (src <= thresh ? value : src))
+THRESHOLD_OP(threshold_EQ, (src == thresh ? value : src))
+THRESHOLD_OP(threshold_GQ, (src >= thresh ? value : src))
+THRESHOLD_OP(threshold_GT, (src >  thresh ? value : src))
 
 
 BINARY_OP(img_thresh_LT, (src1 <  src2 ? src1 : src2))

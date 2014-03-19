@@ -524,19 +524,14 @@ ocipError ocip_API ocipSelectChannel(ocipImage Source, ocipImage Dest, int Chann
 #undef CLASS
 #define CLASS GetList().thresholding
 
-ocipError ocip_API ocipThresholdGT(ocipImage Source, ocipImage Dest, float Thresh, float valueHigher)
-{
-   H( CLASS.ThresholdGT(Img(Source), Img(Dest), Thresh, valueHigher) )
-}
-
-ocipError ocip_API ocipThresholdLT(ocipImage Source, ocipImage Dest, float Thresh, float valueLower)
-{
-   H( CLASS.ThresholdLT(Img(Source), Img(Dest), Thresh, valueLower) )
-}
-
 ocipError ocip_API ocipThresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
    H( CLASS.ThresholdGTLT(Img(Source), Img(Dest), threshLT, valueLower, threshGT, valueHigher) )
+}
+
+ocipError ocip_API ocipThreshold(ocipImage Source, ocipImage Dest, float Thresh, float value, ECompareOperation Op)
+{
+   H( CLASS.Threshold(Img(Source), Img(Dest), Thresh, value, (Thresholding::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipThreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
@@ -544,12 +539,12 @@ ocipError ocip_API ocipThreshold_Img(ocipImage Source1, ocipImage Source2, ocipI
    H( CLASS.Threshold(Img(Source1), Img(Source2), Img(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipCompare_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
+ocipError ocip_API ocipCompare(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
 {
    H( CLASS.Compare(Img(Source1), Img(Source2), Img(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipCompare(ocipImage Source, ocipImage Dest, float Value, ECompareOperation Op)
+ocipError ocip_API ocipCompareC(ocipImage Source, ocipImage Dest, float Value, ECompareOperation Op)
 {
    H( CLASS.Compare(Img(Source), Img(Dest), Value, (Thresholding::ECompareOperation) Op) )
 }
@@ -803,19 +798,15 @@ REDUCE_INDEX_OP( ocipMaxAbsIndx_V,  MaxAbs,  double)
 #undef CLASS
 #define CLASS GetList().thresholdingVector
 
-ocipError ocip_API ocipThresholdGT_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueHigher)
-{
-   H( CLASS.ThresholdGT(Buf(Source), Buf(Dest), Thresh, valueHigher) )
-}
-
-ocipError ocip_API ocipThresholdLT_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float valueLower)
-{
-   H( CLASS.ThresholdLT(Buf(Source), Buf(Dest), Thresh, valueLower) )
-}
 
 ocipError ocip_API ocipThresholdGTLT_V(ocipBuffer Source, ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
    H( CLASS.ThresholdGTLT(Buf(Source), Buf(Dest), threshLT, valueLower, threshGT, valueHigher) )
+}
+
+ocipError ocip_API ocipThreshold_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float value, ECompareOperation Op)
+{
+   H( CLASS.Threshold(Buf(Source), Buf(Dest), Thresh, value, (ThresholdingVector::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipThreshold_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
@@ -823,12 +814,12 @@ ocipError ocip_API ocipThreshold_Img_V(ocipBuffer Source1, ocipBuffer Source2, o
    H( CLASS.Threshold(Buf(Source1), Buf(Source2), Buf(Dest), (ThresholdingVector::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipCompare_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
+ocipError ocip_API ocipCompare_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
 {
    H( CLASS.Compare(Buf(Source1), Buf(Source2), Buf(Dest), (ThresholdingVector::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipCompare_V(ocipBuffer Source, ocipBuffer Dest, float Value, ECompareOperation Op)
+ocipError ocip_API ocipCompareC_V(ocipBuffer Source, ocipBuffer Dest, float Value, ECompareOperation Op)
 {
    H( CLASS.Compare(Buf(Source), Buf(Dest), Value, (ThresholdingVector::ECompareOperation) Op) )
 }

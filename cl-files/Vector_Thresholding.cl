@@ -24,21 +24,6 @@
 
 #include "Vector.h"
 
-kernel void thresholdLT(INPUT_SPACE const TYPE * source, global TYPE * dest, int src_step, int dst_step, int width, float thresh, float valueLower)
-{
-   BEGIN
-   LAST_WORKER(src < thresh ? valueLower : src)
-   PREPARE_VECTOR
-   VECTOR_OP(src < (TYPE)((SCALAR)thresh) ? (DST)((DST_SCALAR)valueLower) : src);
-}
-
-kernel void thresholdGT(INPUT_SPACE const TYPE * source, global TYPE * dest, int src_step, int dst_step, int width, float thresh, float valueHigher)
-{
-   BEGIN
-   LAST_WORKER(src > thresh ? valueHigher : src)
-   PREPARE_VECTOR
-   VECTOR_OP(src > (TYPE)((SCALAR)thresh) ? (DST)((DST_SCALAR)valueHigher) : src);
-}
 
 kernel void thresholdGTLT(INPUT_SPACE const TYPE * source, global TYPE * dest, int src_step, int dst_step, int width, 
                     float threshLT, float valueLower, float threshGT, float valueHigher)
@@ -48,6 +33,25 @@ kernel void thresholdGTLT(INPUT_SPACE const TYPE * source, global TYPE * dest, i
    PREPARE_VECTOR
    VECTOR_OP(src < (TYPE)((SCALAR)threshLT) ? (DST)((DST_SCALAR)valueLower) : (src > (TYPE)((SCALAR)threshGT) ? (DST)((DST_SCALAR)valueHigher) : src));
 }
+
+
+#define THRESHOLD_OP(name, code) \
+kernel void name(INPUT_SPACE const TYPE * source, global DST * dest, int src_step, int dst_step, int width, float thresh_arg, float value_arg)\
+{\
+   BEGIN\
+   INTERNAL_SCALAR value = value_arg;\
+   INTERNAL_SCALAR thresh = thresh_arg;\
+   LAST_WORKER(code)\
+   PREPARE_VECTOR\
+   VECTOR_OP(code);\
+}
+
+THRESHOLD_OP(threshold_LT, (src <  thresh ? value : src))
+THRESHOLD_OP(threshold_LQ, (src <= thresh ? value : src))
+THRESHOLD_OP(threshold_EQ, (src == thresh ? value : src))
+THRESHOLD_OP(threshold_GQ, (src >= thresh ? value : src))
+THRESHOLD_OP(threshold_GT, (src >  thresh ? value : src))
+
 
 BINARY_OP(img_thresh_LT, (src1 <  src2 ? src1 : src2))
 BINARY_OP(img_thresh_LQ, (src1 <= src2 ? src1 : src2))

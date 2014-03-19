@@ -37,15 +37,6 @@ public:
    :  VectorProgram(CL, "Vector_Thresholding.cl")
    { }
 
-   /// D = (S > Thresh ? valueHigher : S)
-   void ThresholdGT(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float valueHigher = 255);
-
-   /// D = (S < Thresh ? valueLower : S)
-   void ThresholdLT(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float valueLower = 0);
-
-   /// D = (S > Thresh ? valueHigher : (S < Thresh ? valueLower : S) )
-   void ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
-
    enum ECompareOperation
    {
       LT,
@@ -54,6 +45,12 @@ public:
       GQ,
       GT,
    };
+
+   /// D = (S Op Thresh ? value : S)
+   void Threshold(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float value = 255, ECompareOperation Op = GT);
+
+   /// D = (S > threshGT ? valueHigher : (S < threshLT ? valueLower : S) )
+   void ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
    /// D = (S1 Op S2 ? S1 : S2)
    void Threshold(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op = GT);

@@ -30,66 +30,32 @@
 #define FLOAT_VALUE 0.5
 
 #define COMPARE_TYPE LT
-#define BENCH_NAME CONCATENATE(Compare, COMPARE_TYPE)
 #include "benchCompareBase.hpp"
 
 #define COMPARE_TYPE LQ
-#define BENCH_NAME CONCATENATE(Compare, COMPARE_TYPE)
 #include "benchCompareBase.hpp"
 
 #define COMPARE_TYPE EQ
-#define BENCH_NAME CONCATENATE(Compare, COMPARE_TYPE)
 #include "benchCompareBase.hpp"
 
 #define COMPARE_TYPE GQ
-#define BENCH_NAME CONCATENATE(Compare, COMPARE_TYPE)
 #include "benchCompareBase.hpp"
 
 #define COMPARE_TYPE GT
-#define BENCH_NAME CONCATENATE(Compare, COMPARE_TYPE)
 #include "benchCompareBase.hpp"
-//
-//
-//#define BENCH_NAME CONCATENATE(Compare, COMPARE_TYPE)
 
-//#define BENCH_NAME CompareLT
-//#include "benchCompareBase.hpp"
-//
-//#define BENCH_NAME CompareLQ
-//#include "benchCompareBase.hpp"
-//
-//#define BENCH_NAME CompareEQ
-//#include "benchCompareBase.hpp"
-//
-//#define BENCH_NAME CompareGQ
-//#include "benchCompareBase.hpp"
-//
-//#define BENCH_NAME CompareGT
-//#include "benchCompareBase.hpp"
-
-//template<typename DataType>
-//class CompareBenchBase : public BenchUnaryBase<DataType, false>
-//{
-//public:
-//   void Create(uint Width, uint Height);
-//};
 
 #define COMPARE_TYPE LT
-#define BENCH_NAME Compare_Img
 #include "benchCompareImgBase.hpp"
 
 #define COMPARE_TYPE LQ
-#define BENCH_NAME Compare_Img
 #include "benchCompareImgBase.hpp"
 
 #define COMPARE_TYPE EQ
-#define BENCH_NAME Compare_Img
 #include "benchCompareImgBase.hpp"
 
 #define COMPARE_TYPE GQ
-#define BENCH_NAME Compare_Img
 #include "benchCompareImgBase.hpp"
 
 #define COMPARE_TYPE GT
-#define BENCH_NAME Compare_Img
 #include "benchCompareImgBase.hpp"
