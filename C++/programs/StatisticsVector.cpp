@@ -190,9 +190,6 @@ double StatisticsVector::MeanSqr(ImageBuffer& Source)
 }
 
 
-#undef SELECT_NAME
-#define SELECT_NAME(name, src_img) #name  // No _flush version for these (yet)
-
 // Reductions that also find the coordinate
 double StatisticsVector::Min(ImageBuffer& Source, int& outX, int& outY)
 {
