@@ -346,12 +346,12 @@ inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative)
    // CL
    if (m_UsesBuffer)
    {
-      ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_ONLY);
+      ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
       ocipSendImageBuffer(m_CLBufferSrc);
    }
    else
    {
-      ocipCreateImage(&m_CLSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_ONLY);
+      ocipCreateImage(&m_CLSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
       ocipSendImage(m_CLSrc);
    }
 

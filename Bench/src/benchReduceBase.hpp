@@ -110,55 +110,76 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
    if (std::is_same<float, DataType>::value)
    {
       // To prevent float values from overflowing, we divide the values to get them smaller
-
-      if (USE_BUFFER)
+      if (this->m_UsesBuffer)
       {
-         // Create temporary image
-         ocipBuffer TempImage = nullptr;
-         ocipCreateImageBuffer(&TempImage, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
-
-         // Divide into temp
-         ocipDivC_V(m_CLBufferSrc, TempImage, 1000000);
-
-         // Copy temp to source image
-         ocipCopy_V(TempImage, m_CLBufferSrc);
-
-         // Read into host
+         ocipDivC_V(m_CLBufferSrc, m_CLBufferSrc, 1000000);
          ocipReadImageBuffer(m_CLBufferSrc);
-
-         ocipReleaseImageBuffer(TempImage);
       }
       else
       {
-         // Create temporary image
-         ocipImage TempImage = nullptr;
-         ocipCreateImage(&TempImage, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
-
-         // Divide into temp
-         ocipDivC(m_CLSrc, TempImage, 1000000);
-
-         // Copy temp to source image
-         ocipCopy(TempImage, m_CLSrc);
-
-         // Read into host
+         ocipDivC(m_CLSrc, m_CLSrc, 1000000);
          ocipReadImage(m_CLSrc);
-
-         ocipReleaseImage(TempImage);
       }
-
-      // Resend the image
-      CUDA_CODE(
-         CUDAPP(Upload<DataType>)((DataType*) m_ImgSrc.Data(), m_ImgSrc.Step,
-            (DataType*) m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width, m_ImgSrc.Height);
-         )
-
-      NPP_CODE(
-         cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
-            m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
-         )
       
    }
+   else if (std::is_same<unsigned char, DataType>::value)
+   {
+      // Remove smallest and biggest values
+      if (this->m_UsesBuffer)
+      {
+         ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 253, 250);
+         ocipReadImageBuffer(m_CLBufferSrc);
+      }
+      else
+      {
+         ocipThresholdGTLT(m_CLSrc, m_CLSrc, 2, 3, 253, 250);
+         ocipReadImage(m_CLSrc);
+      }
 
+      // Place a single high and low pixel at a random location
+      CImage<unsigned char>& Img = static_cast<CImage<unsigned char>&>(m_ImgSrc);
+      Img(std::rand() % Width, std::rand() % Height) = 1;
+      Img(std::rand() % Width, std::rand() % Height) = 254;
+   }
+   if (std::is_same<unsigned short, DataType>::value)
+   {
+      // Remove smallest and biggest values
+      if (this->m_UsesBuffer)
+      {
+         ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 64000, 63200);
+         ocipReadImageBuffer(m_CLBufferSrc);
+      }
+      else
+      {
+         ocipThresholdGTLT(m_CLSrc, m_CLSrc, 2, 3, 64000, 63200);
+         ocipReadImage(m_CLSrc);
+      }
+
+      // Place a single high and low pixel at a random location
+      CImage<unsigned short>& Img = static_cast<CImage<unsigned short>&>(m_ImgSrc);
+      Img(std::rand() % Width, std::rand() % Height) = 1;
+      Img(std::rand() % Width, std::rand() % Height) = 64539;
+   }
+
+   // Resend the image
+   if (this->m_UsesBuffer)
+      ocipSendImageBuffer(m_CLBufferSrc);
+   else
+      ocipSendImage(m_CLSrc);
+
+   CUDA_CODE(
+      CUDAPP(Upload<DataType>)((DataType*) m_ImgSrc.Data(), m_ImgSrc.Step,
+         (DataType*) m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width, m_ImgSrc.Height);
+      )
+
+   NPP_CODE(
+      cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
+         m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
+      )
+
+   CV_CODE(
+      m_CVSrc.upload(toMat(m_ImgSrc));
+      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType, typename DstT>
@@ -183,6 +204,12 @@ void BenchReduceBase<DataType, DstT>::Free()
 template<typename DataType, typename DstT>
 bool BenchReduceBase<DataType, DstT>::CompareCL(BenchReduceBase *)
 {
+   if (m_IndxIPP.X != m_IndxCL.X)
+      return false;
+   
+   if (m_IndxIPP.Y != m_IndxCL.Y)
+      return false;
+
    return Compare(m_DstCL, m_DstIPP);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -190,7 +217,20 @@ template<typename DataType, typename DstT>
 bool BenchReduceBase<DataType, DstT>::CompareNPP(BenchReduceBase *)
 {
    DstT NPP = 0;
-   NPP_CODE(cudaMemcpy(&NPP, m_NPPDst, sizeof(DstT), cudaMemcpyDeviceToHost);)
+   SPoint Index;
+   NPP_CODE(
+      cudaMemcpy(&NPP, m_NPPDst, sizeof(NPP), cudaMemcpyDeviceToHost);
+      cudaMemcpy(&Index, m_IndxNPP, sizeof(Index), cudaMemcpyDeviceToHost);
+      )
+
+   if (m_IndxIPP.X != 0 && m_IndxIPP.X != 0)
+   {
+      if (m_IndxIPP.X != Index.X)
+         return false;
+   
+      if (m_IndxIPP.Y != Index.Y)
+         return false;
+   }
 
    return Compare(NPP, m_DstIPP);
 }
@@ -199,6 +239,12 @@ template<typename DataType, typename DstT>
 bool BenchReduceBase<DataType, DstT>::CompareCV(BenchReduceBase *)
 {
 #ifdef HAS_CV
+   if (m_IndxIPP.X != m_IndxCV.x)
+      return false;
+   
+   if (m_IndxIPP.Y != m_IndxCV.y)
+      return false;
+
    return Compare(m_DstCV[0], m_DstIPP);
 #else
    return false;
