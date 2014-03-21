@@ -22,7 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define USE_BUFFER false // Set to false to use Image mode
+#define USE_BUFFER true // Set to false to use Image mode
 #define HAS_CL_BUFFER
 
 #include "benchBase.hpp"
@@ -113,6 +113,11 @@ void RunBench()
 #endif
    B(MinIndx);
    B(MaxIndx);
+
+   B(Min4C);
+   B(Max4C);
+   B(Sum4C);
+   B(Mean4C);
 
    Bench(ErodeBench);
    Bench(DilateBench);

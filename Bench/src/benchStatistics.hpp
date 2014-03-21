@@ -46,6 +46,12 @@
 #define BENCH_NAME MaxAbs
 #include "benchReduce.hpp"*/
 
+#define BENCH_NAME Min
+#include "benchReduce4C.hpp"
+
+#define BENCH_NAME Max
+#include "benchReduce4C.hpp"
+
 #undef IPP_ADDITIONAL_PARAMS
 #undef CL_ADDITIONAL_PARAMS
 #undef NPP_ADDITIONAL_PARAMS
@@ -95,6 +101,12 @@
 
 /*#define BENCH_NAME MeanSqr
 #include "benchReduce.hpp"*/
+
+#define BENCH_NAME Sum
+#include "benchReduce4C.hpp"
+
+#define BENCH_NAME Mean
+#include "benchReduce4C.hpp"
 
 #undef IPP_REDUCE_HINT
 #undef REDUCE_DST_TYPE

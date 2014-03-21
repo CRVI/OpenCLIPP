@@ -22,56 +22,60 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-template<typename DataType> class CONCATENATE(BENCH_NAME, Bench);
+template<typename DataType> class CONCATENATE(BENCH_NAME, 4CBench);
 
-typedef CONCATENATE(BENCH_NAME, Bench)<unsigned char>    CONCATENATE(BENCH_NAME, BenchU8);
-typedef CONCATENATE(BENCH_NAME, Bench)<unsigned short>   CONCATENATE(BENCH_NAME, BenchU16);
-typedef CONCATENATE(BENCH_NAME, Bench)<float>            CONCATENATE(BENCH_NAME, BenchF32);
+typedef CONCATENATE(BENCH_NAME, 4CBench)<unsigned char>    CONCATENATE(BENCH_NAME, 4CBenchU8);
+typedef CONCATENATE(BENCH_NAME, 4CBench)<unsigned short>   CONCATENATE(BENCH_NAME, 4CBenchU16);
+typedef CONCATENATE(BENCH_NAME, 4CBench)<float>            CONCATENATE(BENCH_NAME, 4CBenchF32);
 
 template<typename DataType>
-class CONCATENATE(BENCH_NAME, Bench) : public BenchReduceBase<DataType, REDUCE_DST_TYPE>
+class CONCATENATE(BENCH_NAME, 4CBench) : public BenchReduceBase<DataType, REDUCE_DST_TYPE>
 {
 public:
    void RunIPP();
    void RunCL();
    void RunNPP();
-   void RunCV();
 
-#ifndef CV_OPERATION
+   void Create(uint Width, uint Height);
+
    bool HasCVTest() const { return false; }
-#endif
 
    float CompareTolerance() const { return REDUCE_CMP_TOLERANCE; }
 };
+template<typename DataType>
+void CONCATENATE(BENCH_NAME, 4CBench)<DataType>::Create(uint Width, uint Height)
+{
+   BenchReduceBase<DataType, REDUCE_DST_TYPE>::Create(Width, Height, 4);
+}
 template<>
-void CONCATENATE(BENCH_NAME, Bench)<unsigned char>::RunIPP()
+void CONCATENATE(BENCH_NAME, 4CBench)<unsigned char>::RunIPP()
 {
    IPP_CODE(
-      CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _8u_C1R)(
-         this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, &this->m_DstIPP[0] IPP_ADDITIONAL_PARAMS);
+      CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _8u_C4R)(
+         this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, this->m_DstIPP IPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CONCATENATE(BENCH_NAME, Bench)<unsigned short>::RunIPP()
+void CONCATENATE(BENCH_NAME, 4CBench)<unsigned short>::RunIPP()
 {
    IPP_CODE(
-      CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _16u_C1R)(
-         (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, &this->m_DstIPP[0] IPP_ADDITIONAL_PARAMS);
+      CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _16u_C4R)(
+         (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, this->m_DstIPP IPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CONCATENATE(BENCH_NAME, Bench)<float>::RunIPP()
+void CONCATENATE(BENCH_NAME, 4CBench)<float>::RunIPP()
 {
    IPP_CODE(
-      CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _32f_C1R)(
-         (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, &this->m_DstIPP[0] IPP_REDUCE_HINT IPP_ADDITIONAL_PARAMS);
+      CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _32f_C4R)(
+         (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, this->m_DstIPP IPP_REDUCE_HINT IPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCL()
+void CONCATENATE(BENCH_NAME, 4CBench)<DataType>::RunCL()
 {
    if (this->m_UsesBuffer)
       CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_Program, this->m_CLBufferSrc, this->m_DstCL CL_ADDITIONAL_PARAMS);
@@ -80,39 +84,30 @@ void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCL()
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CONCATENATE(BENCH_NAME, Bench)<unsigned char>::RunNPP()
+void CONCATENATE(BENCH_NAME, 4CBench)<unsigned char>::RunNPP()
 {
    NPP_CODE(
-      CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _8u_C1R)(
+      CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _8u_C4R)(
          (Npp8u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CONCATENATE(BENCH_NAME, Bench)<unsigned short>::RunNPP()
+void CONCATENATE(BENCH_NAME, 4CBench)<unsigned short>::RunNPP()
 {
    NPP_CODE(
-      CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _16u_C1R)(
+      CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _16u_C4R)(
          (Npp16u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void CONCATENATE(BENCH_NAME, Bench)<float>::RunNPP()
+void CONCATENATE(BENCH_NAME, 4CBench)<float>::RunNPP()
 {
    NPP_CODE(
-      CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _32f_C1R)(
+      CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _32f_C4R)(
          (Npp32f*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCV()
-{
-#ifdef CV_OPERATION
-   CV_CODE(CV_OPERATION(m_CVSrc, m_DstCV);)
-#endif
-}
 
 #undef BENCH_NAME
-#undef CV_OPERATION

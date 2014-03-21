@@ -29,20 +29,18 @@ public:
    BenchReduceBase()
    : IBench1in0out(USE_BUFFER)
    , m_Program(nullptr)
-   , m_DstIPP(0)
-   , m_DstCL(0)
    , m_IndxNPP(nullptr)
    , m_NPPWorkBuffer(nullptr)
    { }
 
-   void Create(uint Width, uint Height);
+   void Create(uint Width, uint Height, int NbChannels = 1);
    void Free();
 
    bool CompareCL(BenchReduceBase * This);
    bool CompareNPP(BenchReduceBase * This);
    bool CompareCV(BenchReduceBase * This);
 
-   bool Compare(double V1, double V2);
+   bool Compare(double * V1, DstT * V2);
 
    virtual float CompareTolerance() const { return SUCCESS_EPSILON; }
 
@@ -52,10 +50,10 @@ protected:
 
    ocipProgram m_Program;
 
-   DstT m_DstIPP;
+   DstT m_DstIPP[4];
    SPoint m_IndxIPP;
 
-   double m_DstCL;
+   double m_DstCL[4];
    SPoint m_IndxCL;
 
    CV_CODE(Scalar m_DstCV;)
@@ -72,9 +70,9 @@ protected:
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType, typename DstT>
-void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
+void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChannels)
 {
-   IBench1in0out::Create<DataType>(Width, Height);
+   IBench1in0out::Create<DataType>(Width, Height, true, NbChannels);
 
    m_IndxCL = m_IndxIPP = SPoint(0, 0);
 
@@ -87,9 +85,9 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
 
    NPP_CODE(
       int BufferSize = 0;
-      nppiMaxGetBufferHostSize_32f_C1R(m_NPPRoi, &BufferSize);
+      nppiMaxGetBufferHostSize_32f_C4R(m_NPPRoi, &BufferSize);
       cudaMalloc((void**) &m_NPPWorkBuffer, BufferSize);
-      cudaMalloc((void**) &m_NPPDst, sizeof(DstT));
+      cudaMalloc((void**) &m_NPPDst, sizeof(DstT) * 4);
       cudaMalloc((void**) &m_IndxNPP, sizeof(m_IndxNPP));
       )
 
@@ -192,12 +190,14 @@ bool BenchReduceBase<DataType, DstT>::CompareCL(BenchReduceBase *)
 template<typename DataType, typename DstT>
 bool BenchReduceBase<DataType, DstT>::CompareNPP(BenchReduceBase *)
 {
-   DstT NPP = 0;
+   DstT NPP[4] = {0};
    SPoint Index;
    NPP_CODE(
-      cudaMemcpy(&NPP, m_NPPDst, sizeof(NPP), cudaMemcpyDeviceToHost);
+      cudaMemcpy(&NPP, m_NPPDst, sizeof(DstT) * 4, cudaMemcpyDeviceToHost);
       cudaMemcpy(&Index, m_IndxNPP, sizeof(Index), cudaMemcpyDeviceToHost);
       )
+
+   double NPPd[4] = {NPP[0], NPP[1], NPP[2], NPP[3]};
 
    if (m_IndxIPP.X != 0 && m_IndxIPP.X != 0)
    {
@@ -208,7 +208,7 @@ bool BenchReduceBase<DataType, DstT>::CompareNPP(BenchReduceBase *)
          return false;
    }
 
-   return Compare(NPP, m_DstIPP);
+   return Compare(NPPd, m_DstIPP);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType, typename DstT>
@@ -221,18 +221,28 @@ bool BenchReduceBase<DataType, DstT>::CompareCV(BenchReduceBase *)
    if (m_IndxIPP.Y != m_IndxCV.y)
       return false;
 
-   return Compare(m_DstCV[0], m_DstIPP);
+   double CV[4] = {m_DstCV[0], 0};
+
+   return Compare(CV, m_DstIPP);
 #else
    return false;
 #endif
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType, typename DstT>
-bool BenchReduceBase<DataType, DstT>::Compare(double V1, double V2)
+bool BenchReduceBase<DataType, DstT>::Compare(double * V1, DstT * V2)
 {
-   double diff = abs(V1 - V2);
-   double diffRatio = diff / abs(V2);
+   uint NbValues = m_ImgSrc.Channels;
 
-   bool value = (V1 == V2) || (diffRatio < CompareTolerance());
-   return value;
+   for (uint i = 0; i < NbValues; i++)
+   {
+      double diff = abs(*V1 - *V2);
+      double diffRatio = diff / abs(*V2);
+
+      bool value = (*V1 == *V2) || (diffRatio < CompareTolerance());
+      if (!value)
+         return false;
+   }
+
+   return true;
 }

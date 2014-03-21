@@ -226,6 +226,7 @@
     <ClInclude Include="src\benchLut.hpp" />
     <ClInclude Include="src\benchMorpho.hpp" />
     <ClInclude Include="src\benchMorphoBase.hpp" />
+    <ClInclude Include="src\benchReduce4C.hpp" />
     <ClInclude Include="src\benchReduceBase.hpp" />
     <ClInclude Include="src\benchReduce.hpp" />
     <ClInclude Include="src\benchResize.hpp" />

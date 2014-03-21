@@ -139,10 +139,13 @@
     <ClInclude Include="src\benchThresholdImgBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\benchFFT.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\benchCompareImgBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\benchFFT.hpp">
+    <ClInclude Include="src\benchReduce4C.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
