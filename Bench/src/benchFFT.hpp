@@ -91,32 +91,12 @@ private:
 
 void FFTForwardBench::Create(uint Width, uint Height)
 {
-   // Source image
-   IBench1in0out::Create<float>(Width, Height);
-
-   // Destination image
+   // Destination image size
    uint DstWidth = Width / 2 + 1;
    uint DstHeight = Height;
 
-   // CPU
-   m_ImgDstIPP.Create<float>(DstWidth, DstHeight, 2);
-
-   // CL
-   m_ImgDstCL.Create<float>(DstWidth, DstHeight, 2);
-
-   // OpenCV OCL
-   m_ImgDstCV.Create<float>(DstWidth, DstHeight, 2);
-
-   if (m_UsesBuffer)
-      ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-   else
-      ocipCreateImage(&m_CLDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-
-   // NPP
-   NPP_CODE(
-      m_ImgDstNPP.Create<float>(DstWidth, DstHeight, 2);
-      m_NPPDst = NPP_Malloc<sizeof(float)>(DstWidth * 2, DstHeight, m_NPPDstStep);
-      )
+   // Create source and destination images
+   IBench1in1out::Create<float, float>(Width, Height, DstWidth, DstHeight, true, 1, 2);
 
 
    // Prepare other resources
@@ -171,73 +151,12 @@ void FFTForwardBench::Free()
 
 void FFTBackwardBench::Create(uint Width, uint Height)
 {
-   // Source image
+   // Source image size
    uint SrcWidth = Width / 2 + 1;
-   m_ImgSrc.Create<float>(SrcWidth, Height, 2);
-   FillRandomImg(m_ImgSrc);
 
+   // Create source and destination images
+   IBench1in1out::Create<float, float>(SrcWidth, Height, Width, Height, true, 2, 1);
 
-   // CL
-   if (m_UsesBuffer)
-   {
-      ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_ONLY);
-      ocipSendImageBuffer(m_CLBufferSrc);
-   }
-   else
-   {
-      ocipCreateImage(&m_CLSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_ONLY);
-      ocipSendImage(m_CLSrc);
-   }
-
-   // IPP
-   IPP_CODE(
-      m_IPPRoi.width = SrcWidth;
-      m_IPPRoi.height = Height;
-      )
-
-   // NPP
-   NPP_CODE(
-      m_NPPSrc = NPP_Malloc<sizeof(float)>(SrcWidth * 2, Height, m_NPPSrcStep);
-      m_NPPRoi.width = SrcWidth;
-      m_NPPRoi.height = Height;
-
-      cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
-         m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
-      )
-
-   // CV
-   CV_CODE(
-      m_CVSrc.create(SrcWidth, Width, GetCVType<float>(2));
-      m_CVSrc.upload(toMat(m_ImgSrc));
-      )
-
-
-   // Destination image
-   uint DstWidth = Width;
-   uint DstHeight = Height;
-
-   // CPU
-   m_ImgDstIPP.Create<float>(DstWidth, DstHeight);
-
-   // CL
-   m_ImgDstCL.Create<float>(DstWidth, DstHeight);
-
-   if (m_UsesBuffer)
-      ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-   else
-      ocipCreateImage(&m_CLDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-
-   // NPP
-   NPP_CODE(
-      m_ImgDstNPP.Create<float>(DstWidth, DstHeight);
-      m_NPPDst = NPP_Malloc<sizeof(float)>(DstWidth , DstHeight, m_NPPDstStep);
-      )
-
-   // OpenCV
-   CV_CODE(
-      m_ImgDstCV.Create<float>(DstWidth, DstHeight);
-      m_CVDst.create(DstHeight, DstWidth, GetCVType<float>(1));
-      )
 
    // Prepare other resources
    ocipPrepareFFT(&m_Program, m_CLBufferDst, m_CLBufferSrc);

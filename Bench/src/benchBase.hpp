@@ -68,7 +68,7 @@ public:
    , m_NPPSrcStep(0)
    { }
 
-   template<typename DataType> void Create(uint Width, uint Height, bool AllowNegative = true);
+   template<typename DataType> void Create(uint Width, uint Height, bool AllowNegative = true, int NbChannels = 1);
    void Free();
    bool CLUsesBuffer() const { return m_UsesBuffer; }
 
@@ -102,7 +102,7 @@ public:
    { }
 
    template<typename SrcType, typename DstType> void Create(
-      uint Width, uint Height, uint DstWidth = 0, uint DstHeight = 0, bool AllowNegative = true);
+      uint Width, uint Height, uint DstWidth = 0, uint DstHeight = 0, bool AllowNegative = true, int NbChannelsSrc = 1, int NbChannelsDst = 1);
 
    void Free();
    template<class T> bool CompareCL(T * This);
@@ -207,22 +207,28 @@ struct SGetBenchDataType
    typedef typename SGetBenchDataTypeImpl<Bench, SHasDataType<Bench>::value>::Type Type;
 };
 
-NPP_CODE(template<int T>
-   void * NPP_Malloc(uint Width, uint Height, int& Step)
+NPP_CODE(
+   template<typename T>
+   void * NPP_Malloc(uint Width, uint Height, int& Step, int NbChannels = 1)
    {
-      return (void *) nppiMalloc_8u_C1(Width, Height, &Step);
-   }
+      size_t element_width = sizeof(T) * NbChannels;
 
-   template<>
-   void * NPP_Malloc<2>(uint Width, uint Height, int& Step)
-   {
-      return (void *) nppiMalloc_16u_C1(Width, Height, &Step);
-   }
+      switch (element_width)
+      {
+      case 1:
+         return (void *) nppiMalloc_8u_C1(Width, Height, &Step);
+      case 2:
+         return (void *) nppiMalloc_16u_C1(Width, Height, &Step);
+      case 4:
+         return (void *) nppiMalloc_32s_C1(Width, Height, &Step);
+      case 8:
+         return (void *) nppiMalloc_16s_C4(Width, Height, &Step);
+      case 16:
+         return (void *) nppiMalloc_32s_C4(Width, Height, &Step);
+      default:
+         return nullptr;
+      }
 
-   template<>
-   void * NPP_Malloc<4>(uint Width, uint Height, int& Step)
-   {
-      return (void *) nppiMalloc_32s_C1(Width, Height, &Step);
    }
    )
 
@@ -303,10 +309,10 @@ CV_CODE(
    )
 
 template<typename DataType> 
-inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative)
+inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative, int NbChannels)
 {
    // Source image
-   m_ImgSrc.Create<DataType>(Width, Height);
+   m_ImgSrc.Create<DataType>(Width, Height, NbChannels);
    FillRandomImg(m_ImgSrc);
 
    if (!AllowNegative)
@@ -339,7 +345,7 @@ inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative)
 
    // NPP
    NPP_CODE(
-      m_NPPSrc = NPP_Malloc<sizeof(DataType)>(Width, Height, m_NPPSrcStep);
+      m_NPPSrc = NPP_Malloc<DataType>(Width, Height, m_NPPSrcStep, NbChannels);
       m_NPPRoi.width = Width;
       m_NPPRoi.height = Height;
 
@@ -349,7 +355,7 @@ inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative)
 
    // OpenCV
    CV_CODE(
-      m_CVSrc.create(Height, Width, GetCVType<DataType>(1));
+      m_CVSrc.create(Height, Width, GetCVType<DataType>(NbChannels));
       m_CVSrc.upload(toMat(m_ImgSrc));
       )
 }
@@ -365,9 +371,9 @@ inline void IBench1in0out::Free()
 }
 
 template<typename SrcType, typename DstType>
-inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint DstHeight, bool AllowNegative)
+inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint DstHeight, bool AllowNegative, int NbChannelsSrc, int NbChannelsDst)
 {
-   IBench1in0out::Create<SrcType>(Width, Height, AllowNegative);
+   IBench1in0out::Create<SrcType>(Width, Height, AllowNegative, NbChannelsSrc);
 
    if (DstWidth == 0)
       DstWidth = Width;
@@ -376,10 +382,10 @@ inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint D
       DstHeight = Height;
 
    // CPU
-   m_ImgDstIPP.Create<DstType>(DstWidth, DstHeight);
+   m_ImgDstIPP.Create<DstType>(DstWidth, DstHeight, NbChannelsDst);
 
    // CL
-   m_ImgDstCL.Create<DstType>(DstWidth, DstHeight);
+   m_ImgDstCL.Create<DstType>(DstWidth, DstHeight, NbChannelsDst);
 
    if (m_UsesBuffer)
       ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
@@ -388,14 +394,14 @@ inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint D
 
    // NPP
    NPP_CODE(
-      m_ImgDstNPP.Create<DstType>(DstWidth, DstHeight);
-      m_NPPDst = NPP_Malloc<sizeof(DstType)>(DstWidth, DstHeight, m_NPPDstStep);
+      m_ImgDstNPP.Create<DstType>(DstWidth, DstHeight, NbChannelsDst);
+      m_NPPDst = NPP_Malloc<DstType>(DstWidth, DstHeight, m_NPPDstStep, NbChannelsDst);
       )
 
    // OpenCV
    CV_CODE(
-      m_ImgDstCV.Create<DstType>(DstWidth, DstHeight);
-      m_CVDst.create(DstHeight, DstWidth, GetCVType<DstType>(1));
+      m_ImgDstCV.Create<DstType>(DstWidth, DstHeight, NbChannelsDst);
+      m_CVDst.create(DstHeight, DstWidth, GetCVType<DstType>(NbChannelsDst));
       )
 }
 
@@ -434,7 +440,7 @@ inline void IBench2in1out::Create(uint Width, uint Height)
 
    // NPP
    NPP_CODE(
-      m_NPPSrcB = NPP_Malloc<sizeof(SrcType)>(Width, Height, m_NPPSrcBStep);
+      m_NPPSrcB = NPP_Malloc<SrcType>(Width, Height, m_NPPSrcBStep);
       cudaMemcpy2D(m_NPPSrcB, m_NPPSrcBStep, m_ImgSrcB.Data(), m_ImgSrcB.Step,
          m_ImgSrcB.BytesWidth(), Height, cudaMemcpyHostToDevice);
       )

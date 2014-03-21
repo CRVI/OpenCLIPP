@@ -67,8 +67,8 @@ void TransferBench::Create(uint Width, uint Height)
 
    // NPP
    NPP_CODE(
-      m_NPPSrc = (unsigned char*) NPP_Malloc<1>(Width, Height, m_NPPSrcStep);
-      m_NPPDst = (unsigned char*) NPP_Malloc<1>(Width, Height, m_NPPDstStep);
+      m_NPPSrc = (unsigned char*) NPP_Malloc<unsigned char>(Width, Height, m_NPPSrcStep);
+      m_NPPDst = (unsigned char*) NPP_Malloc<unsigned char>(Width, Height, m_NPPDstStep);
       )
 
    // CL

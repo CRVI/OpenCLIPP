@@ -87,7 +87,7 @@ inline void MorphoBenchBase::Create(uint Width, uint Height)
       ocipCreateImage(&m_CLTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
 
    // NPP
-   NPP_CODE(m_NPPTmp = (Npp8u*) NPP_Malloc<1>(Width, Height, m_NPPTmpStep);)
+   NPP_CODE(m_NPPTmp = (Npp8u*) NPP_Malloc<unsigned char>(Width, Height, m_NPPTmpStep);)
 }
 
 inline void MorphoBenchBase::Free()

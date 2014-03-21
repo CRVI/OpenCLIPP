@@ -165,8 +165,8 @@ public:
 
       // NPP
       NPP_CODE(
-         m_NPPTmpV = NPP_Malloc<sizeof(DataType)>(Width, Height, m_NPPTmpVStep);
-         m_NPPTmpH = NPP_Malloc<sizeof(DataType)>(Width, Height, m_NPPTmpHStep);
+         m_NPPTmpV = NPP_Malloc<DataType>(Width, Height, m_NPPTmpVStep);
+         m_NPPTmpH = NPP_Malloc<DataType>(Width, Height, m_NPPTmpHStep);
          )
    }
 

@@ -296,6 +296,8 @@ SSize GetBiggestImage()
          Biggest.Height = BENCH_HEIGHT[i];
    }
 
+   Biggest.Width *= 4;  // We can have as much as 4 channels
+
    return Biggest;
 }
 //-------------------------------------------------------------------------------------------------
