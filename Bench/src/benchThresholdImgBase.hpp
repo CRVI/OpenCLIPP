@@ -39,7 +39,6 @@ public:
 
    bool HasNPPTest()  const { return false; }
    bool HasCVTest()   const { return false; }
-   bool HasCUDATest() const { return false; }
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -32,12 +32,10 @@ public:
    void Create(uint Width, uint Height);
    void Free();
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunCV();
    void RunNPP();
 
-   bool CompareCUDA(IntegralBench * This);
    bool CompareCL(IntegralBench * This);
 
    float CompareTolerance() const
@@ -62,42 +60,11 @@ void IntegralBench::Create(uint Width, uint Height)
    ocipCreateImage(&m_CLDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
 
    ocipPrepareIntegral(&m_Program, m_CLSrc);
-
-   CUDA_CODE(
-      CUDAPP(Scan_Init)(Width, Height, SCAN_AXIS_BOTH);
-
-      // Re-allocate with proper size and type for CUDA - requires float for Src and same size images
-      CUDAPP(Free)(m_CUDASrc);
-      CUDAPP(Free)(m_CUDADst);
-
-      // This CUDA library requires a float input image for integral scan
-      CSimpleImage FloatImage;
-      FloatImage.Create<float>(Width, Height);
-
-      // Use OpenCLIPP to convert to a float image
-      ocipImage CLFloatImage = nullptr;
-      ocipCreateImage(&CLFloatImage, FloatImage.ToSImage(), FloatImage.Data(), CL_MEM_READ_WRITE);
-
-      ocipConvert(m_CLSrc, CLFloatImage);
-
-      ocipReadImage(CLFloatImage);
-      ocipReleaseImage(CLFloatImage);
-
-      // Send to CUDA device memory
-      CUDAPP(Malloc<float>)((float*&) m_CUDASrc, m_CUDASrcStep, Width, Height);
-      CUDAPP(Upload<float>)((float*) FloatImage.Data(), FloatImage.Step,
-         (float*) m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width, m_ImgSrc.Height);
-
-      // Allocate Dst with same size as input
-      CUDAPP(Malloc<float>)((float*&) m_CUDADst, m_CUDADstStep, Width, Height);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void IntegralBench::Free()
 {
    IBench1in1out::Free();
-
-   CUDA_CODE(CUDAPP(Scan_Shutdown)();)
 
    ocipReleaseProgram(m_Program);
 }
@@ -120,30 +87,6 @@ void IntegralBench::RunCV()
 void IntegralBench::RunNPP()
 {
    NPP_CODE(nppiIntegral_8u32f_C1R((Npp8u*) m_NPPSrc, m_NPPSrcStep, (Npp32f*) m_NPPDst, m_NPPDstStep, m_NPPRoi, 0);)
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-void IntegralBench::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(Scan_32f_C1)((float *) m_CUDASrc, m_CUDASrcStep, (float *) m_CUDADst, m_CUDADstStep,
-         m_ImgSrc.Width, m_ImgSrc.Height, CUDA_OP_ADD, SCAN_AXIS_BOTH);
-      )
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-bool IntegralBench::CompareCUDA(IntegralBench * This)
-{
-   //Download the CUDA buffer into an host equivalent
-   CSimpleImage CUDADst(m_ImgDstCL.ToSImage());
-
-   CUDA_CODE(
-      CUDAPP(Download)((float*) m_CUDADst, m_CUDADstStep, (float*) CUDADst.Data(), CUDADst.Step, 
-         CUDADst.Width, CUDADst.Height);
-      )
-
-   // CUDA version is missing the bottom and right lines
-   CImageROI ROI(m_ImgDstIPP, 0, 0, m_ImgDstCL.Width - 1, m_ImgDstCL.Height - 1);
-
-   return CompareImages(CUDADst, ROI, m_ImgSrc, *This);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 bool IntegralBench::CompareCL(IntegralBench * This)

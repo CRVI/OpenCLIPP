@@ -39,7 +39,6 @@ public:
 
    void Create(uint Width, uint Height);
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
 
@@ -59,15 +58,6 @@ template<typename SrcType, typename DstType>
 void ScaleBench<SrcType, DstType>::RunCL()
 {
    ocipScale(m_CLSrc, m_CLDst);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename SrcType, typename DstType>
-void ScaleBench<SrcType, DstType>::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(Scale<__ID(SrcType, DstType)>)
-         ((SrcType*) m_CUDASrc, m_CUDASrcStep, (DstType*) m_CUDADst, m_CUDADstStep, m_ImgSrc.Width, m_ImgSrc.Height);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

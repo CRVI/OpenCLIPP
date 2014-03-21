@@ -32,7 +32,6 @@ public:
    , m_DstIPP(0)
    , m_DstCL(0)
    , m_IndxNPP(nullptr)
-   , m_CUDAWorkBuffer(nullptr)
    , m_NPPWorkBuffer(nullptr)
    { }
 
@@ -41,14 +40,11 @@ public:
 
    bool CompareCL(BenchReduceBase * This);
    bool CompareNPP(BenchReduceBase * This);
-   bool CompareCUDA(BenchReduceBase * This);
    bool CompareCV(BenchReduceBase * This);
 
    bool Compare(double V1, double V2);
 
    virtual float CompareTolerance() const { return SUCCESS_EPSILON; }
-
-   DataType* Src() { return (DataType*) m_CUDASrc; }
 
    typedef DataType dataType;
 
@@ -70,10 +66,7 @@ protected:
    DstT * m_NPPDst;
    SPoint * m_IndxNPP;
 
-   unsigned char* m_CUDAWorkBuffer;
    unsigned char* m_NPPWorkBuffer;
-
-   CUDA_CODE(CUDAPP(PageLockedArray) m_CUDADst;)
 
    friend class IBench1in0out;
 };
@@ -91,13 +84,6 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
       ocipPrepareImageBufferStatistics(&m_Program, m_CLBufferSrc);
    else
       ocipPrepareStatistics(&m_Program, m_CLSrc);
-
-   CUDA_CODE(
-      uint uBufferSize = 0;
-      CUDAPP(MaxGetBufferSize<DataType>)(Width, Height, uBufferSize);
-      CUDAPP(Malloc<DataType>)((DataType*&)m_CUDAWorkBuffer, uBufferSize);
-      m_CUDADst.Create(sizeof(int));
-      )
 
    NPP_CODE(
       int BufferSize = 0;
@@ -167,11 +153,6 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height)
    else
       ocipSendImage(m_CLSrc);
 
-   CUDA_CODE(
-      CUDAPP(Upload<DataType>)((DataType*) m_ImgSrc.Data(), m_ImgSrc.Step,
-         (DataType*) m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width, m_ImgSrc.Height);
-      )
-
    NPP_CODE(
       cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
          m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
@@ -188,11 +169,6 @@ void BenchReduceBase<DataType, DstT>::Free()
    IBench1in0out::Free();
 
    ocipReleaseProgram(m_Program);
-
-   CUDA_CODE(
-      m_CUDADst.Free();
-      CUDAPP(Free)(m_CUDAWorkBuffer);
-      )
 
    NPP_CODE(
       cudaFree(m_NPPWorkBuffer);
@@ -249,20 +225,6 @@ bool BenchReduceBase<DataType, DstT>::CompareCV(BenchReduceBase *)
 #else
    return false;
 #endif
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType, typename DstT>
-bool BenchReduceBase<DataType, DstT>::CompareCUDA(BenchReduceBase *)
-{
-   float DstCUDA = 0;
-
-   CUDA_CODE(
-      m_CUDADst.Download();
-      DstT* h_pDst = reinterpret_cast<DstT*>(m_CUDADst.HostRef());
-      DstCUDA = static_cast<float>(*h_pDst);
-      )
-
-   return Compare(DstCUDA, m_DstIPP);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType, typename DstT>

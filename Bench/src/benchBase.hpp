@@ -48,15 +48,7 @@ public:
    template<class T> bool CompareCV(T * This) { return false; }
 };
 
-class ICUDABench
-{
-public:
-   bool HasCUDATest() const { return true; }
-   void RunCUDA() { }
-   template<class T> bool CompareCUDA(T * This) { return false; }
-};
-
-class IBench : public ICLBench, public INPPBench, public ICUDABench, public ICVBench
+class IBench : public ICLBench, public INPPBench, public ICVBench
 {
 public:
    SSize CompareSize() const { return SSize(1, 1); }
@@ -72,8 +64,6 @@ public:
    : m_UsesBuffer(CLUsesBuffer)
    , m_CLSrc(nullptr)
    , m_CLBufferSrc(nullptr)
-   , m_CUDASrc(nullptr)
-   , m_CUDASrcStep(0)
    , m_NPPSrc(nullptr)
    , m_NPPSrcStep(0)
    { }
@@ -91,9 +81,6 @@ protected:
    ocipImage m_CLSrc;
    ocipBuffer m_CLBufferSrc;
 
-   void* m_CUDASrc;
-   uint  m_CUDASrcStep;
-
    void * m_NPPSrc;
    int m_NPPSrcStep;
    NPP_CODE(NppiSize m_NPPRoi;)
@@ -110,8 +97,6 @@ public:
    : IBench1in0out(CLUsesBuffer)
    , m_CLDst(nullptr)
    , m_CLBufferDst(nullptr)
-   , m_CUDADst(nullptr)
-   , m_CUDADstStep(0)
    , m_NPPDst(nullptr)
    , m_NPPDstStep(0)
    { }
@@ -123,7 +108,6 @@ public:
    template<class T> bool CompareCL(T * This);
    template<class T> bool CompareNPP(T * This);
    template<class T> bool CompareCV(T * This);
-   template<class T> bool CompareCUDA(T * This);
 
 protected:
    CSimpleImage m_ImgDstIPP;
@@ -133,9 +117,6 @@ protected:
 
    ocipImage m_CLDst;
    ocipBuffer m_CLBufferDst;
-
-   void* m_CUDADst;
-   uint  m_CUDADstStep;
 
    void * m_NPPDst;
    int m_NPPDstStep;
@@ -150,8 +131,6 @@ public:
    : IBench1in1out(CLUsesBuffer)
    , m_CLSrcB(nullptr)
    , m_CLBufferSrcB(nullptr)
-   , m_CUDASrcB(nullptr)
-   , m_CUDASrcBStep(0)
    , m_NPPSrcB(nullptr)
    , m_NPPSrcBStep(0)
    { }
@@ -164,9 +143,6 @@ protected:
 
    ocipImage m_CLSrcB;
    ocipBuffer m_CLBufferSrcB;
-
-   void* m_CUDASrcB;
-   uint  m_CUDASrcBStep;
 
    void * m_NPPSrcB;
    int m_NPPSrcBStep;
@@ -376,20 +352,11 @@ inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative)
       m_CVSrc.create(Height, Width, GetCVType<DataType>(1));
       m_CVSrc.upload(toMat(m_ImgSrc));
       )
-
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc<DataType>)((DataType*&) m_CUDASrc, m_CUDASrcStep, Width, Height);
-      CUDAPP(Upload<DataType>)((DataType*) m_ImgSrc.Data(), m_ImgSrc.Step,
-         (DataType*) m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width, m_ImgSrc.Height);
-      )
 }
 
 inline void IBench1in0out::Free()
 {
    NPP_CODE(nppiFree(m_NPPSrc);)
-
-   CUDA_CODE(CUDAPP(Free)(m_CUDASrc);)
 
    ocipReleaseImageBuffer(m_CLBufferSrc);
    ocipReleaseImage(m_CLSrc);
@@ -430,11 +397,6 @@ inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint D
       m_ImgDstCV.Create<DstType>(DstWidth, DstHeight);
       m_CVDst.create(DstHeight, DstWidth, GetCVType<DstType>(1));
       )
-
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc<DstType>)((DstType*&) m_CUDADst, m_CUDADstStep, DstWidth, DstHeight);
-      )
 }
 
 inline void IBench1in1out::Free()
@@ -442,8 +404,6 @@ inline void IBench1in1out::Free()
    IBench1in0out::Free();
 
    NPP_CODE(nppiFree(m_NPPDst);)
-
-   CUDA_CODE(CUDAPP(Free)(m_CUDADst);)
 
    ocipReleaseImageBuffer(m_CLBufferDst);
    ocipReleaseImage(m_CLDst);
@@ -484,13 +444,6 @@ inline void IBench2in1out::Create(uint Width, uint Height)
       m_CVSrcB.create(Height, Width, GetCVType<SrcType>(1));
       m_CVSrcB.upload(toMat(m_ImgSrcB));
       )
-
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc<SrcType>)((SrcType*&) m_CUDASrcB, m_CUDASrcBStep, Width, Height);
-      CUDAPP(Upload<SrcType>)((SrcType*) m_ImgSrcB.Data(), m_ImgSrcB.Step,
-         (SrcType*) m_CUDASrcB, m_CUDASrcBStep, Width, Height);
-      )
 }
 
 inline void IBench2in1out::Free()
@@ -498,8 +451,6 @@ inline void IBench2in1out::Free()
    IBench1in1out::Free();
 
    NPP_CODE(nppiFree(m_NPPSrcB);)
-
-   CUDA_CODE(CUDAPP(Free)(m_CUDASrcB);)
 
    ocipReleaseImageBuffer(m_CLBufferSrcB);
    ocipReleaseImage(m_CLSrcB);
@@ -537,20 +488,4 @@ inline bool IBench1in1out::CompareCV(T * This)
    )
 
    return CompareImages(m_ImgDstCV, m_ImgDstIPP, m_ImgSrc, *This);
-}
-
-template<class T>
-inline bool IBench1in1out::CompareCUDA(T * This)
-{
-   //Download the CUDA buffer into an host equivalent
-   CSimpleImage CUDADst(m_ImgDstIPP.ToSImage());
-
-   typedef typename SGetBenchDataType<T>::Type Type;
-
-   CUDA_CODE(
-      CUDAPP(Download)((Type*) m_CUDADst, m_CUDADstStep, (Type*) CUDADst.Data(), CUDADst.Step, 
-         CUDADst.Width, CUDADst.Height);
-   )
-
-   return CompareImages(CUDADst, m_ImgDstIPP, m_ImgSrc, *This);
 }

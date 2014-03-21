@@ -31,7 +31,6 @@ public:
    { }
 
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunCV();
 
@@ -63,16 +62,6 @@ void Median3x3Bench::RunCL()
       ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 3);
    else
       ocipMedian(m_CLSrc, m_CLDst, 3);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-void Median3x3Bench::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(FilterMedian_3x3)(
-         (unsigned char*) m_CUDASrc, m_CUDASrcStep,
-         (unsigned char*) m_CUDADst, m_CUDADstStep,
-         m_ImgSrc.Width, m_ImgSrc.Height);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median3x3Bench::RunCV()

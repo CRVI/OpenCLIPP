@@ -58,13 +58,6 @@
 #define IPP_CODE(code)
 #endif   // HAS_IPP
 
-#ifdef HAS_CUDA
-#include "custom_cuda.h"
-#else
-#define CUDA_AVAILABLE false
-#define CUDA_CODE(code)
-#endif   // HAS_CUDA
-
 #ifdef HAS_CV
 #include <opencv2/opencv.hpp>
 #include <opencv2/ocl/ocl.hpp>

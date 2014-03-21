@@ -45,8 +45,6 @@ public:
    void RunCL();
    void RunCV();
 
-   bool HasCUDATest() const { return false; }
-
    float CompareTolerance() const { return 0.005f; }
 
 private:
@@ -76,8 +74,6 @@ public:
    void RunNPP();
    void RunCL();
    void RunCV();
-
-   bool HasCUDATest() const { return false; }
 
    float CompareTolerance() const { return 0.005f; }
 
@@ -120,11 +116,6 @@ void FFTForwardBench::Create(uint Width, uint Height)
    NPP_CODE(
       m_ImgDstNPP.Create<float>(DstWidth, DstHeight, 2);
       m_NPPDst = NPP_Malloc<sizeof(float)>(DstWidth * 2, DstHeight, m_NPPDstStep);
-      )
-
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc<float>)((float*&) m_CUDADst, m_CUDADstStep, DstWidth, DstHeight);
       )
 
 
@@ -214,13 +205,6 @@ void FFTBackwardBench::Create(uint Width, uint Height)
          m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
       )
 
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc<float>)((float*&) m_CUDASrc, m_CUDASrcStep, SrcWidth * 2, Height);
-      CUDAPP(Upload<float>)((float*) m_ImgSrc.Data(), m_ImgSrc.Step,
-         (float*) m_CUDASrc, m_CUDASrcStep, m_ImgSrc.Width * 2, m_ImgSrc.Height);
-      )
-
    // CV
    CV_CODE(
       m_CVSrc.create(SrcWidth, Width, GetCVType<float>(2));
@@ -247,11 +231,6 @@ void FFTBackwardBench::Create(uint Width, uint Height)
    NPP_CODE(
       m_ImgDstNPP.Create<float>(DstWidth, DstHeight);
       m_NPPDst = NPP_Malloc<sizeof(float)>(DstWidth , DstHeight, m_NPPDstStep);
-      )
-
-   // CUDA
-   CUDA_CODE(
-      CUDAPP(Malloc<float>)((float*&) m_CUDADst, m_CUDADstStep, DstWidth, DstHeight);
       )
 
    // OpenCV

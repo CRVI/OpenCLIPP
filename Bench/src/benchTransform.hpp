@@ -30,7 +30,6 @@
 #define HAS_FLOAT
 #define CONSTANT_MIDDLE
 #define CONSTANT_LAST
-#define NO_CUSTOM_CUDA
 
 #define BENCH_NAME MirrorX
 #define IPP_NAME Mirror
@@ -55,8 +54,6 @@
 #define NPP_PARAM_LAST , NPP_BOTH_AXIS
 #define CV_PARAM_LAST , -1
 #include "benchUnary.hpp"
-
-#undef NO_CUSTOM_CUDA
 
 #define BENCH_NAME Transpose
 #define CV_NAME transpose

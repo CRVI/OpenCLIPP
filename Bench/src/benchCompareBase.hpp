@@ -41,7 +41,6 @@ public:
 
    bool HasNPPTest() const { return false; }
    bool HasCVTest() const { return false; }
-   bool HasCUDATest() const { return false; }
 
    void Create(uint Width, uint Height);
 };

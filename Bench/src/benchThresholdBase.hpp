@@ -39,7 +39,6 @@ public:
    void RunCL();
 
    bool HasCVTest()   const { return false; }
-   bool HasCUDATest() const { return false; }
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------

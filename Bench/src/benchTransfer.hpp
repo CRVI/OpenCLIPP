@@ -41,7 +41,6 @@ public:
    void RunNPP();
    void RunCL();
 
-   bool HasCUDATest() { return false; }
    bool HasCVTest() { return false; }
 
    bool CompareNPP(TransferBench*) { return true; }

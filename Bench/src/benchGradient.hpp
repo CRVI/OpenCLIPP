@@ -26,7 +26,6 @@ class GradientBench : public MorphoBenchBase
 {
 public:
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
    void RunCV();
@@ -50,24 +49,6 @@ void GradientBench::RunCL()
       ocipGradient_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 3);
    else
       ocipGradient(m_CLSrc, m_CLDst, m_CLTmp, 3);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-void GradientBench::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(Gradient_8u_C1)((unsigned char*) m_CUDASrc,
-         m_CUDASrcStep,
-         (unsigned char*) m_CUDATmp,
-         m_CUDATmpStep,
-         (unsigned char*) m_CUDADst,
-         m_CUDADstStep,
-         m_ImgSrc.Width,
-         m_ImgSrc.Height,
-         m_MaskSize.Width,
-         m_MaskSize.Height,
-         m_MaskAnchor.X,
-         m_MaskAnchor.Y);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void GradientBench::RunNPP()

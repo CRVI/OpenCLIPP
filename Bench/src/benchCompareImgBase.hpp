@@ -40,7 +40,6 @@ public:
    void RunNPP();
 
    bool HasCVTest()   const { return false; }
-   bool HasCUDATest() const { return false; }
 
    void Create(uint Width, uint Height);
 };

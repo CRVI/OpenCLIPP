@@ -31,8 +31,6 @@ class MorphoBenchBase : public IBench1in1out
 public:
    MorphoBenchBase()
    : IBench1in1out(MORPHO_USES_BUFFER)
-   , m_CUDATmp(nullptr)
-   , m_CUDATmpStep(0)
    , m_NPPTmp(nullptr)
    , m_NPPTmpStep(0)
    , m_MaskSize(3, 3)
@@ -53,9 +51,6 @@ protected:
 
    ocipImage m_CLTmp;
    ocipBuffer m_CLBufferTmp;
-
-   unsigned char* m_CUDATmp;
-   uint m_CUDATmpStep;
 
    unsigned char * m_NPPTmp;
    int m_NPPTmpStep;
@@ -85,9 +80,6 @@ inline void MorphoBenchBase::Create(uint Width, uint Height)
       m_ROI2.height = m_IPPRoi.height - 4;
       )
 
-   // CUDA
-   CUDA_CODE(CUDAPP(Malloc_8u_C1)(m_CUDATmp, m_CUDATmpStep, Width, Height);)
-
    // CL
    if (m_UsesBuffer)
       ocipCreateImageBuffer(&m_CLBufferTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
@@ -101,8 +93,6 @@ inline void MorphoBenchBase::Create(uint Width, uint Height)
 inline void MorphoBenchBase::Free()
 {
    IBench1in1out::Free();
-
-   CUDA_CODE(CUDAPP(Free)(m_CUDATmp);)
 
    NPP_CODE(nppiFree(m_NPPTmp);)
 }

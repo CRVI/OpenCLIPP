@@ -26,7 +26,6 @@ class CONCATENATE(BENCH_NAME, Bench) : public MorphoBenchBase
 {
 public:
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
    void RunCV();
@@ -46,24 +45,6 @@ void CONCATENATE(BENCH_NAME, Bench)::RunCL()
       CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufferDst, 3);
    else
       CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLDst, 3);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-void CONCATENATE(BENCH_NAME, Bench)::RunCUDA()
-{
-   /*CUDA_CODE(
-      CUDAPP(Tophat_8u_C1)((unsigned char*) m_CUDASrc,
-         m_CUDASrcStep,
-         (unsigned char*) m_CUDATmp,
-         m_CUDATmpStep,
-         (unsigned char*) m_CUDADst,
-         m_CUDADstStep,
-         m_ImgSrc.Width,
-         m_ImgSrc.Height,
-         m_MaskSize.Width,
-         m_MaskSize.Height,
-         m_MaskAnchor.X,
-         m_MaskAnchor.Y);
-      )*/
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void CONCATENATE(BENCH_NAME, Bench)::RunNPP()

@@ -37,7 +37,6 @@
 //#define HAS_IPP   // Intel IPP library
 //#define HAS_NPP   // nVidia NPP library
 //#define HAS_CV    // OpenCV OCL library
-//#define HAS_CUDA  // Custom CUDA implementation
 
 #if defined(FULL_TESTS) && !defined(HAS_IPP)
 #error Need IPP to do the full tests - IPP is used as reference
@@ -105,7 +104,6 @@ struct Libraries
       CL,
       NPP,
       CV,
-      CUDA,
       NbLibs,
    };
 
@@ -126,8 +124,6 @@ struct Libraries
          return "NPP";
       case CV:
          return "CV";
-      case CUDA:
-         return "CUDA";
       default:
          return "";
       }
@@ -144,7 +140,6 @@ void runbench(const char* szBenchname, BenchableType& cBenchable)
    Libs[Libraries::CL].Available = true && cBenchable.HasCLTest();
    Libs[Libraries::NPP].Available = NPP_AVAILABLE && cBenchable.HasNPPTest();
    Libs[Libraries::IPP].Available = IPP_AVAILABLE;
-   Libs[Libraries::CUDA].Available = CUDA_AVAILABLE && cBenchable.HasCUDATest();
    Libs[Libraries::CV].Available = CV_AVAILABLE && cBenchable.HasCVTest();
 
    for (int i = 0; i < Libraries::NbLibs; i++)
@@ -261,31 +256,6 @@ void runbench(const char* szBenchname, BenchableType& cBenchable)
          Check(Success, "CV", Result);
 
          Libs[Libraries::CV].Success = Success;
-      }
-
-      if (Libs[Libraries::CUDA].Available)
-      {
-         //Warm the cache
-         cBenchable.RunCUDA();
-
-         CUDA_CODE(CUDA_WAIT)
-
-         //Run a few times to bench
-         Timer.Start();
-         for(uint j = 0; j < BENCH_ITERATIONS; j++)
-         {
-            cBenchable.RunCUDA();
-         }
-
-         CUDA_CODE(CUDA_WAIT)
-
-         Libs[Libraries::CUDA].Time = Timer.Readms() / BENCH_ITERATIONS;
-
-         bool Success = cBenchable.CompareCUDA(&cBenchable);
-
-         Check(Success, "CUDA", Result);
-
-         Libs[Libraries::CUDA].Success = Success;
       }
 
 #ifdef FULL_TESTS

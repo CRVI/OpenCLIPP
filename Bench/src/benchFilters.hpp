@@ -168,12 +168,6 @@ public:
          m_NPPTmpV = NPP_Malloc<sizeof(DataType)>(Width, Height, m_NPPTmpVStep);
          m_NPPTmpH = NPP_Malloc<sizeof(DataType)>(Width, Height, m_NPPTmpHStep);
          )
-
-      // CUDA
-      /*CUDA_CODE(
-         CUDAPP(Malloc<DataType>)((DataType*&) m_CUDATmpV, m_CUDATmpVStep, Width, Height);
-         CUDAPP(Malloc<DataType>)((DataType*&) m_CUDATmpH, m_CUDATmpHStep, Width, Height);
-         )*/
    }
 
    void Free()
@@ -182,8 +176,6 @@ public:
 
       NPP_CODE(nppiFree(m_NPPTmpV);)
       NPP_CODE(nppiFree(m_NPPTmpH);)
-
-      //CUDA_CODE(CUDAPP(Free)(m_CUDASrc);)
    }
 
 protected:

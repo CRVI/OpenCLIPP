@@ -35,7 +35,6 @@ class CLASS_NAME : public BenchBinaryBase<DataType, USE_BUFFER>
 {
 public:
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
    void RunCV();
@@ -73,16 +72,6 @@ void CLASS_NAME<DataType>::RunCL()
       CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrcB, this->m_CLBufferSrc, this->m_CLBufferDst);
    else
       CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrcB, this->m_CLSrc, this->m_CLDst);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CLASS_NAME<DataType>::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(BENCH_NAME)<DataType>
-         ((DataType*) this->m_CUDASrcB, this->m_CUDASrcBStep, (DataType*) this->m_CUDASrc, this->m_CUDASrcStep,
-            (DataType*) this->m_CUDADst, this->m_CUDADstStep, this->m_ImgSrc.Width, this->m_ImgSrc.Height);
-   )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

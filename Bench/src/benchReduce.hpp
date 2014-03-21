@@ -33,7 +33,6 @@ class CONCATENATE(BENCH_NAME, Bench) : public BenchReduceBase<DataType, REDUCE_D
 {
 public:
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
    void RunCV();
@@ -79,36 +78,6 @@ void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCL()
    else
       CONCATENATE(ocip, BENCH_NAME)(this->m_Program, this->m_CLSrc, &this->m_DstCL CL_ADDITIONAL_PARAMS);
 }
-//-----------------------------------------------------------------------------------------------------------------------------
-#ifdef CUDA_REDUCE_SAME_TYPE
-template<typename DataType>
-void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCUDA()
-{
-   CUDA_CODE(
-      DataType* CUDADst = reinterpret_cast<DataType*>(this->m_CUDADst.DeviceRef());
-      CUDAPP(BENCH_NAME<DataType>)(Src(), m_CUDASrcStep, CUDADst, m_ImgSrc.Width, m_ImgSrc.Height, m_CUDAWorkBuffer);
-      )
-}
-#else // CUDA_REDUCE_SAME_TYPE
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCUDA()
-{
-   CUDA_CODE(
-      uint* CUDADst = reinterpret_cast<uint*>(m_CUDADst.DeviceRef());
-      CUDAPP(BENCH_NAME<DataType>)(Src(), m_CUDASrcStep, CUDADst, m_ImgSrc.Width, m_ImgSrc.Height, m_CUDAWorkBuffer);
-      )
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<>
-void CONCATENATE(BENCH_NAME, Bench)<float>::RunCUDA()
-{
-   CUDA_CODE(
-      float* CUDADst = reinterpret_cast<float*>(m_CUDADst.DeviceRef());
-      CUDAPP(BENCH_NAME<float>)(Src(), m_CUDASrcStep, CUDADst, m_ImgSrc.Width, m_ImgSrc.Height, m_CUDAWorkBuffer);
-      )
-}
-#endif   // CUDA_REDUCE_SAME_TYPE
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void CONCATENATE(BENCH_NAME, Bench)<unsigned char>::RunNPP()

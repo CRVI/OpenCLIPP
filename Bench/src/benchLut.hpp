@@ -43,7 +43,6 @@ public:
    void Create(uint Width, uint Height);
    void Free();
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
 
@@ -56,12 +55,6 @@ public:
 private:
    vector<uint> m_Levels;
    vector<uint> m_Values;
-
-   vector<DataType> m_LevelsCUDA;
-   vector<DataType> m_ValuesCUDA;
-
-   DataType * m_LevelsPtrCUDA;
-   DataType * m_ValuesPtrCUDA;
 
    NPP_CODE(
       Npp32s * m_NPPLevels;
@@ -76,8 +69,6 @@ void LutBench<DataType>::Create(uint Width, uint Height)
 
    m_Levels.assign(Length, 0);
    m_Values.assign(Length, 0);
-   m_LevelsCUDA.assign(Length, 0);
-   m_ValuesCUDA.assign(Length, 0);
 
    for (uint& e : m_Levels)
       e = rand() % 256;
@@ -88,20 +79,6 @@ void LutBench<DataType>::Create(uint Width, uint Height)
    sort(m_Levels.begin(), m_Levels.end());
    sort(m_Values.begin(), m_Values.end());
 
-   for (int i = 0; i < Length; i++)
-   {
-      m_LevelsCUDA[i] = m_Levels[i];
-      m_ValuesCUDA[i] = m_Values[i];
-   }
-
-
-   CUDA_CODE(
-      CUDAPP(Malloc)(m_LevelsPtrCUDA, Length);
-      CUDAPP(Malloc)(m_ValuesPtrCUDA, Length);
-
-      CUDAPP(Upload)(m_LevelsCUDA.data(), m_LevelsPtrCUDA, Length);
-      CUDAPP(Upload)(m_ValuesCUDA.data(), m_ValuesPtrCUDA, Length);
-      )
 
    NPP_CODE(
       cudaMalloc((void**) &m_NPPLevels, Length * sizeof(Npp32s));
@@ -116,11 +93,6 @@ template<typename DataType>
 void LutBench<DataType>::Free()
 {
    IBench1in1out::Free();
-
-   CUDA_CODE(
-      CUDAPP(Free)(m_LevelsPtrCUDA);
-      CUDAPP(Free)(m_ValuesPtrCUDA);
-      )
 
    NPP_CODE(
       cudaFree(m_NPPLevels);
@@ -144,16 +116,6 @@ void LutBench<DataType>::RunCL()
       ocipLut_V(m_CLBufferSrc, m_CLBufferDst, m_Levels.data(), m_Values.data(), Length);
    else
       ocipLut(m_CLSrc, m_CLDst, m_Levels.data(), m_Values.data(), Length);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void LutBench<DataType>::RunCUDA()
-{
-   // This library does only linear LUT, but it still is quite fast
-   CUDA_CODE(
-      CUDAPP(LUT_Linear<DataType>)((DataType*) m_CUDASrc, m_CUDASrcStep, (DataType*) m_CUDADst, m_CUDADstStep, m_ImgSrc.Width, m_ImgSrc.Height,
-         m_LevelsPtrCUDA, m_ValuesPtrCUDA, Length);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

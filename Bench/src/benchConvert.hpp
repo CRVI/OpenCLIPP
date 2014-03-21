@@ -42,7 +42,6 @@ public:
 
    void Create(uint Width, uint Height);
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunCV();
    void RunNPP();
@@ -74,15 +73,6 @@ void ConvertBench<SrcType, DstType>::RunCV()
       }
       catch (cv::Exception e)
       { } )
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename SrcType, typename DstType>
-void ConvertBench<SrcType, DstType>::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(Convert<__ID(SrcType, DstType)>)
-         ((SrcType*) m_CUDASrc, m_CUDASrcStep, (DstType*) m_CUDADst, m_CUDADstStep, m_ImgSrc.Width, m_ImgSrc.Height);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

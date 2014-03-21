@@ -26,7 +26,6 @@ class TopHatBench : public MorphoBenchBase
 {
 public:
    void RunIPP();
-   void RunCUDA();
    void RunCL();
    void RunNPP();
    void RunCV();
@@ -51,24 +50,6 @@ void TopHatBench::RunCL()
       ocipTopHat_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 1, 3);
    else
       ocipTopHat(m_CLSrc, m_CLDst, m_CLTmp, 1, 3);
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-void TopHatBench::RunCUDA()
-{
-   CUDA_CODE(
-      CUDAPP(Tophat_8u_C1)((unsigned char*) m_CUDASrc,
-         m_CUDASrcStep,
-         (unsigned char*) m_CUDATmp,
-         m_CUDATmpStep,
-         (unsigned char*) m_CUDADst,
-         m_CUDADstStep,
-         m_ImgSrc.Width,
-         m_ImgSrc.Height,
-         m_MaskSize.Width,
-         m_MaskSize.Height,
-         m_MaskAnchor.X,
-         m_MaskAnchor.Y);
-      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TopHatBench::RunNPP()
