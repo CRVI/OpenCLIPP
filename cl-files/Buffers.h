@@ -71,3 +71,7 @@
 #define CONVERT_FLOAT(val) CONCATENATE(convert_float, VEC_WIDTH) (val)              // Example : convert_float16(val)
 #define ABS abs
 #endif
+
+#define TYPE2 CONCATENATE(SCALAR, 2)
+#define TYPE3 CONCATENATE(SCALAR, 3)
+#define TYPE4 CONCATENATE(SCALAR, 4)

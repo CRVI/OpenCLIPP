@@ -344,6 +344,12 @@ ocipError ocip_API fun(PROGRAM_ARG IMAGE_ARG Source, type * Result, int * IndexX
    H( *Result = CLASS.method(CONV(Source), *IndexX, *IndexY) )\
 }
 
+#define REDUCE_ARG_OP(fun, method, type) \
+ocipError ocip_API fun(PROGRAM_ARG IMAGE_ARG Source, type * Result)\
+{\
+   H( CLASS.method(CONV(Source), Result) )\
+}
+
 
 // Image based operations
 #define CONV Img
@@ -588,17 +594,25 @@ REDUCE_RETURN_OP(ocipOtsuThreshold, OtsuThreshold, uint)
 #undef CLASS
 #define CLASS (*(Statistics*)Program)
 
-REDUCE_RETURN_OP(ocipMin,        Min,     double)
-REDUCE_RETURN_OP(ocipMax,        Max,     double)
-REDUCE_RETURN_OP(ocipMinAbs,     MinAbs,  double)
-REDUCE_RETURN_OP(ocipMaxAbs,     MaxAbs,  double)
-REDUCE_RETURN_OP(ocipSum,        Sum,     double)
-REDUCE_RETURN_OP(ocipMean,       Mean,    double)
-REDUCE_RETURN_OP(ocipMeanSqr,    MeanSqr, double)
-REDUCE_INDEX_OP( ocipMinIndx,    Min,     double)
-REDUCE_INDEX_OP( ocipMaxIndx,    Max,     double)
-REDUCE_INDEX_OP( ocipMinAbsIndx, MinAbs,  double)
-REDUCE_INDEX_OP( ocipMaxAbsIndx, MaxAbs,  double)
+REDUCE_RETURN_OP(ocipMin,           Min,           double)
+REDUCE_RETURN_OP(ocipMax,           Max,           double)
+REDUCE_RETURN_OP(ocipMinAbs,        MinAbs,        double)
+REDUCE_RETURN_OP(ocipMaxAbs,        MaxAbs,        double)
+REDUCE_RETURN_OP(ocipSum,           Sum,           double)
+REDUCE_RETURN_OP(ocipMean,          Mean,          double)
+REDUCE_RETURN_OP(ocipMeanSqr,       MeanSqr,       double)
+REDUCE_RETURN_OP(ocipCountNonZero,  CountNonZero,  double)
+REDUCE_INDEX_OP( ocipMinIndx,       Min,           double)
+REDUCE_INDEX_OP( ocipMaxIndx,       Max,           double)
+REDUCE_INDEX_OP( ocipMinAbsIndx,    MinAbs,        double)
+REDUCE_INDEX_OP( ocipMaxAbsIndx,    MaxAbs,        double)
+REDUCE_ARG_OP(   ocipMin_4C,        Min,           double)
+REDUCE_ARG_OP(   ocipMax_4C,        Max,           double)
+REDUCE_ARG_OP(   ocipMinAbs_4C,     MinAbs,        double)
+REDUCE_ARG_OP(   ocipMaxAbs_4C,     MaxAbs,        double)
+REDUCE_ARG_OP(   ocipSum_4C,        Sum,           double)
+REDUCE_ARG_OP(   ocipMean_4C,       Mean,          double)
+REDUCE_ARG_OP(   ocipMeanSqr_4C,    MeanSqr,       double)
 
 
 #undef CLASS
@@ -782,17 +796,25 @@ CONSTANT_OP(ocipLaplace_V, Laplace, int)
 #undef CLASS
 #define CLASS (*(StatisticsVector*)Program)
 
-REDUCE_RETURN_OP(ocipMin_V,         Min,     double)
-REDUCE_RETURN_OP(ocipMax_V,         Max,     double)
-REDUCE_RETURN_OP(ocipMinAbs_V,      MinAbs,  double)
-REDUCE_RETURN_OP(ocipMaxAbs_V,      MaxAbs,  double)
-REDUCE_RETURN_OP(ocipSum_V,         Sum,     double)
-REDUCE_RETURN_OP(ocipMean_V,        Mean,    double)
-REDUCE_RETURN_OP(ocipMeanSqr_V,     MeanSqr, double)
-REDUCE_INDEX_OP( ocipMinIndx_V,     Min,     double)
-REDUCE_INDEX_OP( ocipMaxIndx_V,     Max,     double)
-REDUCE_INDEX_OP( ocipMinAbsIndx_V,  MinAbs,  double)
-REDUCE_INDEX_OP( ocipMaxAbsIndx_V,  MaxAbs,  double)
+REDUCE_RETURN_OP(ocipMin_V,            Min,           double)
+REDUCE_RETURN_OP(ocipMax_V,            Max,           double)
+REDUCE_RETURN_OP(ocipMinAbs_V,         MinAbs,        double)
+REDUCE_RETURN_OP(ocipMaxAbs_V,         MaxAbs,        double)
+REDUCE_RETURN_OP(ocipSum_V,            Sum,           double)
+REDUCE_RETURN_OP(ocipMean_V,           Mean,          double)
+REDUCE_RETURN_OP(ocipMeanSqr_V,        MeanSqr,       double)
+REDUCE_RETURN_OP(ocipCountNonZero_V,   CountNonZero,  uint)
+REDUCE_INDEX_OP( ocipMinIndx_V,        Min,           double)
+REDUCE_INDEX_OP( ocipMaxIndx_V,        Max,           double)
+REDUCE_INDEX_OP( ocipMinAbsIndx_V,     MinAbs,        double)
+REDUCE_INDEX_OP( ocipMaxAbsIndx_V,     MaxAbs,        double)
+REDUCE_ARG_OP(   ocipMin_4C_V,         Min,           double)
+REDUCE_ARG_OP(   ocipMax_4C_V,         Max,           double)
+REDUCE_ARG_OP(   ocipMinAbs_4C_V,      MinAbs,        double)
+REDUCE_ARG_OP(   ocipMaxAbs_4C_V,      MaxAbs,        double)
+REDUCE_ARG_OP(   ocipSum_4C_V,         Sum,           double)
+REDUCE_ARG_OP(   ocipMean_4C_V,        Mean,          double)
+REDUCE_ARG_OP(   ocipMeanSqr_4C_V,     MeanSqr,       double)
 
 
 #undef CLASS

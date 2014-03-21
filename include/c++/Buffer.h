@@ -63,19 +63,19 @@ class CL_API IBuffer : public Memory
 {
 public:
    /// Converts to a cl::Buffer
-   operator cl::Buffer& () 
+   operator cl::Buffer& ()
    {
       return m_Buffer;
    }
 
    /// Converts to a cl_mem
-   operator cl_mem () 
+   operator cl_mem ()
    {
       return (cl_mem) m_Buffer();
    }
 
    /// Returns the size in bytes
-   size_t Size() const     
+   size_t Size() const
    {
       return m_Size;
    }

@@ -26,7 +26,7 @@
 
 
 #define KERNEL_RANGE(src_img) GetRange(src_img), GetLocalRange()
-#define SELECT_NAME(name, src_img) SelectName( #name , src_img)
+#define SELECT_NAME(name, src_img) SelectSVName( #name , src_img)
 
 #include "kernel_helpers.h"
 
@@ -38,13 +38,16 @@ using namespace std;
 namespace OpenCLIPP
 {
 
+string SelectSVName(const char * name, const ImageBase& Image);
+
+
 // StatisticsVector
 void StatisticsVector::PrepareBuffer(const ImageBase& Image)
 {
    size_t NbGroups = (size_t) GetNbGroups(Image);
 
-   // We need twice the size to be able to store the number of pixels per group
-   size_t BufferSize = NbGroups * 2;
+   // We need space for 4 channels + another space for the number of pixels
+   size_t BufferSize = NbGroups * (4 + 1);
 
    if (m_PartialResultBuffer != nullptr &&
       m_PartialResultBuffer->Size() == BufferSize * sizeof(float) &&
@@ -95,7 +98,7 @@ void StatisticsVector::InitAbs(ImageBuffer& Source)
 {
    Source.SendIfNeeded();
 
-   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), "init_abs")
+   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), "init")
       (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
 }
 
@@ -103,50 +106,60 @@ void StatisticsVector::InitAbs(ImageBuffer& Source)
 // Reductions
 double StatisticsVector::Min(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    Init(Source);
 
    Kernel(reduce_min, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double StatisticsVector::Max(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    Init(Source);
 
    Kernel(reduce_max, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double StatisticsVector::MinAbs(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    InitAbs(Source);
 
    Kernel(reduce_minabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double StatisticsVector::MaxAbs(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    InitAbs(Source);
 
    Kernel(reduce_maxabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double StatisticsVector::Sum(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    PrepareBuffer(Source);
 
    Kernel(reduce_sum, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -158,6 +171,8 @@ double StatisticsVector::Sum(ImageBuffer& Source)
 
 uint StatisticsVector::CountNonZero(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    PrepareBuffer(Source);
 
    Kernel(reduce_count_nz, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -169,6 +184,8 @@ uint StatisticsVector::CountNonZero(ImageBuffer& Source)
 
 double StatisticsVector::Mean(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    PrepareBuffer(Source);
 
    Kernel(reduce_mean, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -180,6 +197,8 @@ double StatisticsVector::Mean(ImageBuffer& Source)
 
 double StatisticsVector::MeanSqr(ImageBuffer& Source)
 {
+   Check1Channel(Source);
+
    PrepareBuffer(Source);
 
    Kernel(reduce_mean_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -193,6 +212,8 @@ double StatisticsVector::MeanSqr(ImageBuffer& Source)
 // Reductions that also find the coordinate
 double StatisticsVector::Min(ImageBuffer& Source, int& outX, int& outY)
 {
+   Check1Channel(Source);
+
    PrepareCoords(Source);
 
    Kernel(min_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -205,6 +226,8 @@ double StatisticsVector::Min(ImageBuffer& Source, int& outX, int& outY)
 
 double StatisticsVector::Max(ImageBuffer& Source, int& outX, int& outY)
 {
+   Check1Channel(Source);
+
    PrepareCoords(Source);
 
    Kernel(max_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -217,6 +240,8 @@ double StatisticsVector::Max(ImageBuffer& Source, int& outX, int& outY)
 
 double StatisticsVector::MinAbs(ImageBuffer& Source, int& outX, int& outY)
 {
+   Check1Channel(Source);
+
    PrepareCoords(Source);
 
    Kernel(min_abs_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -229,6 +254,8 @@ double StatisticsVector::MinAbs(ImageBuffer& Source, int& outX, int& outY)
 
 double StatisticsVector::MaxAbs(ImageBuffer& Source, int& outX, int& outY)
 {
+   Check1Channel(Source);
+
    PrepareCoords(Source);
 
    Kernel(max_abs_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
@@ -237,6 +264,119 @@ double StatisticsVector::MaxAbs(ImageBuffer& Source, int& outX, int& outY)
    m_PartialCoordBuffer->Read(true);
 
    return ReduceMax(m_PartialResult, m_PartialCoord, outX, outY);
+}
+
+
+// For images with multiple channels
+void StatisticsVector::Min(ImageBuffer& Source, double outVal[4])
+{
+   Init(Source);
+
+   Kernel(reduce_min_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void StatisticsVector::Max(ImageBuffer& Source, double outVal[4])
+{
+   Init(Source);
+
+   Kernel(reduce_max_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void StatisticsVector::MinAbs(ImageBuffer& Source, double outVal[4])
+{
+   InitAbs(Source);
+
+   Kernel(reduce_minabs_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void StatisticsVector::MaxAbs(ImageBuffer& Source, double outVal[4])
+{
+   InitAbs(Source);
+
+   Kernel(reduce_maxabs_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void StatisticsVector::Sum(ImageBuffer& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_sum_4C, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceSum_4C(m_PartialResult, outVal);
+}
+
+void StatisticsVector::Mean(ImageBuffer& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_mean_4C, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceMean_4C(m_PartialResult, outVal);
+}
+
+void StatisticsVector::MeanSqr(ImageBuffer& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_mean_sqr_4C, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceMean_4C(m_PartialResult, outVal);
+}
+
+
+// Select the proper kernel name
+string SelectSVName(const char * name, const ImageBase& Image)
+{
+   string Name = name;
+
+   switch (Image.NbChannels())
+   {
+   case 1:
+      break;
+   case 2:
+      Name += "_2C";
+      break;
+   case 3:
+      Name += "_3C";
+      break;
+   case 4:
+      Name += "_4C";
+      break;
+   default:
+      throw cl::Error(CL_INVALID_IMAGE_SIZE, "images must have between 1 and 4 channels");
+      break;
+   }
+   
+   if (IsFlushImage(Image))
+      Name += "_flush";       // Use faster version
+
+   return Name;
 }
 
 }

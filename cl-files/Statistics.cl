@@ -39,6 +39,7 @@
 #define WIDTH1 16  // Number of pixels per workitem
 #define POSI(i) (int2)(gx + i, gy)
 
+#define SEL_CHAN(code) (code).x
 
 // This version handles images of any size - it will be a bit slower
 #define REDUCE(name, type, preop, fun1, postop1, fun2, postop2) \
@@ -54,12 +55,14 @@ kernel void name(INPUT source, global float * result, int img_width, int img_hei
    \
    if (gx < img_width && gy < img_height)\
    {\
-      type Res = preop(READ_IMAGE(source, POSI(0)).x);\
+      type Res = CONCATENATE(convert_, type)(SEL_CHAN(READ_IMAGE(source, POSI(0))));\
+      Res = preop(Res);\
       int Nb = 1;\
       for (int i = 1; i < WIDTH1; i++)\
          if (gx + i < img_width)\
          {\
-            Res = fun1(Res, (type) preop(READ_IMAGE(source, POSI(i)).x));\
+            type px = CONCATENATE(convert_, type)(SEL_CHAN(READ_IMAGE(source, POSI(i))));\
+            Res = fun1(Res, preop(px));\
             Nb++;\
          }\
       \
@@ -123,9 +126,13 @@ kernel void name(INPUT source, global float * result, int img_width, int img_hei
    const int gy = get_global_id(1);\
    const int lid = get_local_id(1) * get_local_size(0) + get_local_id(0);\
    \
-   type Res = preop(READ_IMAGE(source, POSI(0)).x);\
+   type Res = CONCATENATE(convert_, type)(SEL_CHAN(READ_IMAGE(source, POSI(0))));\
+   Res = preop(Res);\
    for (int i = 1; i < WIDTH1; i++)\
-      Res = fun1(Res, (type) preop(READ_IMAGE(source, POSI(i)).x));\
+   {\
+      type px = CONCATENATE(convert_, type)(SEL_CHAN(READ_IMAGE(source, POSI(i))));\
+      Res = fun1(Res, preop(px));\
+   }\
    \
    buffer[lid] = postop1(Res, WIDTH1);\
    \
@@ -179,7 +186,7 @@ REDUCE_FLUSH(CONCATENATE(name, _flush), type, preop, fun1, postop1, fun2, postop
 
 #define NOOP(a)      a
 #define NOOP2(a, nb) a
-#define SQR(a)       (convert_float(a) * a)
+#define SQR(a)       (a * a)
 #define NO_Z(a)      (a != 0 ? 1 : 0)
 #define SUM(a, b)    (a + b)
 #define MEAN(a, b)   ((a + b) / 2)
@@ -212,8 +219,20 @@ void name(global float * result, float value, int nb_pixels)\
    }\
 }
 
+#define FLOAT_ATOMIC4(name, name1C) \
+void name(global float * result, TYPE4 value, int nb_pixels)\
+{\
+   name1C(result + 0, value.x, nb_pixels);\
+   name1C(result + 1, value.y, nb_pixels);\
+   name1C(result + 2, value.z, nb_pixels);\
+   name1C(result + 3, value.w, nb_pixels);\
+}
+
 FLOAT_ATOMIC(atomic_minf, min)
 FLOAT_ATOMIC(atomic_maxf, max)
+
+FLOAT_ATOMIC4(atomic_minf_4C, atomic_minf)
+FLOAT_ATOMIC4(atomic_maxf_4C, atomic_maxf)
 
 
 // Store the partially calculated value - the final result will be calculated by the CPU
@@ -222,7 +241,18 @@ void store_value(global float * result_buffer, float value, int nb_pixels)
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
    const int offset = get_num_groups(0) * get_num_groups(1);
    result_buffer[gid] = value;
-   result_buffer[offset + gid] = nb_pixels;
+   result_buffer[offset * 4 + gid] = nb_pixels;
+}
+
+void store_value_4C(global float * buffer, float4 value, int nb_pixels)
+{
+   const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
+
+   global float4 * result_buffer = (global float4 *) buffer + gid * 4;
+   result_buffer[gid] = value;
+
+   const int offset = get_num_groups(0) * get_num_groups(1);
+   buffer[offset * 4 + gid] = nb_pixels;
 }
 
 
@@ -237,6 +267,19 @@ REDUCE_KERNEL(reduce_mean,     float,  NOOP, SUM,  DIV,   MEAN2, store_value)
 REDUCE_KERNEL(reduce_mean_sqr, float,  SQR,  SUM,  DIV,   MEAN2, store_value)
 
 
+#undef SEL_CHAN
+#define SEL_CHAN(code) code
+
+//            name                  type     preop fun1  post1  fun2  postop2
+REDUCE_KERNEL(reduce_min_4C,        TYPE,    NOOP, min,  NOOP2, MIN2,  atomic_minf_4C)
+REDUCE_KERNEL(reduce_max_4C,        TYPE,    NOOP, max,  NOOP2, MAX2,  atomic_maxf_4C)
+REDUCE_KERNEL(reduce_minabs_4C,     TYPE,    ABS,  min,  NOOP2, MIN2,  atomic_minf_4C)
+REDUCE_KERNEL(reduce_maxabs_4C,     TYPE,    ABS,  max,  NOOP2, MAX2,  atomic_maxf_4C)
+REDUCE_KERNEL(reduce_sum_4C,        float4,  NOOP, SUM,  NOOP2, SUM2,  store_value_4C)
+REDUCE_KERNEL(reduce_mean_4C,       float4,  NOOP, SUM,  DIV,   MEAN2, store_value_4C)
+REDUCE_KERNEL(reduce_mean_sqr_4C,   float4,  SQR,  SUM,  DIV,   MEAN2, store_value_4C)
+
+
 // Initialize result to a valid value
 kernel void init(INPUT source, global float * result)
 {
@@ -247,6 +290,17 @@ kernel void init_abs(INPUT source, global float * result)
 {
    *result = ABS(READ_IMAGE(source, (int2)(0, 0)).x);
 }
+
+kernel void init_4C(INPUT source, global float4 * result)
+{
+   *result = convert_float4(READ_IMAGE(source, (int2)(0, 0)));
+}
+
+kernel void init_abs_4C(INPUT source, global float4 * result)
+{
+   *result = convert_float4(ABS(READ_IMAGE(source, (int2)(0, 0))));
+}
+
 
 // DO_REDUCE that handles coordinates
 #undef DO_REDUCE

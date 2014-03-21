@@ -53,4 +53,7 @@ double ReduceMean(std::vector<float>& buffer);
 double ReduceMin(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY);
 double ReduceMax(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY);
 
+void ReduceSum_4C(std::vector<float>& buffer, double outVal[4]);
+void ReduceMean_4C(std::vector<float>& buffer, double outVal[4]);
+
 }

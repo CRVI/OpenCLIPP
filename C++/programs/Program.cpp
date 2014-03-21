@@ -400,4 +400,10 @@ void CheckNotFloat(const ImageBase& Img)
       throw cl::Error(CL_INVALID_VALUE, "float image used when not allowed");
 }
 
+void Check1Channel(const ImageBase& Img)
+{
+   if (Img.NbChannels() > 1)
+      throw cl::Error(CL_INVALID_VALUE, "only 1 channel images are allowed");
+}
+
 }

@@ -44,8 +44,8 @@ void Statistics::PrepareBuffer(const ImageBase& Image)
 {
    size_t NbGroups = (size_t) GetNbGroups(Image);
 
-   // We need twice the size to be able to store the number of pixels per group
-   size_t BufferSize = NbGroups * 2;
+   // We need space for 4 channels + another space for the number of pixels
+   size_t BufferSize = NbGroups * (4 + 1);
 
    if (m_PartialResultBuffer != nullptr &&
       m_PartialResultBuffer->Size() == BufferSize * sizeof(float) &&
@@ -100,6 +100,22 @@ void Statistics::InitAbs(IImage& Source)
       (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
 }
 
+void Statistics::Init4C(IImage& Source)
+{
+   Source.SendIfNeeded();
+
+   cl::make_kernel<cl::Image2D, cl::Buffer>(SelectProgram(Source), "init_4C")
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+}
+
+void Statistics::InitAbs4C(IImage& Source)
+{
+   Source.SendIfNeeded();
+
+   cl::make_kernel<cl::Image2D, cl::Buffer>(SelectProgram(Source), "init_abs_4C")
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+}
+
 
 // Reductions
 double Statistics::Min(IImage& Source)
@@ -110,7 +126,7 @@ double Statistics::Min(IImage& Source)
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double Statistics::Max(IImage& Source)
@@ -121,7 +137,7 @@ double Statistics::Max(IImage& Source)
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double Statistics::MinAbs(IImage& Source)
@@ -132,7 +148,7 @@ double Statistics::MinAbs(IImage& Source)
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double Statistics::MaxAbs(IImage& Source)
@@ -143,7 +159,7 @@ double Statistics::MaxAbs(IImage& Source)
 
    m_ResultBuffer.Read(true);
 
-   return m_Result;
+   return m_Result[0];
 }
 
 double Statistics::Sum(IImage& Source)
@@ -237,6 +253,89 @@ double Statistics::MaxAbs(IImage& Source, int& outX, int& outY)
    m_PartialCoordBuffer->Read(true);
 
    return ReduceMax(m_PartialResult, m_PartialCoord, outX, outY);
+}
+
+
+// For images with multiple channels
+void Statistics::Min(IImage& Source, double outVal[4])
+{
+   Init4C(Source);
+
+   Kernel(reduce_min_4C, In(Source), Out(m_ResultBuffer), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void Statistics::Max(IImage& Source, double outVal[4])
+{
+   Init4C(Source);
+
+   Kernel(reduce_max_4C, In(Source), Out(m_ResultBuffer), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void Statistics::MinAbs(IImage& Source, double outVal[4])
+{
+   InitAbs4C(Source);
+
+   Kernel(reduce_minabs_4C, In(Source), Out(m_ResultBuffer), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void Statistics::MaxAbs(IImage& Source, double outVal[4])
+{
+   InitAbs4C(Source);
+
+   Kernel(reduce_maxabs_4C, In(Source), Out(m_ResultBuffer), Source.Width(), Source.Height());
+
+   m_ResultBuffer.Read(true);
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = m_Result[i];
+}
+
+void Statistics::Sum(IImage& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_sum_4C, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceSum_4C(m_PartialResult, outVal);
+}
+
+void Statistics::Mean(IImage& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_mean_4C, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceMean_4C(m_PartialResult, outVal);
+}
+
+void Statistics::MeanSqr(IImage& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_mean_sqr_4C, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceMean_4C(m_PartialResult, outVal);
 }
 
 }

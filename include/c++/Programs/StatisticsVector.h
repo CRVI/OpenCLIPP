@@ -35,25 +35,35 @@ class CL_API StatisticsVector : public ImageBufferProgram
 public:
    StatisticsVector(COpenCL& CL)
    :  ImageBufferProgram(CL, "Vector_Statistics.cl"),
-      m_ResultBuffer(*m_CL, &m_Result, 1)
+      m_ResultBuffer(*m_CL, m_Result, 4)
    { }
 
-   double Min(ImageBuffer& Source);           ///< Finds the minimum value in the image
-   double Max(ImageBuffer& Source);           ///< Finds the maximum value in the image
-   double MinAbs(ImageBuffer& Source);        ///< Finds the minimum of the absolute of the values in the image
-   double MaxAbs(ImageBuffer& Source);        ///< Finds the maxumum of the absolute of the values in the image
-   double Sum(ImageBuffer& Source);           ///< Calculates the sum of all pixel values
-   uint   CountNonZero(ImageBuffer& Source);  ///< Calculates the number of non zero pixels
-   double Mean(ImageBuffer& Source);          ///< Calculates the mean value of all pixel values
-   double MeanSqr(ImageBuffer& Source);       ///< Calculates the mean of the square of all pixel values
+   // These are for 1 channel images
+   double Min(    ImageBuffer& Source);      ///< Finds the minimum value in the image
+   double Max(    ImageBuffer& Source);      ///< Finds the maximum value in the image
+   double MinAbs( ImageBuffer& Source);      ///< Finds the minimum of the absolute of the values in the image
+   double MaxAbs( ImageBuffer& Source);      ///< Finds the maxumum of the absolute of the values in the image
+   double Sum(    ImageBuffer& Source);      ///< Calculates the sum of all pixel values
+   double Mean(   ImageBuffer& Source);      ///< Calculates the mean value of all pixel values
+   double MeanSqr(ImageBuffer& Source);      ///< Calculates the mean of the square of all pixel values
+   uint   CountNonZero(ImageBuffer& Source); ///< Calculates the number of non zero pixels
 
-   double Min(ImageBuffer& Source, int& outX, int& outY);     ///< Finds the position in the image that has the minimum value
-   double Max(ImageBuffer& Source, int& outX, int& outY);     ///< Finds the position in the image that has the maximum value
-   double MinAbs(ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the minimum of the absolute values
-   double MaxAbs(ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the maximum of the absolute values
+   double Min(    ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the minimum value
+   double Max(    ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the maximum value
+   double MinAbs( ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the minimum of the absolute values
+   double MaxAbs( ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the maximum of the absolute values
+
+   // These are for 2, 3 or 4 channel images
+   void Min(      ImageBuffer& Source, double outVal[4]);   ///< Finds the minimum values in the image
+   void Max(      ImageBuffer& Source, double outVal[4]);   ///< Finds the maximum values in the image
+   void MinAbs(   ImageBuffer& Source, double outVal[4]);   ///< Finds the minimum of the absolute of the values in the image
+   void MaxAbs(   ImageBuffer& Source, double outVal[4]);   ///< Finds the maxumum of the absolute of the values in the image
+   void Sum(      ImageBuffer& Source, double outVal[4]);   ///< Calculates the sum of all pixel values
+   void Mean(     ImageBuffer& Source, double outVal[4]);   ///< Calculates the mean value of all pixel values
+   void MeanSqr(  ImageBuffer& Source, double outVal[4]);   ///< Calculates the mean of the square of all pixel values
 
 protected:
-   float m_Result;
+   float m_Result[4];
    Buffer m_ResultBuffer;
 
    void PrepareBuffer(const ImageBase& Image);  // Prepares m_PartialResult

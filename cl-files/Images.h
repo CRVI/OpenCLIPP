@@ -70,6 +70,10 @@ constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_
 #define CONVERT(val) CONCATENATE(CONCATENATE(convert_, TYPE), _sat) (val)           // Example : convert_int4_sat(val)
 #endif
 
+#define TYPE2 CONCATENATE(SCALAR, 2)
+#define TYPE3 CONCATENATE(SCALAR, 3)
+#define TYPE4 CONCATENATE(SCALAR, 4)
+
 
 #define INPUT  read_only  image2d_t
 #define OUTPUT write_only image2d_t

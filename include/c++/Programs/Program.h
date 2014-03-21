@@ -251,6 +251,7 @@ private:
 bool SameType(const ImageBase& Img1, const ImageBase& Img2);         ///< Returns true if both images are of the same type
 void CheckFloat(const ImageBase& Img);                               ///< Checks that the image contains float, throws a cl::Error if not
 void CheckNotFloat(const ImageBase& Img);                            ///< Checks that the image does not contains float, throws a cl::Error if not
+void Check1Channel(const ImageBase& Img);                            ///< Checks that the image contains only 1 channel, throws a cl::Error if not
 void CheckSameSize(const ImageBase& Img1, const ImageBase& Img2);    ///< Checks that both images have the same size, throws a cl::Error if not
 
 /// Checks sizes + float/signed/unsigned, throws a cl::Error if not.

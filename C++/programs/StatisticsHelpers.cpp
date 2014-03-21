@@ -51,9 +51,7 @@ std::string SelectName(const char * name, const ImageBase& Image)
 
 double ReduceSum(std::vector<float>& buffer)
 {
-   // First half of buffer contains the sums
-   // Second half of buffer contains the number of pixels per sum (which we don't need)
-   size_t size = buffer.size() / 2;
+   size_t size = buffer.size() / 5;
 
    double Sum = buffer[0];
    for (size_t i = 1; i < size; i++)
@@ -62,18 +60,29 @@ double ReduceSum(std::vector<float>& buffer)
    return Sum;
 }
 
+void ReduceSum_4C(std::vector<float>& buffer, double outVal[4])
+{
+   size_t size = buffer.size() / 5;
+
+   for (int i = 0; i < 4; i++)
+      outVal[i] = buffer[i];
+
+   for (size_t i = 1; i < size; i++)
+      for (int j = 0; j < 4; j++)
+         outVal[j] += buffer[i * 4 + j];
+}
+
 double ReduceMean(std::vector<float>& buffer)
 {
-   // First half of buffer contains the mean of all pixels
-   // Second half of buffer contains the number of pixels used to generate the mean
-   size_t size = buffer.size() / 2;
+   size_t size = buffer.size() / 5;
+   size_t NbIndex = size * 4;       // Index where we can find the number of pixels
 
-   double MeanSum = buffer[0];      // MeanSum will contain the sum of the means
-   double NormalNb = buffer[size];  // We use the number of pixels from the first workgroup as reference
-   double SumPixels = buffer[size]; // Will be equal to the number of pixels in the image
+   double MeanSum = buffer[0];         // MeanSum will contain the sum of the means
+   double NormalNb = buffer[NbIndex];  // We use the number of pixels from the first workgroup as reference
+   double SumPixels = buffer[NbIndex]; // Will be equal to the number of pixels in the image
    for (size_t i = 1; i < size; i++)
    {
-      double NbPixels = buffer[size + i];
+      double NbPixels = buffer[NbIndex + i];
       double Ratio = NbPixels / NormalNb; // If this workgroup had less pixels, Ratio will be smaller 
 
       MeanSum += buffer[i] * Ratio;
@@ -86,11 +95,37 @@ double ReduceMean(std::vector<float>& buffer)
    return MeanSum / Divisor;  // Divide the sum to get the final mean
 }
 
+
+void ReduceMean_4C(std::vector<float>& buffer, double outVal[4])
+{
+   size_t size = buffer.size() / 5;
+   size_t NbIndex = size * 4;       // Index where we can find the number of pixels
+
+   for (int j = 0; j < 4; j++)
+      outVal[j] = buffer[j];         // MeanSum will contain the sum of the means
+
+   double NormalNb = buffer[NbIndex];  // We use the number of pixels from the first workgroup as reference
+   double SumPixels = buffer[NbIndex]; // Will be equal to the number of pixels in the image
+   for (size_t i = 1; i < size; i++)
+   {
+      double NbPixels = buffer[NbIndex + i];
+      double Ratio = NbPixels / NormalNb; // If this workgroup had less pixels, Ratio will be smaller 
+
+      for (int j = 0; j < 4; j++)
+         outVal[j] += buffer[i * 4 + j] * Ratio;
+
+      SumPixels += NbPixels;
+   }
+
+   double Divisor = SumPixels / NormalNb; // Normalize the divisor
+
+   for (int j = 0; j < 4; j++)
+      outVal[j] /= Divisor;  // Divide the sum to get the final mean
+}
+
 double ReduceMin(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY)
 {
-   // First half of buffer contains the mean of all pixels
-   // Second half of buffer contains the number of pixels used to generate the mean
-   size_t size = buffer.size() / 2;
+   size_t size = buffer.size() / 5;
    int x = coords[0];
    int y = coords[1];
 
@@ -111,9 +146,7 @@ double ReduceMin(std::vector<float>& buffer, std::vector<int>& coords, int& outX
 
 double ReduceMax(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY)
 {
-   // First half of buffer contains the mean of all pixels
-   // Second half of buffer contains the number of pixels used to generate the mean
-   size_t size = buffer.size() / 2;
+   size_t size = buffer.size() / 5;
    int x = coords[0];
    int y = coords[1];
 
