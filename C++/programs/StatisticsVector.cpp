@@ -90,7 +90,7 @@ void StatisticsVector::Init(ImageBuffer& Source)
 {
    Source.SendIfNeeded();
 
-   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), "init")
+   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), SelectSVName("init", Source))
       (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
 }
 
@@ -98,7 +98,7 @@ void StatisticsVector::InitAbs(ImageBuffer& Source)
 {
    Source.SendIfNeeded();
 
-   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), "init")
+   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), SelectSVName("init_abs", Source))
       (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
 }
 
@@ -272,7 +272,7 @@ void StatisticsVector::Min(ImageBuffer& Source, double outVal[4])
 {
    Init(Source);
 
-   Kernel(reduce_min_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_min, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -284,7 +284,7 @@ void StatisticsVector::Max(ImageBuffer& Source, double outVal[4])
 {
    Init(Source);
 
-   Kernel(reduce_max_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_max, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -296,7 +296,7 @@ void StatisticsVector::MinAbs(ImageBuffer& Source, double outVal[4])
 {
    InitAbs(Source);
 
-   Kernel(reduce_minabs_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_minabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -308,7 +308,7 @@ void StatisticsVector::MaxAbs(ImageBuffer& Source, double outVal[4])
 {
    InitAbs(Source);
 
-   Kernel(reduce_maxabs_4C, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_maxabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -320,7 +320,7 @@ void StatisticsVector::Sum(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_sum_4C, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_sum, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -331,7 +331,7 @@ void StatisticsVector::Mean(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_mean_4C, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_mean, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -342,7 +342,7 @@ void StatisticsVector::MeanSqr(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_mean_sqr_4C, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_mean_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -373,7 +373,9 @@ string SelectSVName(const char * name, const ImageBase& Image)
       break;
    }
    
-   if (IsFlushImage(Image))
+   bool InitKernel = (string(name).find("init") != string::npos);
+
+   if (!InitKernel && IsFlushImage(Image))
       Name += "_flush";       // Use faster version
 
    return Name;

@@ -25,11 +25,11 @@
 // Helpers for Statistics reduction
 
 // Local group & global group logic :
-//  The reduction algorithm expects to have each local group filled with workers (full grids of 16x16)
-//  Each worker reads 16 pixels along X (so one group reads a rectangle of 16x16x16 (4096) pixels)
+//  The reduction algorithm expects to have each local group filled with workers (full grids of 16x16 - LWxLW)
+//  Each worker reads 16 pixels along X (WIDTH1) (so one group reads a rectangle of 256x16 (4096) pixels)
 //  Local size is 16x16
-//  So for images that have a Width not a multiple of 16*32 or a height not a multiple of 16 :
-//    Additional workers are started that only set in_image[lid] to false
+//  So for images that have a Width not a multiple of 256 (LW*WIDTH1) or a height not a multiple of 16 :
+//    Additional workers are started that only set nb_pixels[lid] to 0
 //  For images with flush width and height, the faster _flush version is used
 //  Each group will work on at least 1 pixel (worst case), so m_Result will be filled with valid data
 

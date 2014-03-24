@@ -248,8 +248,8 @@ void store_value_4C(global float * buffer, float4 value, int nb_pixels)
 {
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
 
-   global float4 * result_buffer = (global float4 *) buffer + gid * 4;
-   result_buffer[gid] = value;
+   global float4 * result_buffer = (global float4 *) (buffer + gid * 4);
+   *result_buffer = value;
 
    const int offset = get_num_groups(0) * get_num_groups(1);
    buffer[offset * 4 + gid] = nb_pixels;

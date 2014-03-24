@@ -272,7 +272,7 @@ void store_value_2C(global float * buffer, float2 value, int nb_pixels)
 {
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
 
-   global float2 * result_buffer = (global float2 *) buffer + gid * 4;
+   global float2 * result_buffer = (global float2 *) (buffer + gid * 4);
    *result_buffer = value;
 
    const int offset = get_num_groups(0) * get_num_groups(1);
@@ -283,7 +283,7 @@ void store_value_3C(global float * buffer, float3 value, int nb_pixels)
 {
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
 
-   global float3 * result_buffer = (global float3 *) buffer + gid * 4;
+   global float3 * result_buffer = (global float3 *) (buffer + gid * 4);
    *result_buffer = value;
 
    const int offset = get_num_groups(0) * get_num_groups(1);
@@ -294,8 +294,8 @@ void store_value_4C(global float * buffer, float4 value, int nb_pixels)
 {
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
 
-   global float4 * result_buffer = (global float4 *) buffer + gid * 4;
-   result_buffer[gid] = value;
+   global float4 * result_buffer = (global float4 *) (buffer + gid * 4);
+   *result_buffer = value;
 
    const int offset = get_num_groups(0) * get_num_groups(1);
    buffer[offset * 4 + gid] = nb_pixels;
@@ -374,7 +374,7 @@ kernel void init_abs_2C(INPUT_SPACE const TYPE2 * source, global float2 * result
 
 kernel void init_3C(INPUT_SPACE const TYPE3 * source, global float3 * result)
 {
-   *result = convert_float2(*source);
+   *result = convert_float3(*source);
 }
 
 kernel void init_abs_3C(INPUT_SPACE const TYPE3 * source, global float3 * result)
@@ -384,7 +384,7 @@ kernel void init_abs_3C(INPUT_SPACE const TYPE3 * source, global float3 * result
 
 kernel void init_4C(INPUT_SPACE const TYPE4 * source, global float4 * result)
 {
-   *result = convert_float2(*source);
+   *result = convert_float4(*source);
 }
 
 kernel void init_abs_4C(INPUT_SPACE const TYPE4 * source, global float4 * result)

@@ -236,10 +236,10 @@ bool BenchReduceBase<DataType, DstT>::Compare(double * V1, DstT * V2)
 
    for (uint i = 0; i < NbValues; i++)
    {
-      double diff = abs(*V1 - *V2);
-      double diffRatio = diff / abs(*V2);
+      double diff = abs(V1[i] - V2[i]);
+      double diffRatio = diff / abs(V2[i]);
 
-      bool value = (*V1 == *V2) || (diffRatio < CompareTolerance());
+      bool value = (V1[i] == V2[i]) || (diffRatio < CompareTolerance());
       if (!value)
          return false;
    }
