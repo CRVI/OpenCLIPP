@@ -36,7 +36,7 @@ float FilterTolerance<float>()
 }
 
 
-template<typename DataType, int mask_size = 1>
+template<typename DataType, int mask_size = 1, int channels = 1>
 class FilterBenchBase : public BenchUnaryBase<DataType, USE_BUFFER>
 {
 public:
@@ -52,8 +52,10 @@ public:
    SPoint m_MaskAnchor;
 };
 
-#define FILTER_BENCH(Name, width) \
-class CONCATENATE(CONCATENATE(Name, width), Bench) : public FilterBenchBase<FILTER_TYPE, width / 2>\
+#define FILTER_CLASS_NAME(Name, width, nb_channels) CONCATENATE(CONCATENATE(Name, CONCATENATE(width, CONCATENATE(_, nb_channels))), Bench)
+
+#define DECLARE_FILTER_BENCH(Name, width, nb_channels) \
+class FILTER_CLASS_NAME(Name, width, nb_channels) : public FilterBenchBase<FILTER_TYPE, width / 2, nb_channels>\
 {\
 public:\
    void RunCL()\
@@ -79,10 +81,13 @@ public:\
    }\
 };
 
-template<typename DataType, int mask_size>
-void FilterBenchBase<DataType, mask_size>::Create(uint Width, uint Height)
+#define FILTER_BENCH(Name, width)  DECLARE_FILTER_BENCH(Name, width, 1)
+#define FILTER_BENCH4(Name, width) DECLARE_FILTER_BENCH(Name, width, 4)
+
+template<typename DataType, int mask_size, int channels>
+void FilterBenchBase<DataType, mask_size, channels>::Create(uint Width, uint Height)
 {
-   BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height);
+   BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height, channels);
 
    IPP_CODE(
       m_IPPRoi.width -= mask_size * 2;
@@ -110,6 +115,13 @@ FILTER_BENCH(SobelHoriz, 3)
 //FILTER_BENCH(Hipass, 3)  // Not supported by NPP
 //FILTER_BENCH(Hipass, 5)  // Not supported by NPP
 
+#undef  FILTER_IPP_MOD
+#define FILTER_IPP_MOD _8u_C4R
+
+FILTER_BENCH4(Sharpen, 3)
+FILTER_BENCH4(SobelVert, 3)
+FILTER_BENCH4(SobelHoriz, 3)
+
 // F32 images (not supported with U8 in IPP)
 #undef FILTER_TYPE
 #undef FILTER_IPP_MOD
@@ -121,10 +133,21 @@ FILTER_BENCH(ScharrHoriz, 3)
 FILTER_BENCH(PrewittVert, 3)
 FILTER_BENCH(PrewittHoriz, 3)
 
+#undef FILTER_IPP_MOD
+#define FILTER_IPP_MOD _32f_C4R
+
+//FILTER_BENCH(ScharrVert, 3)    // 4C Scharr not supported in IPP
+//FILTER_BENCH(ScharrHoriz, 3)
+FILTER_BENCH4(PrewittVert, 3)
+FILTER_BENCH4(PrewittHoriz, 3)
+
+
 // These primitives need to have a mask
 
+#undef FILTER_IPP_MOD
 #undef FILTERS_IPP_MASK
 #undef FILTERS_NPP_MASK
+#define FILTER_IPP_MOD _32f_C1R
 #define FILTERS_IPP_MASK , ippMskSize3x3
 #define FILTERS_NPP_MASK , NPP_MASK_SIZE_3_X_3
 
@@ -132,8 +155,18 @@ FILTER_BENCH(Laplace, 3)
 FILTER_BENCH(SobelCross, 3)
 FILTER_BENCH(Gauss, 3)
 
+#undef  FILTER_IPP_MOD
+#define FILTER_IPP_MOD _32f_C4R
+
+FILTER_BENCH4(Laplace, 3)
+//FILTER_BENCH(SobelCross, 3) // 4C SobelCross not supported in IPP
+FILTER_BENCH4(Gauss, 3)
+
+
+#undef  FILTER_IPP_MOD
 #undef FILTERS_IPP_MASK
 #undef FILTERS_NPP_MASK
+#define FILTER_IPP_MOD _32f_C1R
 #define FILTERS_IPP_MASK , ippMskSize5x5
 #define FILTERS_NPP_MASK , NPP_MASK_SIZE_5_X_5
 
@@ -141,62 +174,62 @@ FILTER_BENCH(Laplace, 5)
 FILTER_BENCH(SobelCross, 5)
 FILTER_BENCH(Gauss, 5)
 
+#undef  FILTER_IPP_MOD
+#define FILTER_IPP_MOD _32f_C4R
+
+FILTER_BENCH4(Laplace, 5)
+//FILTER_BENCH(SobelCross, 5) // 4C SobelCross not supported in IPP
+FILTER_BENCH4(Gauss, 5)
+
 #undef FILTER_IPP_MOD
 #define FILTER_IPP_MOD Mask_32f_C1R
 
 FILTER_BENCH(SobelVert, 5)
 FILTER_BENCH(SobelHoriz, 5)
 
+//FILTER_BENCH4(SobelVert, 5) // 32f 5x5 4C Sobel not supported in IPP
+//FILTER_BENCH4(SobelVert, 5)
+
+
 // TODO : Make a version that tests filters with Anchor and MaskSize like Median and Box
 
 // These are not supported as a single operation in IPP and NPP
 // So they are made in multi-step
 
-template<typename DataType, int width>
-class AdvancedFilter : public FilterBenchBase<FILTER_TYPE, width>
+template<typename DataType, int width, int channels>
+class AdvancedFilter : public FilterBenchBase<FILTER_TYPE, width, channels>
 {
 public:
    void Create(uint Width, uint Height)
    {
-      FilterBenchBase<FILTER_TYPE, width>::Create(Width, Height);
+      FilterBenchBase<FILTER_TYPE, width, channels>::Create(Width, Height);
 
-      m_IPPTmpV.Create<DataType>(Width, Height);
-      m_IPPTmpH.Create<DataType>(Width, Height);
+      m_IPPTmpV.Create<DataType>(Width, Height, channels);
 
       // NPP
       NPP_CODE(
-         m_NPPTmpV = NPP_Malloc<DataType>(Width, Height, m_NPPTmpVStep);
-         m_NPPTmpH = NPP_Malloc<DataType>(Width, Height, m_NPPTmpHStep);
+         m_NPPTmpV = NPP_Malloc<DataType>(Width, Height, m_NPPTmpVStep, channels);
          )
    }
 
    void Free()
    {
-      FilterBenchBase<FILTER_TYPE, width>::Free();
+      FilterBenchBase<FILTER_TYPE, width, channels>::Free();
 
       NPP_CODE(nppiFree(m_NPPTmpV);)
-      NPP_CODE(nppiFree(m_NPPTmpH);)
    }
 
 protected:
 
    CSimpleImage m_IPPTmpV;
-   CSimpleImage m_IPPTmpH;
-
-   void* m_CUDATmpV;
-   uint  m_CUDATmpVStep;
-   void* m_CUDATmpH;
-   uint  m_CUDATmpHStep;
 
    void * m_NPPTmpV;
    int m_NPPTmpVStep;
-   void * m_NPPTmpH;
-   int m_NPPTmpHStep;
 };
 
-#undef FILTER_BENCH
-#define FILTER_BENCH(Name, width) \
-class CONCATENATE(CONCATENATE(Name, width), Bench) : public AdvancedFilter<FILTER_TYPE, width / 2>\
+#undef DECLARE_FILTER_BENCH
+#define DECLARE_FILTER_BENCH(Name, width, nb_channels) \
+class FILTER_CLASS_NAME(Name, width, nb_channels) : public AdvancedFilter<FILTER_TYPE, width / 2, nb_channels>\
 {\
 public:\
    void RunCL()\
@@ -212,11 +245,14 @@ public:\
          CONCATENATE(CONCATENATE(ippiFilter, CONCATENATE(Name, Vert)), FILTER_IPP_MOD)\
             ((FILTER_TYPE*) m_ImgSrc.Data(width / 2, width / 2), m_ImgSrc.Step, (FILTER_TYPE*) m_IPPTmpV.Data(width / 2, width / 2), m_IPPTmpV.Step, m_IPPRoi FILTERS_IPP_MASK);\
          CONCATENATE(CONCATENATE(ippiFilter, CONCATENATE(Name, Horiz)), FILTER_IPP_MOD)\
-            ((FILTER_TYPE*) m_ImgSrc.Data(width / 2, width / 2), m_ImgSrc.Step, (FILTER_TYPE*) m_IPPTmpH.Data(width / 2, width / 2), m_IPPTmpH.Step, m_IPPRoi FILTERS_IPP_MASK);\
-         ippiSqr_32f_C1IR((FILTER_TYPE*) m_IPPTmpV.Data(width / 2, width / 2), m_IPPTmpV.Step, m_IPPRoi);\
-         ippiSqr_32f_C1IR((FILTER_TYPE*) m_IPPTmpH.Data(width / 2, width / 2), m_IPPTmpH.Step, m_IPPRoi);\
-         ippiAdd_32f_C1IR((FILTER_TYPE*) m_IPPTmpV.Data(width / 2, width / 2), m_IPPTmpV.Step, (FILTER_TYPE*) m_IPPTmpH.Data(width / 2, width / 2), m_IPPTmpH.Step, m_IPPRoi);\
-         ippiSqrt_32f_C1R((FILTER_TYPE*) m_IPPTmpH.Data(width / 2, width / 2), m_IPPTmpH.Step, (FILTER_TYPE*) m_ImgDstIPP.Data(width / 2, width / 2), m_ImgDstIPP.Step, m_IPPRoi);\
+            ((FILTER_TYPE*) m_ImgSrc.Data(width / 2, width / 2), m_ImgSrc.Step, (FILTER_TYPE*) m_ImgDstIPP.Data(width / 2, width / 2), m_ImgDstIPP.Step, m_IPPRoi FILTERS_IPP_MASK);\
+         CONCATENATE(ippiSqr, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_IPPTmpV.Data(width / 2, width / 2), m_IPPTmpV.Step, m_IPPRoi);\
+         CONCATENATE(ippiSqr, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_ImgDstIPP.Data(width / 2, width / 2), m_ImgDstIPP.Step, m_IPPRoi);\
+         CONCATENATE(ippiAdd, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_IPPTmpV.Data(width / 2, width / 2), m_IPPTmpV.Step, (FILTER_TYPE*) m_ImgDstIPP.Data(width / 2, width / 2), m_ImgDstIPP.Step, m_IPPRoi);\
+         CONCATENATE(ippiSqrt, FILTERS_MATH_SUFFIX(nb_channels)) ((FILTER_TYPE*) m_ImgDstIPP.Data(width / 2, width / 2), m_ImgDstIPP.Step, m_IPPRoi);\
       )\
    }\
    void RunNPP()\
@@ -225,14 +261,20 @@ public:\
          CONCATENATE(CONCATENATE(nppiFilter, CONCATENATE(Name, Vert)), FILTER_IPP_MOD)\
             ((FILTER_TYPE*) m_NPPSrc, m_NPPSrcStep, (FILTER_TYPE*) m_NPPTmpV, m_NPPTmpVStep, m_NPPRoi FILTERS_NPP_MASK);\
          CONCATENATE(CONCATENATE(nppiFilter, CONCATENATE(Name, Horiz)), FILTER_IPP_MOD)\
-            ((FILTER_TYPE*) m_NPPSrc, m_NPPSrcStep, (FILTER_TYPE*) m_NPPTmpH, m_NPPTmpHStep, m_NPPRoi FILTERS_NPP_MASK);\
-         nppiSqr_32f_C1IR((FILTER_TYPE*) m_NPPTmpV, m_NPPTmpVStep, m_NPPRoi);\
-         nppiSqr_32f_C1IR((FILTER_TYPE*) m_NPPTmpH, m_NPPTmpHStep, m_NPPRoi);\
-         nppiAdd_32f_C1IR((FILTER_TYPE*) m_NPPTmpV, m_NPPTmpVStep, (FILTER_TYPE*) m_NPPTmpH, m_NPPTmpHStep, m_NPPRoi);\
-         nppiSqrt_32f_C1R((FILTER_TYPE*) m_NPPTmpH, m_NPPTmpHStep, (FILTER_TYPE*) m_NPPDst, m_NPPDstStep, m_NPPRoi);\
+            ((FILTER_TYPE*) m_NPPSrc, m_NPPSrcStep, (FILTER_TYPE*) m_NPPDst, m_NPPDstStep, m_NPPRoi FILTERS_NPP_MASK);\
+         CONCATENATE(nppiSqr, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_NPPTmpV, m_NPPTmpVStep, m_NPPRoi);\
+         CONCATENATE(nppiSqr, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_NPPDst, m_NPPDstStep, m_NPPRoi);\
+         CONCATENATE(nppiAdd, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_NPPTmpV, m_NPPTmpVStep, (FILTER_TYPE*) m_NPPDst, m_NPPDstStep, m_NPPRoi);\
+         CONCATENATE(nppiSqrt, FILTERS_MATH_SUFFIX(nb_channels))\
+            ((FILTER_TYPE*) m_NPPDst, m_NPPDstStep, m_NPPRoi);\
          )\
    }\
 };
+
+#define FILTERS_MATH_SUFFIX(nb_channels) CONCATENATE(_32f_C, CONCATENATE(nb_channels, IR))
 
 #undef FILTERS_IPP_MASK
 #undef FILTERS_NPP_MASK
@@ -241,12 +283,24 @@ public:\
 
 FILTER_BENCH(Sobel, 3)
 
+#undef FILTER_IPP_MOD
 #undef FILTERS_IPP_MASK
 #undef FILTERS_NPP_MASK
+#define FILTER_IPP_MOD _32f_C4R
+#define FILTERS_IPP_MASK
+#define FILTERS_NPP_MASK
+
+FILTER_BENCH4(Sobel, 3)
+
+#undef FILTER_IPP_MOD
+#undef FILTERS_IPP_MASK
+#undef FILTERS_NPP_MASK
+#define FILTER_IPP_MOD Mask_32f_C1R
 #define FILTERS_IPP_MASK , ippMskSize5x5
 #define FILTERS_NPP_MASK , NPP_MASK_SIZE_5_X_5
 
 FILTER_BENCH(Sobel, 5)
+//FILTER_BENCH4(Sobel, 5)  // 32f 5x5 4C Sobel not supported in IPP
 
 #undef FILTER_IPP_MOD
 #undef FILTERS_IPP_MASK
@@ -257,3 +311,9 @@ FILTER_BENCH(Sobel, 5)
 
 FILTER_BENCH(Prewitt, 3)
 FILTER_BENCH(Scharr, 3)
+
+#undef FILTER_IPP_MOD
+#define FILTER_IPP_MOD _32f_C4R
+
+FILTER_BENCH4(Prewitt, 3)
+//FILTER_BENCH(Scharr, 3)  // 4C Scharr not supported in IPP

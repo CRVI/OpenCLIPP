@@ -153,26 +153,40 @@ void RunBench()
    Bench(__ID(ResizeBench<float, 11, 11, true>));*/
 
    // Filters
-   Bench(Sobel3Bench);
-   Bench(Sobel5Bench);
-   Bench(Prewitt3Bench);
-   Bench(Scharr3Bench);
+   Bench(Sobel3_1Bench);
+   Bench(Sobel5_1Bench);
+   Bench(Prewitt3_1Bench);
+   Bench(Scharr3_1Bench);
 
-   Bench(Gauss3Bench);
-   Bench(Gauss5Bench);
-   Bench(Sharpen3Bench);
-   Bench(SobelVert3Bench);
-   Bench(SobelHoriz3Bench);
-   Bench(SobelVert5Bench);
-   Bench(SobelHoriz5Bench);
-   Bench(ScharrVert3Bench);
-   Bench(ScharrHoriz3Bench);
-   Bench(PrewittVert3Bench);
-   Bench(PrewittHoriz3Bench);
-   Bench(Laplace3Bench);
-   Bench(Laplace5Bench);
-   Bench(SobelCross3Bench);
-   Bench(SobelCross5Bench);
+   Bench(Gauss3_1Bench);
+   Bench(Gauss5_1Bench);
+   Bench(Sharpen3_1Bench);
+   Bench(SobelVert3_1Bench);
+   Bench(SobelHoriz3_1Bench);
+   Bench(SobelVert5_1Bench);
+   Bench(SobelHoriz5_1Bench);
+   Bench(ScharrVert3_1Bench);
+   Bench(ScharrHoriz3_1Bench);
+   Bench(PrewittVert3_1Bench);
+   Bench(PrewittHoriz3_1Bench);
+   Bench(Laplace3_1Bench);
+   Bench(Laplace5_1Bench);
+   Bench(SobelCross3_1Bench);
+   Bench(SobelCross5_1Bench);
+
+   Bench(Sharpen3_4Bench);
+   Bench(SobelVert3_4Bench);
+   Bench(SobelHoriz3_4Bench);
+#ifndef FULL_BENCH               // These work but they use too much RAM to run well on my machine with high resolution images - would require 12+GB of RAM for them
+   Bench(PrewittVert3_4Bench);
+   Bench(PrewittHoriz3_4Bench);
+   Bench(Laplace3_4Bench);
+   Bench(Gauss3_4Bench);
+   Bench(Laplace5_4Bench);
+   Bench(Gauss5_4Bench);
+   Bench(Sobel3_4Bench);
+   Bench(Prewitt3_4Bench);
+#endif   // FULL_BENCH
    
    B(CompareCLT);
    B(CompareCLQ);

@@ -61,7 +61,7 @@ bool AbsDiff(const CSimpleImage& Source1, const CSimpleImage& Source2, CSimpleIm
 
 float FindMax(const CSimpleImage& Source, SPoint Offset, SSize RoiSize, SPoint& Index)
 {
-   IppiSize Roi = {RoiSize.Width, RoiSize.Height};
+   IppiSize Roi = {RoiSize.Width * Source.Channels, RoiSize.Height};
    Ipp8u V8 = 0;
    Ipp16u V16 = 0;
    Ipp32f VF = 0;
@@ -89,7 +89,7 @@ float FindMax(const CSimpleImage& Source, SPoint Offset, SSize RoiSize, SPoint& 
       Result = 0;
    }
 
-   Index.X = PosX;
+   Index.X = PosX / Source.Channels;
    Index.Y = PosY;
 
    return Result;

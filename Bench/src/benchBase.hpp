@@ -158,9 +158,10 @@ public:
    : IBench1in1out(UseBuffer)
    { }
 
-   void Create(uint Width, uint Height)
+   void Create(uint Width, uint Height, int NbChannels = 1)
    {
-      IBench1in1out::Create<DataType, DataType>(Width, Height);
+      IBench1in1out::Create<DataType, DataType>(Width, Height,
+         0, 0, true, NbChannels, NbChannels);
    }
 
 };
