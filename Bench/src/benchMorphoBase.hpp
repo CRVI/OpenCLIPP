@@ -31,6 +31,8 @@ class MorphoBenchBase : public IBench1in1out
 public:
    MorphoBenchBase()
    : IBench1in1out(MORPHO_USES_BUFFER)
+   , m_CLTmp(nullptr)
+   , m_CLBufferTmp(nullptr)
    , m_NPPTmp(nullptr)
    , m_NPPTmpStep(0)
    , m_MaskSize(3, 3)
@@ -93,6 +95,9 @@ inline void MorphoBenchBase::Create(uint Width, uint Height)
 inline void MorphoBenchBase::Free()
 {
    IBench1in1out::Free();
+
+   ocipReleaseImageBuffer(m_CLBufferTmp);
+   ocipReleaseImage(m_CLTmp);
 
    NPP_CODE(nppiFree(m_NPPTmp);)
 }
