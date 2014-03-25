@@ -48,7 +48,6 @@ public:
 
    float CompareTolerance() const { return 1; }   // Increased tolerance to accept minor rounding errors
 
-   typedef DstType dataType;
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename SrcType, typename DstType>

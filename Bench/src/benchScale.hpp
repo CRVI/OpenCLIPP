@@ -44,7 +44,6 @@ public:
 
    bool HasCVTest() const { return false; }
 
-   typedef DstType dataType;
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename SrcType, typename DstType>

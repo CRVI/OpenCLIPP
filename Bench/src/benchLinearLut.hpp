@@ -48,8 +48,6 @@ public:
 
    bool HasCVTest() const { return false; }
 
-   typedef DataType dataType;
-
    const static int Length = 5;
 
 private:

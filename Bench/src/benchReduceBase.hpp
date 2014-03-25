@@ -44,8 +44,6 @@ public:
 
    virtual float CompareTolerance() const { return SUCCESS_EPSILON; }
 
-   typedef DataType dataType;
-
 protected:
 
    ocipProgram m_Program;

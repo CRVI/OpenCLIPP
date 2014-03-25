@@ -163,7 +163,6 @@ public:
       IBench1in1out::Create<DataType, DataType>(Width, Height);
    }
 
-   typedef DataType dataType;
 };
 
 template<typename DataType, bool UseBuffer>
@@ -179,33 +178,8 @@ public:
       IBench2in1out::Create<DataType, DataType>(Width, Height);
    }
 
-   typedef DataType dataType;
 };
 
-template <typename T>
-struct SHasDataType {
-   template <typename C> static char t(typename C::dataType*);
-   template <typename> static int t(...);
-   static const bool value = sizeof(t<T>(0)) == sizeof(char);
-};
-
-template<class Bench, bool HasType>
-struct SGetBenchDataTypeImpl
-{
-   typedef unsigned char Type;
-};
-
-template<class Bench>
-struct SGetBenchDataTypeImpl<Bench, true>
-{
-   typedef typename Bench::dataType Type;
-};
-
-template<class Bench>
-struct SGetBenchDataType
-{
-   typedef typename SGetBenchDataTypeImpl<Bench, SHasDataType<Bench>::value>::Type Type;
-};
 
 NPP_CODE(
    template<typename T>

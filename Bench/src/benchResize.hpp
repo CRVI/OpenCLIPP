@@ -40,8 +40,6 @@ public:
    void RunCL();
    void RunCV();
 
-   typedef DataType dataType;
-
    float CompareTolerance() const { return .05f; }    // High tolerance to allow for minor interpolation differences
    bool CompareTolRelative() const { return true; }
 
