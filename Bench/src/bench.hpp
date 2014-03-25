@@ -39,6 +39,7 @@
 #include "benchLut.hpp"
 #include "benchLinearLut.hpp"
 #include "benchTransfer.hpp"
+#include "benchImageProximityBase.hpp"
 #include "benchImageTransfer.hpp"
 #include "benchIntegral.hpp"
 #include "benchResize.hpp"
@@ -215,6 +216,10 @@ void RunBench()
    B(Threshold_ImgEQ);
    B(Threshold_ImgGQ);
    B(Threshold_ImgGT);*/
+
+   Bench(SqrDistanceBenchU8);
+   Bench(SqrDistanceBenchU16);
+   Bench(SqrDistanceBenchF32);
 
    if (ocipIsFFTAvailable())
    {

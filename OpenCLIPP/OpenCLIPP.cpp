@@ -57,6 +57,7 @@ struct SProgramList
       lutVector(CL),
       morphology(CL),
       morphologyBuffer(CL),
+      imageProximity(CL),
       transform(CL),
       thresholding(CL),
       thresholdingVector(CL)
@@ -74,6 +75,7 @@ struct SProgramList
    LutVector lutVector;
    Morphology morphology;
    MorphologyBuffer morphologyBuffer;
+   ImageProximity imageProximity;
    Transform transform;
    Thresholding thresholding;
    ThresholdingVector thresholdingVector;
@@ -367,6 +369,7 @@ PREPARE(ocipPrepareConversion, conversions)
 PREPARE(ocipPrepareThresholding, thresholding)
 PREPARE(ocipPrepareFilters, filters)
 PREPARE(ocipPrepareHistogram, histogram)
+PREPARE(ocipPrepareImageProximity, imageProximity)
 
 PREPARE2(ocipPrepareStatistics, Statistics)
 PREPARE2(ocipPrepareBlob, Blob)
@@ -472,6 +475,13 @@ MORPHO(ocipBlackHat, BlackHat)
 
 #undef MORPHO
 
+#undef CLASS
+#define CLASS GetList().imageProximity
+
+ocipError ocip_API ocipSqrDistance(ocipImage Source, ocipImage Template, ocipImage Dest)
+{
+   H( CLASS.SqrDistance(Img(Source), Img(Template), Img(Dest)) )
+}
 
 #undef CLASS
 #define CLASS GetList().transform

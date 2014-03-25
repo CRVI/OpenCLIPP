@@ -40,6 +40,7 @@
 #include "c++/Programs/LutVector.h"
 #include "c++/Programs/Morphology.h"
 #include "c++/Programs/MorphologyBuffer.h"
+#include "c++/Programs/ImageProximity.h"
 #include "c++/Programs/Statistics.h"
 #include "c++/Programs/StatisticsVector.h"
 #include "c++/Programs/Transform.h"

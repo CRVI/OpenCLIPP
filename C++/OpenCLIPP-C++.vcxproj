@@ -193,6 +193,7 @@
     <ClInclude Include="..\include\c++\Programs\LutVector.h" />
     <ClInclude Include="..\include\c++\Programs\Morphology.h" />
     <ClInclude Include="..\include\c++\Programs\MorphologyBuffer.h" />
+    <ClInclude Include="..\include\c++\Programs\ImageProximity.h" />
     <ClInclude Include="..\include\c++\Programs\Program.h" />
     <ClInclude Include="..\include\c++\Programs\Statistics.h" />
     <ClInclude Include="..\include\c++\Programs\StatisticsVector.h" />
@@ -241,6 +242,7 @@
     <ClCompile Include="programs\LutVector.cpp" />
     <ClCompile Include="programs\Morphology.cpp" />
     <ClCompile Include="programs\MorphologyBuffer.cpp" />
+    <ClCompile Include="programs\ImageProximity.cpp" />
     <ClCompile Include="programs\Program.cpp" />
     <ClCompile Include="programs\Statistics.cpp" />
     <ClCompile Include="programs\StatisticsHelpers.cpp" />
@@ -261,6 +263,7 @@
     <None Include="..\cl-files\Lut.cl" />
     <None Include="..\cl-files\Morphology.cl" />
     <None Include="..\cl-files\Morphology_Buffer.cl" />
+    <None Include="..\cl-files\ImageProximity.cl" />
     <None Include="..\cl-files\Statistics.cl" />
     <None Include="..\cl-files\Thresholding.cl" />
     <None Include="..\cl-files\Transform.cl" />

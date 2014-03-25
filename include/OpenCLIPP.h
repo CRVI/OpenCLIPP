@@ -875,6 +875,13 @@ ocipError ocip_API ocipFFTForward(  ocipProgram Program,        ocipBuffer RealS
 /// \param RealDest : An image buffer containing a 1 channel image of F32. Will receive the transformed image as real numbers only (no imaginary part).
 ocipError ocip_API ocipFFTInverse( ocipProgram Program,        ocipBuffer ComplexSource,   ocipBuffer RealDest);
 
+// ImageProximity ---------------------------------------------------------------------------------------
+// All ImageProximity operations are Syncrhonous, meaning they block until the ImageProximity is calculated and set to the result
+ocipError ocip_API ocipPrepareImageProximity(ocipImage Image);   ///< See ocipPrepareExample
+
+/// Output the coordinate of the template which is found in the source image
+ocipError ocip_API ocipSqrDistance(ocipImage Source, ocipImage Template, ocipImage Dest);
+
 #ifdef __cplusplus
 }
 #endif
