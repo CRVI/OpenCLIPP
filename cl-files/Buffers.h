@@ -64,11 +64,9 @@
 
 #ifdef FLOAT
 #define CONVERT_SCALAR(val) val
-#define CONVERT_FLOAT(val) val
 #define ABS fabs
 #else
 #define CONVERT_SCALAR(val) CONCATENATE(CONCATENATE(convert_, SCALAR), _sat) (val)  // Example : convert_uchar_sat(val)
-#define CONVERT_FLOAT(val) CONCATENATE(convert_float, VEC_WIDTH) (val)              // Example : convert_float16(val)
 #define ABS abs
 #endif
 

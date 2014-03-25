@@ -36,10 +36,13 @@ namespace OpenCLIPP
 
 static std::string SelectName(const char * Name, const ImageBase& Img)
 {
-   if (Img.NbChannels() != 1)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Filters on images with >1 channels not yet supported");
+   if (Img.NbChannels() < 1 || Img.NbChannels() > 4)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Filters are supported only on images that have between 1 and 4 channels");
 
-   return std::string(Name) + "_1C";
+   std::string KernelName = Name;
+   KernelName += "_" + std::to_string(Img.NbChannels()) + "C";
+
+   return KernelName;
 }
 
 static void GenerateBlurMask(std::vector<float>& Mask, float Sigma, int MaskSize)
@@ -81,7 +84,7 @@ void FiltersVector::GaussianBlur(ImageBuffer& Source, ImageBuffer& Dest, float S
    ReadBuffer MaskBuffer(*m_CL, Mask.data(), NbElements);
 
    // Execute kernel
-   Kernel(gaussian_blur, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Height(), MaskBuffer, MaskSize);
+   Kernel(gaussian_blur, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width(), Source.Height(), MaskBuffer, MaskSize);
 }
 
 void FiltersVector::Gauss(ImageBuffer& Source, ImageBuffer& Dest, int Width)
@@ -90,13 +93,13 @@ void FiltersVector::Gauss(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(gaussian3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(gaussian3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(gaussian5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(gaussian5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -110,7 +113,7 @@ void FiltersVector::Sharpen(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    if (Width != 3)
       throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Sharpen - allowed : 3");
 
-   Kernel(sharpen3, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Height());
+   Kernel(sharpen3, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
 void FiltersVector::Smooth(ImageBuffer& Source, ImageBuffer& Dest, int Width)
@@ -120,7 +123,7 @@ void FiltersVector::Smooth(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    if (Width < 3 || (Width & 1) == 0)
       throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Smooth");
 
-   Kernel(smooth, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Height(), Width);
+   Kernel(smooth, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width(), Source.Height(), Width);
 }
 
 /*static bool RangeFit(const ImageBase& Img, int RangeX, int RangeY)
@@ -147,15 +150,15 @@ void FiltersVector::Median(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    {
       /*if (RangeFit(Source, 16, 16))  // The cached version is slower on my GTX 680
       {
-         Kernel_(*m_CL, SelectProgram(Source), median3_cached, cl::NDRange(16, 16, 1), Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+         Kernel_(*m_CL, SelectProgram(Source), median3_cached, cl::NDRange(16, 16, 1), Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
          return;
       }*/
 
-      Kernel(median3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(median3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
-   Kernel(median5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+   Kernel(median5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
 void FiltersVector::SobelVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
@@ -164,13 +167,13 @@ void FiltersVector::SobelVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(sobelV3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobelV3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(sobelV5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobelV5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -183,13 +186,13 @@ void FiltersVector::SobelHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width
 
    if (Width == 3)
    {
-      Kernel(sobelH3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobelH3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(sobelH5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobelH5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
    
@@ -202,13 +205,13 @@ void FiltersVector::SobelCross(ImageBuffer& Source, ImageBuffer& Dest, int Width
 
    if (Width == 3)
    {
-      Kernel(sobelCross3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobelCross3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(sobelCross5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobelCross5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
    
@@ -221,13 +224,13 @@ void FiltersVector::Sobel(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(sobel3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobel3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(sobel5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(sobel5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
    
@@ -240,7 +243,7 @@ void FiltersVector::PrewittVert(ImageBuffer& Source, ImageBuffer& Dest, int Widt
 
    if (Width == 3)
    {
-      Kernel(prewittV3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(prewittV3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -253,7 +256,7 @@ void FiltersVector::PrewittHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Wid
 
    if (Width == 3)
    {
-      Kernel(prewittH3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(prewittH3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -266,7 +269,7 @@ void FiltersVector::Prewitt(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(prewitt3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(prewitt3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -279,7 +282,7 @@ void FiltersVector::ScharrVert(ImageBuffer& Source, ImageBuffer& Dest, int Width
 
    if (Width == 3)
    {
-      Kernel(scharrV3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(scharrV3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -292,7 +295,7 @@ void FiltersVector::ScharrHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Widt
 
    if (Width == 3)
    {
-      Kernel(scharrH3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(scharrH3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -305,7 +308,7 @@ void FiltersVector::Scharr(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(scharr3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(scharr3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -318,13 +321,13 @@ void FiltersVector::Hipass(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(hipass3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(hipass3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(hipass5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(hipass5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
@@ -337,13 +340,13 @@ void FiltersVector::Laplace(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 
    if (Width == 3)
    {
-      Kernel(laplace3, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(laplace3, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 
    if (Width == 5)
    {
-      Kernel(laplace5, Source, Dest, Source.Step(), Dest.Step(), Source.Height());
+      Kernel(laplace5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
       return;
    }
 

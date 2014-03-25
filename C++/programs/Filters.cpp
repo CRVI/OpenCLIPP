@@ -25,12 +25,28 @@
 #include "Programs/Filters.h"
 #include <vector>
 
+#define SELECT_NAME(name, src_img) SelectName( #name , src_img)
+
 #include "kernel_helpers.h"
 
 #include <math.h>
 
 namespace OpenCLIPP
 {
+
+static std::string SelectName(const char * Name, const ImageBase& Img)
+{
+   int NbChannels = 1;
+
+   if (Img.NbChannels() > 1)
+      NbChannels = 4;
+
+   std::string KernelName = Name;
+
+   KernelName += "_" + std::to_string(NbChannels) + "C";
+
+   return KernelName;
+}
 
 static void GenerateBlurMask(std::vector<float>& Mask, float Sigma, int MaskSize)
 {
