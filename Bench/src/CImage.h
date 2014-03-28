@@ -142,6 +142,7 @@ IMG_TYPE(short, S16)
 IMG_TYPE(uint, U32)
 IMG_TYPE(int, S32)
 IMG_TYPE(float, F32)
+IMG_TYPE(double, F64)
 
 #undef IMG_TYPE
 

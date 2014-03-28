@@ -1,18 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<--! 
-	This is a natvis file for using with Visual Studio 2012 and the ImageWatch extension
-	How to use :
-		Install ImageWatch extension in visual studio 2012 Update 2 or more recent
-			Download from here : http://visualstudiogallery.msdn.microsoft.com/e682d542-7ef3-402c-b857-bbfba714f78d
-		Copy this file to : C:\Users\username\Documents\Visual Studio 2012\Visualizers
-		When debugging a program using OpenCLIPP C++ image types, display the extension UI : View, Other Windows, Image Watch
-		Follor ImageWatch documentation for more details
-			Documentation URL : http://research.microsoft.com/en-us/um/redmond/groups/ivm/imagewatchhelp/imagewatchhelp.htm
-			
-	NOTE: The extension only shows the host version of the image. It won't show images from the GPU nor will it display temporary (GPU-only) images.
--->
-
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
   <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" MenuName="Add to Image Watch"/>
@@ -29,6 +15,7 @@
     <DisplayString Condition="m_Img.Type==4">{{UINT8, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
     <DisplayString Condition="m_Img.Type==5">{{INT32, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
     <DisplayString Condition="m_Img.Type==6">{{FLOAT32, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
+    <DisplayString Condition="m_Img.Type==7">{{FLOAT64, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
     <Expand>
       <Synthetic Name="[type]" Condition="m_Img.Type==0">
         <DisplayString>UINT8</DisplayString>
@@ -50,6 +37,9 @@
       </Synthetic>
       <Synthetic Name="[type]" Condition="m_Img.Type==6">
         <DisplayString>FLOAT32</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[type]" Condition="m_Img.Type==7">
+        <DisplayString>FLOAT64</DisplayString>
       </Synthetic>
       <Item Name="[channels]">m_Img.Channels</Item>
       <Item Name="[width]">m_Img.Width</Item>
@@ -71,6 +61,7 @@
     <DisplayString Condition="m_Img.Type==4">{{UINT8, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
     <DisplayString Condition="m_Img.Type==5">{{INT32, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
     <DisplayString Condition="m_Img.Type==6">{{FLOAT32, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
+    <DisplayString Condition="m_Img.Type==7">{{FLOAT64, {m_Img.Channels} x {m_Img.Width} x {m_Img.Height}}}</DisplayString>
     <Expand>
       <Synthetic Name="[type]" Condition="m_Img.Type==0">
         <DisplayString>UINT8</DisplayString>
@@ -92,6 +83,9 @@
       </Synthetic>
       <Synthetic Name="[type]" Condition="m_Img.Type==6">
         <DisplayString>FLOAT32</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[type]" Condition="m_Img.Type==7">
+        <DisplayString>FLOAT64</DisplayString>
       </Synthetic>
       <Item Name="[channels]">m_Img.Channels</Item>
       <Item Name="[width]">m_Img.Width</Item>
@@ -113,6 +107,7 @@
     <DisplayString Condition="m_Buffer.m_Img.Type==4">{{UINT8, {m_Buffer.m_Img.Channels} x {m_Buffer.m_Img.Width} x {m_Buffer.m_Img.Height}}}</DisplayString>
     <DisplayString Condition="m_Buffer.m_Img.Type==5">{{INT32, {m_Buffer.m_Img.Channels} x {m_Buffer.m_Img.Width} x {m_Buffer.m_Img.Height}}}</DisplayString>
     <DisplayString Condition="m_Buffer.m_Img.Type==6">{{FLOAT32, {m_Buffer.m_Img.Channels} x {m_Buffer.m_Img.Width} x {m_Buffer.m_Img.Height}}}</DisplayString>
+    <DisplayString Condition="m_Buffer.m_Img.Type==7">{{FLOAT64, {m_Buffer.m_Img.Channels} x {m_Buffer.m_Img.Width} x {m_Buffer.m_Img.Height}}}</DisplayString>
     <Expand>
       <Synthetic Name="[type]" Condition="m_Buffer.m_Img.Type==0">
         <DisplayString>UINT8</DisplayString>
@@ -134,6 +129,9 @@
       </Synthetic>
       <Synthetic Name="[type]" Condition="m_Buffer.m_Img.Type==6">
         <DisplayString>FLOAT32</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[type]" Condition="m_Buffer.m_Img.Type==7">
+        <DisplayString>FLOAT64</DisplayString>
       </Synthetic>
       <Item Name="[channels]">m_Buffer.m_Img.Channels</Item>
       <Item Name="[width]">m_Buffer.m_Img.Width</Item>
@@ -159,6 +157,7 @@
     <DisplayString Condition="Type==4">{{UINT8, {Channels} x {Width} x {Height}}}</DisplayString>
     <DisplayString Condition="Type==5">{{INT32, {Channels} x {Width} x {Height}}}</DisplayString>
     <DisplayString Condition="Type==6">{{FLOAT32, {Channels} x {Width} x {Height}}}</DisplayString>
+    <DisplayString Condition="Type==7">{{FLOAT64, {Channels} x {Width} x {Height}}}</DisplayString>
     <Expand>
       <Synthetic Name="[type]" Condition="Type==0">
         <DisplayString>UINT8</DisplayString>
@@ -180,6 +179,9 @@
       </Synthetic>
       <Synthetic Name="[type]" Condition="Type==6">
         <DisplayString>FLOAT32</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[type]" Condition="Type==7">
+        <DisplayString>FLOAT64</DisplayString>
       </Synthetic>
       <Item Name="[channels]">Channels</Item>
       <Item Name="[width]">Width</Item>

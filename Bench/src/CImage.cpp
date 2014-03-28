@@ -62,6 +62,8 @@ uint Depth(SImage::EDataType Type)
    case SImage::S32:
    case SImage::F32:
       return 32;
+   case SImage::F64:
+      return 64;
    }
 
    return 0;

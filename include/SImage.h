@@ -42,6 +42,7 @@ struct SImage
       U32,           /// Unsigned 32-bit integer (unsigned int)
       S32,           /// Signed 32-bit integer (int)
       F32,           /// 32-bit floating point (float)
+      F64,           /// 64-bit floating point (double)
       NbDataTypes,   /// Number of possible data types
    } Type;  ///< Data type of each channel in the image
 };

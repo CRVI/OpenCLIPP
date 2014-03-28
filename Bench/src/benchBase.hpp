@@ -270,6 +270,8 @@ CV_CODE(
          return GetCVType<int>(NbChannels);
       case SImage::F32:
          return GetCVType<float>(NbChannels);
+      case SImage::F64:
+         return GetCVType<double>(NbChannels);
       default:
          assert(false);
          return 0;

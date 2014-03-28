@@ -110,6 +110,7 @@ bool ImageBase::IsFloat() const
    case SImage::S32:
       return false;
    case SImage::F32:
+   case SImage::F64:
       return true;
    case SImage::NbDataTypes:
    default:
@@ -131,6 +132,7 @@ bool ImageBase::IsUnsigned() const
    case SImage::S16:
    case SImage::S32:
    case SImage::F32:
+   case SImage::F64:
       return false;
    case SImage::NbDataTypes:
    default:
@@ -371,6 +373,8 @@ uint DepthOfType(SImage::EDataType Type)
    case SImage::S32:
    case SImage::F32:
       return 32;
+   case SImage::F64:
+      return 64;
    case SImage::NbDataTypes:
    default:
       return 0;
@@ -428,6 +432,8 @@ cl::ImageFormat FormatFromImage(const SImage& image)
    case SImage::F32:
       format.image_channel_data_type = CL_FLOAT;
       break;
+   case SImage::F64:
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "F64 images are not supported in OpenCL");
    case SImage::NbDataTypes:
    default:
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "FormatFromILImage - DataType");

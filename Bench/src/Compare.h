@@ -52,6 +52,24 @@ bool AbsDiff(const CSimpleImage& Source1, const CSimpleImage& Source2, CSimpleIm
          (Ipp32f*) Source2.Data(), Source2.Step,
          (Ipp32f*) Dest.Data(), Dest.Step, Roi);
       break;
+   case SImage::F64:
+      // IPP does not support AbsDiff for 64b
+      // Use OpenCLIPP instead
+      {
+         ocipBuffer buf1 = nullptr, buf2 = nullptr, dest = nullptr;
+         ocipCreateImageBuffer(&buf1, Source1, (void *) Source1.Data(), CL_MEM_READ_WRITE);
+         ocipCreateImageBuffer(&buf2, Source2, (void *) Source2.Data(), CL_MEM_READ_WRITE);
+         ocipCreateImageBuffer(&dest, Dest, (void *) Dest.Data(), CL_MEM_READ_WRITE);
+
+         ocipAbsDiff_V(buf2, buf1, dest);
+
+         ocipReadImageBuffer(dest);
+
+         ocipReleaseImageBuffer(buf1);
+         ocipReleaseImageBuffer(buf2);
+         ocipReleaseImageBuffer(dest);
+      }
+      break;
    default:
       return false;
    }
@@ -84,6 +102,21 @@ float FindMax(const CSimpleImage& Source, SPoint Offset, SSize RoiSize, SPoint& 
    case SImage::F32:
       ippiMaxIndx_32f_C1R((Ipp32f*) Data, Source.Step, Roi, &VF, &PosX, &PosY);
       Result = VF;
+      break;
+   case SImage::F64:
+      // MaxIndx F64 is not supported in IPP
+      {
+         double res = 0;
+         ocipBuffer buf = nullptr;
+         ocipProgram program = nullptr;
+         ocipCreateImageBuffer(&buf, Source, (void *) Source.Data(), CL_MEM_READ_WRITE);
+         ocipPrepareImageBufferStatistics(&program, buf);
+         ocipMaxIndx_V(program, buf, &res, &PosX, &PosY);
+         Result = (float) res;
+
+         ocipReleaseImageBuffer(buf);
+         ocipReleaseProgram(program);
+      }
       break;
    default:
       Result = 0;
@@ -132,6 +165,8 @@ static inline bool CompareImages(const CSimpleImage& Img1,
          Value = static_cast<const CImage<unsigned short>&>(Img1)(Index.X, Index.Y);
       else if (Img1.Type == Img1.F32)
          Value = static_cast<const CImage<float>&>(Img1)(Index.X, Index.Y);
+      else if (Img1.Type == Img1.F64)
+         Value = static_cast<const CImage<double>&>(Img1)(Index.X, Index.Y);
       /*else
          assert(false);*/
 

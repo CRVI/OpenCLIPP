@@ -172,7 +172,7 @@ ImageProgram::ImageProgram(COpenCL& CL, bool fromSource, const char * Source)
 
 const vector<string> ImageProgram::GetOptions()
 {
-   const char * Defines[NbPixelTypes] = {"I", "UI", "F"};    // Keep in synch with EPixelTypes
+   const char * Defines[NbPixelTypes] = {"I", "UI", "F"};
 
    vector<string> Options(NbPixelTypes);
    for (int i = 0; i < NbPixelTypes; i++)
@@ -287,6 +287,7 @@ int VectorProgram::GetVectorWidth(SImage::EDataType Type)
    case SImage::U32:
    case SImage::S32:
    case SImage::F32:
+   case SImage::F64:
       return 2;
    case SImage::NbDataTypes:
    default:
@@ -340,7 +341,7 @@ Program& VectorProgram::SelectProgram(const ImageBase& Source)
 
 const char ** GetDataTypeList()
 {
-   static const char * PixelTypes[SImage::NbDataTypes] = {"U8", "S8", "U16", "S16", "U32", "S32", "F32"};    // Keep in synch with EPixelTypes
+   static const char * PixelTypes[SImage::NbDataTypes] = {"U8", "S8", "U16", "S16", "U32", "S32", "F32", "F64"};    // Keep in synch with EPixelTypes
    return PixelTypes;
 }
 

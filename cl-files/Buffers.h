@@ -54,6 +54,12 @@
 #define FLOAT
 #endif
 
+#ifdef F64
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#define SCALAR double
+#define FLOAT
+#endif
+
 #ifndef SCALAR
 #define SCALAR uchar
 #endif
