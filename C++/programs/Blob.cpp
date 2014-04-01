@@ -45,7 +45,7 @@ void Blob::SBlobInfo::Init(int connectType)
 void Blob::PrepareFor(ImageBase& Source)
 {
    if (m_TempBuffer == nullptr || Source.Width() > m_TempBuffer->Width() || Source.Height() > m_TempBuffer->Height())
-      m_TempBuffer = std::make_shared<TempImageBuffer>(*m_CL, Source.Size(), SImage::U32);
+      m_TempBuffer = std::make_shared<TempImageBuffer>(*m_CL, Source.Size(), SImage::S32);
 }
 
 void Blob::ComputeLabels(IImage& Source, ImageBuffer& Labels, int ConnectType)
@@ -56,8 +56,7 @@ void Blob::ComputeLabels(IImage& Source, ImageBuffer& Labels, int ConnectType)
    if (Labels.Depth() != 32 || Labels.IsFloat())
       throw cl::Error(CL_INVALID_VALUE, "Wrong Labels image type in Blob::ComputeLabels - Labels must be 32 bit integer");
 
-   if (m_TempBuffer == nullptr)
-      PrepareFor(Source);
+   PrepareFor(Source);
 
    CheckSameSize(Source, Labels);
    CheckCompatibility(Labels, *m_TempBuffer);
@@ -90,7 +89,7 @@ void Blob::RenameLabels(ImageBuffer& Labels)
       throw cl::Error(CL_INVALID_VALUE, "Wrong Labels image type in Blob::RenameLabels - Labels must be 32 bit integer");
 
    if (m_TempBuffer == nullptr)
-      throw cl::Error(CL_INVALID_MEM_OBJECT, "Wrong Labels image type in Blob::RenameLabels - Labels must be 32 bit integer");
+      throw cl::Error(CL_INVALID_MEM_OBJECT, "ComputeLabels must be called before renaming the labels");
 
    CheckCompatibility(Labels, *m_TempBuffer);
 

@@ -177,8 +177,8 @@ kernel void label_step1(global uint * labelImg, global uint * equivTable,
    uint label_step, uint table_step,
    global struct SBlobInfo * info, int Iter)
 {
-   const int img_width = get_global_size(0);
-   const int img_height = get_global_size(0);
+   const int img_width  = get_global_size(0);
+   const int img_height = get_global_size(1);
    const int gx = get_global_id(0);
    const int gy = get_global_id(1);
 

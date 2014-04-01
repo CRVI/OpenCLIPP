@@ -614,11 +614,11 @@ ocipError ocip_API ocipPrepareBlob(ocipProgram * ProgramPtr, ocipImage Image);  
 /// \param Source : The image to analyze
 /// \param Labels : must be a 32b integer image buffer
 /// \param ConnectType : Type of pixel connectivity, can be 4 or 8
-ocipError ocip_API ocipComputeLabels(  ocipImage Source, ocipBuffer Labels, int ConnectType);
+ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipImage Source, ocipBuffer Labels, int ConnectType);
 
 /// Renames the labels to be from 0 to NbLabels-1.
 /// \param Labels : must be an image resulting from a previous call to ComputeLabels()
-ocipError ocip_API ocipRenameLabels(   ocipBuffer Labels);
+ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels);
 
 
 
