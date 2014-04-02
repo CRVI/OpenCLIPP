@@ -599,8 +599,8 @@ ocipError ocip_API ocipMeanSqr_4C(  ocipProgram Program, ocipImage Source, doubl
 
 // Integral ----------------------------------------------------------------------------------------
 ocipError ocip_API ocipPrepareIntegral(ocipProgram * ProgramPtr, ocipImage Image);  ///< See ocipPrepareExample2
-ocipError ocip_API ocipIntegralScan(ocipProgram Program, ocipImage Source, ocipImage Dest);  ///< Scans the image and generates the Integral sum into Dest
-
+ocipError ocip_API ocipIntegral(ocipProgram Program, ocipImage Source, ocipImage Dest);  ///< Scans the image and generates the Integral sum into Dest - Dest must be F32
+ocipError ocip_API ocipSqrIntegral(ocipProgram Program, ocipImage Source, ocipImage Dest);  ///< Scans the image and generates the Square Integral sum into Dest - Dest must be F32
 
 
 // Blobs -------------------------------------------------------------------------------------------
@@ -878,6 +878,15 @@ ocipError ocip_API ocipFFTForward(  ocipProgram Program,        ocipBuffer RealS
 ///                        Its width must be >= Width(RealDest)/2+1.
 /// \param RealDest : An image buffer containing a 1 channel image of F32. Will receive the transformed image as real numbers only (no imaginary part).
 ocipError ocip_API ocipFFTInverse( ocipProgram Program,        ocipBuffer ComplexSource,   ocipBuffer RealDest);
+
+// Integral on image buffers --------------------------------------------------------------------------
+ocipError ocip_API ocipPrepareImageBufferIntegral(ocipProgram * ProgramPtr, ocipBuffer Image); ///< See ocipPrepareExample
+
+///< Scans the image buffer and generates the Integral sum into Dest buffer - Dest must be F32 or F64 - 1 channel
+ocipError ocip_API ocipIntegral_B( ocipProgram Program, ocipBuffer Source, ocipBuffer Dest);
+
+///< Scans the image buffer and generates the Square Integral sum into Dest buffer - Dest must be F32 or F64 - 1 channel
+ocipError ocip_API ocipSqrIntegral_B( ocipProgram Program, ocipBuffer Source, ocipBuffer Dest);
 
 // ImageProximity ---------------------------------------------------------------------------------------
 // All ImageProximity operations are Syncrhonous, meaning they block until the ImageProximity is calculated and set to the result

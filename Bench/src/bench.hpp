@@ -42,6 +42,7 @@
 #include "benchImageProximityBase.hpp"
 #include "benchImageTransfer.hpp"
 #include "benchIntegral.hpp"
+#include "benchSqrIntegral.hpp"
 #include "benchResize.hpp"
 #include "benchFilters.hpp"
 #include "benchThreshold.hpp"
@@ -227,6 +228,11 @@ void RunBench()
       Bench(FFTBackwardBench);
    }
 
+   Bench(IntegralBenchF32);
+   //Bench(IntegralBenchF64);       // Not supported by IPP
+   //Bench(SqrIntegralBenchF32);    // Not supported by IPP
+   Bench(SqrIntegralBenchF64);
+
 #else // FULL_TESTS
    // Benchmark mode
    Bench(TransferBench);
@@ -268,6 +274,4 @@ void RunBench()
 
    Bench(LutBenchU8);
    Bench(LinearLutBenchF32);
-
-   Bench(IntegralBench);
 }

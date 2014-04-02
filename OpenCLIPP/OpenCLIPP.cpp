@@ -630,7 +630,8 @@ REDUCE_ARG_OP(   ocipMeanSqr_4C,    MeanSqr,       double)
 #undef CLASS
 #define CLASS (*(Integral*)Program)
 
-UNARY_OP(ocipIntegralScan, IntegralScan)
+UNARY_OP(ocipIntegral, IntegralSum)
+UNARY_OP(ocipSqrIntegral, SqrIntegral)
 
 
 #undef CLASS
@@ -665,6 +666,7 @@ PREPARE(ocipPrepareImageBufferFilters, morphologyBuffer)
 PREPARE(ocipPrepareImageBufferThresholding, thresholdingVector)
 
 PREPARE2(ocipPrepareImageBufferStatistics, StatisticsVector)
+PREPARE2(ocipPrepareImageBufferIntegral, IntegralBuffer)
 
 #undef CLASS
 #define CLASS GetList().conversions
@@ -830,6 +832,12 @@ REDUCE_ARG_OP(   ocipSumSqr_4C_V,      SumSqr,        double)
 REDUCE_ARG_OP(   ocipMean_4C_V,        Mean,          double)
 REDUCE_ARG_OP(   ocipMeanSqr_4C_V,     MeanSqr,       double)
 
+
+#undef CLASS
+#define CLASS (*(IntegralBuffer*)Program)
+
+UNARY_OP(ocipIntegral_B, IntegralSum)
+UNARY_OP(ocipSqrIntegral_B, SqrIntegral)
 
 #undef CLASS
 #define CLASS GetList().thresholdingVector

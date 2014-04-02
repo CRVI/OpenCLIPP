@@ -224,6 +224,7 @@
     <ClInclude Include="src\benchImageProximityBase.hpp" />
     <ClInclude Include="src\benchImageTransfer.hpp" />
     <ClInclude Include="src\benchIntegral.hpp" />
+    <ClInclude Include="src\benchSqrIntegral.hpp" />
     <ClInclude Include="src\benchLinearLut.hpp" />
     <ClInclude Include="src\benchLut.hpp" />
     <ClInclude Include="src\benchMorpho.hpp" />

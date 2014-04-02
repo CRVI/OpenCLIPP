@@ -37,9 +37,11 @@ public:
       :  ImageProgram(CL, "Integral.cl")
    { }
 
-
    /// Scans the image and generates the Integral sum into Dest
-   void IntegralScan(IImage& Source, IImage& Dest);
+   void IntegralSum(IImage& Source, IImage& Dest);
+
+   /// Scans the image and generates the Square Integral sum into Dest
+   void SqrIntegral(IImage& Source, IImage& Dest);
 
    /// Allocates internal temporary buffers and builds the program
    void PrepareFor(ImageBase& Source);

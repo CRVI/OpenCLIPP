@@ -73,17 +73,55 @@ void Integral::PrepareFor(ImageBase& Source)
    m_HorizontalJunctions = std::make_shared<TempImage>(*m_CL, HorizontalImgSize, SImage::F32);
 }
 
-void Integral::IntegralScan(IImage& Source, IImage& Dest)
+void Integral::IntegralSum(IImage& Source, IImage& Dest)
 {
    PrepareFor(Source);
 
    CheckSameSize(Source, Dest);
    CheckFloat(Dest);
 
+   if (Dest.DataType() != SImage::F32)
+     throw cl::Error(CL_INVALID_VALUE, "Destination image of SqrIntegral must be float type");
+
    uint Width = Source.Width();
    uint Height = Source.Height();
 
    Kernel(scan1, Source, Dest, Width, Height);
+
+   if (GetNbGroupsW(Source) > 1)
+   {
+      make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan2")
+         (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height())), Dest, *m_VerticalJunctions);
+   }
+
+#undef KERNEL_RANGE
+#define KERNEL_RANGE(src_img) src_img.FullRange()
+
+   Kernel(scan3, In(Dest, *m_VerticalJunctions), Dest);
+
+   if (GetNbGroupsH(Source) > 1)
+   {
+      make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan4")
+         (EnqueueArgs(*m_CL, NDRange(Source.Width(), GetNbGroupsH(Source) - 1)), Dest, *m_HorizontalJunctions);
+   }
+
+   Kernel(scan5, In(Dest, *m_HorizontalJunctions), Dest);
+}
+
+void Integral::SqrIntegral(IImage& Source, IImage& Dest)
+{
+   PrepareFor(Source);
+
+   CheckSameSize(Source, Dest);
+   CheckFloat(Dest);
+
+   if (Dest.DataType() != SImage::F32)
+     throw cl::Error(CL_INVALID_VALUE, "Destination image of SqrIntegral must be float type");
+
+   uint Width = Source.Width();
+   uint Height = Source.Height();
+
+   Kernel(sqr, Source, Dest, Width, Height);
 
    if (GetNbGroupsW(Source) > 1)
    {

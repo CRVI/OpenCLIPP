@@ -34,6 +34,7 @@
 #include "c++/Programs/FiltersVector.h"
 #include "c++/Programs/Histogram.h"
 #include "c++/Programs/Integral.h"
+#include "c++/Programs/IntegralBuffer.h"
 #include "c++/Programs/Logic.h"
 #include "c++/Programs/LogicVector.h"
 #include "c++/Programs/Lut.h"

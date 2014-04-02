@@ -187,6 +187,7 @@
     <ClInclude Include="..\include\c++\Programs\FiltersVector.h" />
     <ClInclude Include="..\include\c++\Programs\Histogram.h" />
     <ClInclude Include="..\include\c++\Programs\Integral.h" />
+    <ClInclude Include="..\include\c++\Programs\IntegralBuffer.h" />
     <ClInclude Include="..\include\c++\Programs\Logic.h" />
     <ClInclude Include="..\include\c++\Programs\LogicVector.h" />
     <ClInclude Include="..\include\c++\Programs\Lut.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="programs\FiltersVector.cpp" />
     <ClCompile Include="programs\Histogram.cpp" />
     <ClCompile Include="programs\Integral.cpp" />
+    <ClCompile Include="programs\IntegralBuffer.cpp" />
     <ClCompile Include="programs\Logic.cpp" />
     <ClCompile Include="programs\LogicVector.cpp" />
     <ClCompile Include="programs\Lut.cpp" />
@@ -269,6 +271,7 @@
     <None Include="..\cl-files\Transform.cl" />
     <None Include="..\cl-files\Vector_Arithmetic.cl" />
     <None Include="..\cl-files\Vector_Filters.cl" />
+    <None Include="..\cl-files\Integral_Buffer.cl" />
     <None Include="..\cl-files\Vector_Logic.cl" />
     <None Include="..\cl-files\Vector_Lut.cl" />
     <None Include="..\cl-files\Vector_Statistics.cl" />

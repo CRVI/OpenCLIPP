@@ -61,6 +61,66 @@ constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | C
 #define WG_HEIGHT 16
 #define WG_SIZE (WG_WIDTH * WG_HEIGHT)
 
+// Local sqr (in an area of 256*16)
+__attribute__((reqd_work_group_size(WG_WIDTH, WG_HEIGHT, 1)))
+kernel void sqr(read_only image2d_t source, write_only image2d_t dest, uint width, uint height)
+{
+   const int gx = get_global_id(0) * WIDTH1;
+   const int gy = get_global_id(1);
+   const int local_x = get_local_id(0) * WIDTH1;
+   const int local_y = get_local_id(1);
+   const int buf_index = local_x + local_y * WG_WIDTH * WIDTH1;
+   
+   local TYPE TmpSumX[WG_SIZE * WIDTH1];
+   local TYPE SumX[WG_SIZE * WIDTH1];
+
+   // 16 pixel wide summation on X
+   TYPE Sum = 0;
+   for (int i = 0; i < WIDTH1; i++)
+   {
+      TYPE v = READ_IMAGE(source, (int2)(gx + i, gy));
+      Sum += v * v;
+      TmpSumX[buf_index + i] = Sum;
+   }
+
+   barrier(CLK_LOCAL_MEM_FENCE);
+
+   // Get the sum of preceding groups of 16 pixels
+   Sum = 0;
+   for (int x = WIDTH1 - 1; x < local_x; x += WIDTH1)
+      Sum += TmpSumX[local_y * WG_WIDTH * WIDTH1 + x];
+
+   // Add to the summation
+   for (int i = 0; i < WIDTH1; i++)
+   {
+      TYPE Val = Sum + TmpSumX[buf_index + i];
+      SumX[buf_index + i] = Val;
+   }
+
+   barrier(CLK_LOCAL_MEM_FENCE);
+
+   // We now have a full summation on X of 256 pixels
+
+   // Now sum Y values
+   // NOTE : This part assumes that WG_HEIGHT == WG_WIDTH == WIDTH1
+
+   const int gx2 = gx + local_y;
+
+   if (gx2 >= width)
+      return;
+
+   Sum = 0;
+   for (int i = 0; i < WG_HEIGHT; i++)
+   {
+      int2 Pos = {gx2, get_group_id(1) * WG_HEIGHT + i};
+
+      Sum += SumX[i * WG_WIDTH * WIDTH1 + local_x + local_y];
+
+      if (Pos.y < height)
+         WRITE_IMAGE(dest, Pos, Sum);
+   }
+
+}
 
 // Local scan (in an area of 256*16)
 __attribute__((reqd_work_group_size(WG_WIDTH, WG_HEIGHT, 1)))

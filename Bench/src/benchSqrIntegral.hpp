@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: benchIntegral.hpp
-//! @date   : Jul 2013
+//! @file	: benchSqrIntegral.hpp
+//! @date   : Mar 2014
 //!
-//! @brief  : Benchmark class for integral scan
+//! @brief  : Benchmark class for square integral
 //! 
-//! Copyright (C) 2013 - CRVI
+//! Copyright (C) 2014 - CRVI
 //!
 //! This file is part of OpenCLIPP.
 //! 
@@ -22,50 +22,60 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define INTEGRAL_USE_BUFFER true
+#define SQRINTEGRAL_USE_BUFFER true
 
-template<typename DataType> class IntegralBench;
+template<typename DataType> class SqrIntegralBench;
 
-typedef IntegralBench<float>   CONCATENATE(IntegralBench, F32);
-typedef IntegralBench<double>  CONCATENATE(IntegralBench, F64);
+typedef SqrIntegralBench<float>   CONCATENATE(SqrIntegralBench, F32);
+typedef SqrIntegralBench<double>  CONCATENATE(SqrIntegralBench, F64);
 
 template<typename DataType>
-class IntegralBench : public IBench1in1out
+class SqrIntegralBench : public IBench1in1out
 {
 public:
-   IntegralBench()
-   :  IBench1in1out(INTEGRAL_USE_BUFFER),
-      m_Program(nullptr)
+
+   SqrIntegralBench(): IBench1in1out(SQRINTEGRAL_USE_BUFFER),
+                 m_Program(nullptr) 
    { }
+
+   void RunIPP();
+   //void RunNPP();
+   void RunCL();
+   void RunCV();
+
+   bool HasCUDATest() const { return false; }
 
    void Create(uint Width, uint Height);
    void Free();
-   void RunIPP();
-   void RunCL();
-   void RunCV();
-   void RunNPP();
 
-   bool CompareCL(IntegralBench * This);
+   bool CompareCL(SqrIntegralBench * This);
 
    float CompareTolerance() const
    {
-      // Compute an acceptable tolerance
-      double ApproxSum = m_ImgDstCL.Width * 128. * m_ImgDstCL.Height;
-      return float(ApproxSum / 100000);
+      return 0.005f;
+   }
+
+   bool CompareTolRelative() const
+   {
+      return true;
    }
 
 protected:
    ocipProgram m_Program;
+   CSimpleImage m_IppIntegral;
 };
+
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void IntegralBench<DataType>::Create(uint Width, uint Height)
+void SqrIntegralBench<DataType>::Create(uint Width, uint Height)
 {
    // IPP & NPP require Dst to be 1 pixel larger and taller than Src
-   IBench1in1out::Create<unsigned char, float>(Width, Height, Width + 1, Height + 1);
+   IBench1in1out::Create<unsigned char, double>(Width, Height, Width + 1, Height + 1);
 
    // Re-allocate with proper size for CL - which require same size images
    m_ImgDstCL.Create<DataType>(Width, Height);
+
+   m_IppIntegral.Create<float>(m_ImgDstIPP.Width, m_ImgDstIPP.Height, m_ImgDstIPP.Channels);
 
    if (m_UsesBuffer)
    {
@@ -75,7 +85,7 @@ void IntegralBench<DataType>::Create(uint Width, uint Height)
    }
    else
    {
-      if (is_same<DataType, float>::value)
+     if (is_same<DataType, float>::value)
       {
          ocipReleaseImage(m_CLDst);
          ocipCreateImage(&m_CLDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
@@ -87,64 +97,60 @@ void IntegralBench<DataType>::Create(uint Width, uint Height)
       }
 
    }
-
+   
 }
+
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void IntegralBench<DataType>::Free()
+void SqrIntegralBench<DataType>::Free()
 {
    IBench1in1out::Free();
 
+   m_IppIntegral.Free();
    ocipReleaseProgram(m_Program);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void IntegralBench<DataType>::RunIPP()
+void SqrIntegralBench<DataType>::RunIPP()
 {
-   IPP_CODE(ippiIntegral_8u32f_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, 0);)
+   IPP_CODE(ippiSqrIntegral_8u32f64f_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_IppIntegral.Data(), m_IppIntegral.Step, (Ipp64f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, 0, 0);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void IntegralBench<float>::RunCL()
+void SqrIntegralBench<float>::RunCL()
 {
    if (m_UsesBuffer)
    {
-      ocipIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
+      ocipSqrIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
    }
    else
    {
-      ocipIntegral(m_Program, m_CLSrc, m_CLDst);
+      ocipSqrIntegral(m_Program, m_CLSrc, m_CLDst);
    }
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
-void IntegralBench<double>::RunCL()
+void SqrIntegralBench<double>::RunCL()
 {
    if (m_UsesBuffer)
    {
-      ocipIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
+      ocipSqrIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
    }
    else
    {
       //There's no function for output image type of F64(double)
    }
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+template<typename DataType>
+void SqrIntegralBench<DataType>::RunCV()
+{
+   CV_CODE( sqrIntegral(m_CVSrc, m_CVDst); )    // This does not work well, it recreates m_CVDst as a 32S image...
+}
 
-}
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
-void IntegralBench<DataType>::RunCV()
-{
-   CV_CODE( integral(m_CVSrc, m_CVDst); )    // This does not work well, it recreates m_CVDst as a 32S image...
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void IntegralBench<DataType>::RunNPP()
-{
-   NPP_CODE(nppiIntegral_8u32f_C1R((Npp8u*) m_NPPSrc, m_NPPSrcStep, (Npp32f*) m_NPPDst, m_NPPDstStep, m_NPPRoi, 0);)
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-bool IntegralBench<DataType>::CompareCL(IntegralBench * This)
+bool SqrIntegralBench<DataType>::CompareCL(SqrIntegralBench * This)
 {
    if (m_UsesBuffer)
    {
@@ -152,7 +158,7 @@ bool IntegralBench<DataType>::CompareCL(IntegralBench * This)
    }
    else
    {
-      if (is_same<DataType, double>::value)
+       if (is_same<DataType, double>::value)
          return false;  // F64 is not supported in images
 
       ocipReadImage(m_CLDst);

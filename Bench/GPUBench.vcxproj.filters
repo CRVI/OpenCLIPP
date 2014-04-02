@@ -154,5 +154,8 @@
     <ClInclude Include="src\benchImageProximity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\benchSqrIntegral.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
