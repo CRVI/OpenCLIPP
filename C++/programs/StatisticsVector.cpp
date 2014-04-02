@@ -169,6 +169,19 @@ double StatisticsVector::Sum(ImageBuffer& Source)
    return ReduceSum(m_PartialResult);
 }
 
+double StatisticsVector::SumSqr(ImageBuffer& Source)
+{
+   Check1Channel(Source);
+
+   PrepareBuffer(Source);
+
+   Kernel(reduce_sum_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   return ReduceSum(m_PartialResult);
+}
+
 uint StatisticsVector::CountNonZero(ImageBuffer& Source)
 {
    Check1Channel(Source);
@@ -321,6 +334,17 @@ void StatisticsVector::Sum(ImageBuffer& Source, double outVal[4])
    PrepareBuffer(Source);
 
    Kernel(reduce_sum, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceSum_4C(m_PartialResult, outVal);
+}
+
+void StatisticsVector::SumSqr(ImageBuffer& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_sum_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 

@@ -577,6 +577,7 @@ ocipError ocip_API ocipMax(         ocipProgram Program, ocipImage Source, doubl
 ocipError ocip_API ocipMinAbs(      ocipProgram Program, ocipImage Source, double * Result); ///< Finds the minimum of the absolute of the values in the image
 ocipError ocip_API ocipMaxAbs(      ocipProgram Program, ocipImage Source, double * Result); ///< Finds the maxumum of the absolute of the values in the image
 ocipError ocip_API ocipSum(         ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the sum of all pixel values
+ocipError ocip_API ocipSumSqr(      ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the sum of all pixel values
 ocipError ocip_API ocipMean(        ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean value of all pixel values
 ocipError ocip_API ocipMeanSqr(     ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean of the square of all pixel values
 ocipError ocip_API ocipCountNonZero(ocipProgram Program, ocipImage Source, uint   * Result); ///< Calculates the number of pixels that have a non zero value
@@ -590,6 +591,7 @@ ocipError ocip_API ocipMax_4C(      ocipProgram Program, ocipImage Source, doubl
 ocipError ocip_API ocipMinAbs_4C(   ocipProgram Program, ocipImage Source, double * Result); ///< Finds the minimum of the absolute of the values in the image
 ocipError ocip_API ocipMaxAbs_4C(   ocipProgram Program, ocipImage Source, double * Result); ///< Finds the maxumum of the absolute of the values in the image
 ocipError ocip_API ocipSum_4C(      ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the sum of all pixel values
+ocipError ocip_API ocipSumSqr_4C(   ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the sum of all pixel values
 ocipError ocip_API ocipMean_4C(     ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean value of all pixel values
 ocipError ocip_API ocipMeanSqr_4C(  ocipProgram Program, ocipImage Source, double * Result); ///< Calculates the mean of the square of all pixel values
 
@@ -811,6 +813,7 @@ ocipError ocip_API ocipMax_V(          ocipProgram Program, ocipBuffer Source, d
 ocipError ocip_API ocipMinAbs_V(       ocipProgram Program, ocipBuffer Source, double * Result);   ///< Finds the minimum of the absolute of the values in the image
 ocipError ocip_API ocipMaxAbs_V(       ocipProgram Program, ocipBuffer Source, double * Result);   ///< Finds the maxumum of the absolute of the values in the image
 ocipError ocip_API ocipSum_V(          ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the sum of all pixel values
+ocipError ocip_API ocipSumSqr_V(       ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the sum of the sqaure of all pixel values
 ocipError ocip_API ocipMean_V(         ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the mean value of all pixel values
 ocipError ocip_API ocipMeanSqr_V(      ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the mean of the square of all pixel values
 ocipError ocip_API ocipCountNonZero_V( ocipProgram Program, ocipBuffer Source, uint   * Result);   ///< Calculates the number of pixels that have a non zero value
@@ -824,6 +827,7 @@ ocipError ocip_API ocipMax_4C_V(       ocipProgram Program, ocipBuffer Source, d
 ocipError ocip_API ocipMinAbs_4C_V(    ocipProgram Program, ocipBuffer Source, double * Result);   ///< Finds the minimum of the absolute of the values in the image
 ocipError ocip_API ocipMaxAbs_4C_V(    ocipProgram Program, ocipBuffer Source, double * Result);   ///< Finds the maxumum of the absolute of the values in the image
 ocipError ocip_API ocipSum_4C_V(       ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the sum of all pixel values
+ocipError ocip_API ocipSumSqr_4C_V(    ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the sum of the sqaure of all pixel values
 ocipError ocip_API ocipMean_4C_V(      ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the mean value of all pixel values
 ocipError ocip_API ocipMeanSqr_4C_V(   ocipProgram Program, ocipBuffer Source, double * Result);   ///< Calculates the mean of the square of all pixel values
 

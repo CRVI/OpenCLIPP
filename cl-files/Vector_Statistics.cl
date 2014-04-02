@@ -309,6 +309,7 @@ REDUCE_KERNEL(reduce_max,      SCALAR, NOOP, max,  NOOP2, MAX2,  atomic_maxf)
 REDUCE_KERNEL(reduce_minabs,   SCALAR, ABS,  min,  NOOP2, MIN2,  atomic_minf)
 REDUCE_KERNEL(reduce_maxabs,   SCALAR, ABS,  max,  NOOP2, MAX2,  atomic_maxf)
 REDUCE_KERNEL(reduce_sum,      float,  NOOP, SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_sum_sqr,  float,  SQR,  SUM,  NOOP2, SUM2,  store_value)
 REDUCE_KERNEL(reduce_count_nz, float,  NO_Z, SUM,  NOOP2, SUM2,  store_value)
 REDUCE_KERNEL(reduce_mean,     float,  NOOP, SUM,  DIV,   MEAN2, store_value)
 REDUCE_KERNEL(reduce_mean_sqr, float,  SQR,  SUM,  DIV,   MEAN2, store_value)
@@ -323,6 +324,7 @@ REDUCE_KERNEL(reduce_max_2C,        TYPE2,   NOOP, max,  NOOP2, MAX2,  atomic_ma
 REDUCE_KERNEL(reduce_minabs_2C,     TYPE2,   ABS,  min,  NOOP2, MIN2,  atomic_minf_2C)
 REDUCE_KERNEL(reduce_maxabs_2C,     TYPE2,   ABS,  max,  NOOP2, MAX2,  atomic_maxf_2C)
 REDUCE_KERNEL(reduce_sum_2C,        float2,  NOOP, SUM,  NOOP2, SUM2,  store_value_2C)
+REDUCE_KERNEL(reduce_sum_sqr_2C,    float2,  SQR,  SUM,  NOOP2, SUM2,  store_value_2C)
 REDUCE_KERNEL(reduce_mean_2C,       float2,  NOOP, SUM,  DIV,   MEAN2, store_value_2C)
 REDUCE_KERNEL(reduce_mean_sqr_2C,   float2,  SQR,  SUM,  DIV,   MEAN2, store_value_2C)
 
@@ -335,6 +337,7 @@ REDUCE_KERNEL(reduce_max_3C,        TYPE3,   NOOP, max,  NOOP2, MAX2,  atomic_ma
 REDUCE_KERNEL(reduce_minabs_3C,     TYPE3,   ABS,  min,  NOOP2, MIN2,  atomic_minf_3C)
 REDUCE_KERNEL(reduce_maxabs_3C,     TYPE3,   ABS,  max,  NOOP2, MAX2,  atomic_maxf_3C)
 REDUCE_KERNEL(reduce_sum_3C,        float3,  NOOP, SUM,  NOOP2, SUM2,  store_value_3C)
+REDUCE_KERNEL(reduce_sum_sqr_3C,    float3,  SQR,  SUM,  NOOP2, SUM2,  store_value_3C)
 REDUCE_KERNEL(reduce_mean_3C,       float3,  NOOP, SUM,  DIV,   MEAN2, store_value_3C)
 REDUCE_KERNEL(reduce_mean_sqr_3C,   float3,  SQR,  SUM,  DIV,   MEAN2, store_value_3C)
 
@@ -347,6 +350,7 @@ REDUCE_KERNEL(reduce_max_4C,        TYPE4,   NOOP, max,  NOOP2, MAX2,  atomic_ma
 REDUCE_KERNEL(reduce_minabs_4C,     TYPE4,   ABS,  min,  NOOP2, MIN2,  atomic_minf_4C)
 REDUCE_KERNEL(reduce_maxabs_4C,     TYPE4,   ABS,  max,  NOOP2, MAX2,  atomic_maxf_4C)
 REDUCE_KERNEL(reduce_sum_4C,        float4,  NOOP, SUM,  NOOP2, SUM2,  store_value_4C)
+REDUCE_KERNEL(reduce_sum_sqr_4C,    float4,  SQR, SUM,  NOOP2, SUM2,  store_value_4C)
 REDUCE_KERNEL(reduce_mean_4C,       float4,  NOOP, SUM,  DIV,   MEAN2, store_value_4C)
 REDUCE_KERNEL(reduce_mean_sqr_4C,   float4,  SQR,  SUM,  DIV,   MEAN2, store_value_4C)
 

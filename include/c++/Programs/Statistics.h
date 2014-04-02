@@ -44,6 +44,7 @@ public:
    double MinAbs( IImage& Source);        ///< Finds the minimum of the absolute of the values in the image
    double MaxAbs( IImage& Source);        ///< Finds the maxumum of the absolute of the values in the image
    double Sum(    IImage& Source);        ///< Calculates the sum of all pixel values
+   double SumSqr( IImage& Source);        ///< Calculates the sum of the square all pixel values
    double Mean(   IImage& Source);        ///< Calculates the mean value of all pixel values
    double MeanSqr(IImage& Source);        ///< Calculates the mean of the square of all pixel values
    uint   CountNonZero(IImage& Source);   ///< Calculates the number of non zero pixels (checks only channel 1)
@@ -59,6 +60,7 @@ public:
    void MinAbs(   IImage& Source, double outVal[4]);  ///< Finds the minimum of the absolute of the values in the image
    void MaxAbs(   IImage& Source, double outVal[4]);  ///< Finds the maxumum of the absolute of the values in the image
    void Sum(      IImage& Source, double outVal[4]);  ///< Calculates the sum of all pixel values
+   void SumSqr(   IImage& Source, double outVal[4]);  ///< Calculates the sum of the square all pixel values
    void Mean(     IImage& Source, double outVal[4]);  ///< Calculates the mean value of all pixel values
    void MeanSqr(  IImage& Source, double outVal[4]);  ///< Calculates the mean of the square of all pixel values
 

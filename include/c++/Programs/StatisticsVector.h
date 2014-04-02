@@ -44,6 +44,7 @@ public:
    double MinAbs( ImageBuffer& Source);      ///< Finds the minimum of the absolute of the values in the image
    double MaxAbs( ImageBuffer& Source);      ///< Finds the maxumum of the absolute of the values in the image
    double Sum(    ImageBuffer& Source);      ///< Calculates the sum of all pixel values
+   double SumSqr( ImageBuffer& Source);      ///< Calculates the sum of the square of all pixel values
    double Mean(   ImageBuffer& Source);      ///< Calculates the mean value of all pixel values
    double MeanSqr(ImageBuffer& Source);      ///< Calculates the mean of the square of all pixel values
    uint   CountNonZero(ImageBuffer& Source); ///< Calculates the number of non zero pixels
@@ -59,6 +60,7 @@ public:
    void MinAbs(   ImageBuffer& Source, double outVal[4]);   ///< Finds the minimum of the absolute of the values in the image
    void MaxAbs(   ImageBuffer& Source, double outVal[4]);   ///< Finds the maxumum of the absolute of the values in the image
    void Sum(      ImageBuffer& Source, double outVal[4]);   ///< Calculates the sum of all pixel values
+   void SumSqr(   ImageBuffer& Source, double outVal[4]);   ///< Calculates the sum of the square of all pixel values
    void Mean(     ImageBuffer& Source, double outVal[4]);   ///< Calculates the mean value of all pixel values
    void MeanSqr(  ImageBuffer& Source, double outVal[4]);   ///< Calculates the mean of the square of all pixel values
 

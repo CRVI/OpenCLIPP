@@ -173,6 +173,17 @@ double Statistics::Sum(IImage& Source)
    return ReduceSum(m_PartialResult);
 }
 
+double Statistics::SumSqr(IImage& Source)
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_sum_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   return ReduceSum(m_PartialResult);
+}
+
 uint Statistics::CountNonZero(IImage& Source)
 {
    PrepareBuffer(Source);
@@ -310,6 +321,17 @@ void Statistics::Sum(IImage& Source, double outVal[4])
    PrepareBuffer(Source);
 
    Kernel(reduce_sum_4C, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height());
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceSum_4C(m_PartialResult, outVal);
+}
+
+void Statistics::SumSqr(IImage& Source, double outVal[4])
+{
+   PrepareBuffer(Source);
+
+   Kernel(reduce_sum_sqr_4C, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
