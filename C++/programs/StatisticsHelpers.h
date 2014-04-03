@@ -50,10 +50,11 @@ std::string SelectName(const char * name, const ImageBase& Image);    // Selects
 // CPU side final reduction - done in double for higher precision
 double ReduceSum(std::vector<float>& buffer);
 double ReduceMean(std::vector<float>& buffer);
+
+void ReduceSum(std::vector<float>& buffer, int NbChannels, double outVal[4]);
+void ReduceMean(std::vector<float>& buffer, int NbChannels, double outVal[4]);
+
 double ReduceMin(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY);
 double ReduceMax(std::vector<float>& buffer, std::vector<int>& coords, int& outX, int& outY);
-
-void ReduceSum_4C(std::vector<float>& buffer, double outVal[4]);
-void ReduceMean_4C(std::vector<float>& buffer, double outVal[4]);
 
 }

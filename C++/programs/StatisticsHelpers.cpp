@@ -51,57 +51,36 @@ std::string SelectName(const char * name, const ImageBase& Image)
 
 double ReduceSum(std::vector<float>& buffer)
 {
-   size_t size = buffer.size() / 5;
-
-   double Sum = buffer[0];
-   for (size_t i = 1; i < size; i++)
-      Sum += buffer[i];
-
-   return Sum;
-}
-
-void ReduceSum_4C(std::vector<float>& buffer, double outVal[4])
-{
-   size_t size = buffer.size() / 5;
-
-   for (int i = 0; i < 4; i++)
-      outVal[i] = buffer[i];
-
-   for (size_t i = 1; i < size; i++)
-      for (int j = 0; j < 4; j++)
-         outVal[j] += buffer[i * 4 + j];
+   double Val = 0;
+   ReduceSum(buffer, 1, &Val);
+   return Val;
 }
 
 double ReduceMean(std::vector<float>& buffer)
 {
-   size_t size = buffer.size() / 5;
-   size_t NbIndex = size * 4;       // Index where we can find the number of pixels
-
-   double MeanSum = buffer[0];         // MeanSum will contain the sum of the means
-   double NormalNb = buffer[NbIndex];  // We use the number of pixels from the first workgroup as reference
-   double SumPixels = buffer[NbIndex]; // Will be equal to the number of pixels in the image
-   for (size_t i = 1; i < size; i++)
-   {
-      double NbPixels = buffer[NbIndex + i];
-      double Ratio = NbPixels / NormalNb; // If this workgroup had less pixels, Ratio will be smaller 
-
-      MeanSum += buffer[i] * Ratio;
-
-      SumPixels += NbPixels;
-   }
-
-   double Divisor = SumPixels / NormalNb; // Normalize the divisor
-
-   return MeanSum / Divisor;  // Divide the sum to get the final mean
+   double Val = 0;
+   ReduceMean(buffer, 1, &Val);
+   return Val;
 }
 
+void ReduceSum(std::vector<float>& buffer, int NbChannels, double outVal[4])
+{
+   size_t size = buffer.size() / 5;
 
-void ReduceMean_4C(std::vector<float>& buffer, double outVal[4])
+   for (int i = 0; i < NbChannels; i++)
+      outVal[i] = buffer[i];
+
+   for (size_t i = 1; i < size; i++)
+      for (int j = 0; j < NbChannels; j++)
+         outVal[j] += buffer[i * 4 + j];
+}
+
+void ReduceMean(std::vector<float>& buffer, int NbChannels, double outVal[4])
 {
    size_t size = buffer.size() / 5;
    size_t NbIndex = size * 4;       // Index where we can find the number of pixels
 
-   for (int j = 0; j < 4; j++)
+   for (int j = 0; j < NbChannels; j++)
       outVal[j] = buffer[j];         // MeanSum will contain the sum of the means
 
    double NormalNb = buffer[NbIndex];  // We use the number of pixels from the first workgroup as reference
@@ -111,7 +90,7 @@ void ReduceMean_4C(std::vector<float>& buffer, double outVal[4])
       double NbPixels = buffer[NbIndex + i];
       double Ratio = NbPixels / NormalNb; // If this workgroup had less pixels, Ratio will be smaller 
 
-      for (int j = 0; j < 4; j++)
+      for (int j = 0; j < NbChannels; j++)
          outVal[j] += buffer[i * 4 + j] * Ratio;
 
       SumPixels += NbPixels;
@@ -119,7 +98,7 @@ void ReduceMean_4C(std::vector<float>& buffer, double outVal[4])
 
    double Divisor = SumPixels / NormalNb; // Normalize the divisor
 
-   for (int j = 0; j < 4; j++)
+   for (int j = 0; j < NbChannels; j++)
       outVal[j] /= Divisor;  // Divide the sum to get the final mean
 }
 

@@ -289,7 +289,7 @@ void StatisticsVector::Min(ImageBuffer& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -301,7 +301,7 @@ void StatisticsVector::Max(ImageBuffer& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -313,7 +313,7 @@ void StatisticsVector::MinAbs(ImageBuffer& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -325,7 +325,7 @@ void StatisticsVector::MaxAbs(ImageBuffer& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -337,7 +337,7 @@ void StatisticsVector::Sum(ImageBuffer& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceSum_4C(m_PartialResult, outVal);
+   ReduceSum(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 void StatisticsVector::SumSqr(ImageBuffer& Source, double outVal[4])
@@ -348,7 +348,7 @@ void StatisticsVector::SumSqr(ImageBuffer& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceSum_4C(m_PartialResult, outVal);
+   ReduceSum(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 void StatisticsVector::Mean(ImageBuffer& Source, double outVal[4])
@@ -359,7 +359,7 @@ void StatisticsVector::Mean(ImageBuffer& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceMean_4C(m_PartialResult, outVal);
+   ReduceMean(m_PartialResult, Source.NbChannels(),outVal);
 }
 
 void StatisticsVector::MeanSqr(ImageBuffer& Source, double outVal[4])
@@ -370,7 +370,7 @@ void StatisticsVector::MeanSqr(ImageBuffer& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceMean_4C(m_PartialResult, outVal);
+   ReduceMean(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 

@@ -240,7 +240,7 @@ void store_value(global float * result_buffer, float value, int nb_pixels)
 {
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
    const int offset = get_num_groups(0) * get_num_groups(1);
-   result_buffer[gid] = value;
+   result_buffer[gid * 4] = value;
    result_buffer[offset * 4 + gid] = nb_pixels;
 }
 

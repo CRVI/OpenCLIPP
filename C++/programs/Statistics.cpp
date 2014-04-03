@@ -117,7 +117,7 @@ void Statistics::InitAbs4C(IImage& Source)
 }
 
 
-// Reductions
+// Reductions on the first channel
 double Statistics::Min(IImage& Source)
 {
    Init(Source);
@@ -276,7 +276,7 @@ void Statistics::Min(IImage& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -288,7 +288,7 @@ void Statistics::Max(IImage& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -300,7 +300,7 @@ void Statistics::MinAbs(IImage& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -312,7 +312,7 @@ void Statistics::MaxAbs(IImage& Source, double outVal[4])
 
    m_ResultBuffer.Read(true);
 
-   for (int i = 0; i < 4; i++)
+   for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = m_Result[i];
 }
 
@@ -324,7 +324,7 @@ void Statistics::Sum(IImage& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceSum_4C(m_PartialResult, outVal);
+   ReduceSum(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 void Statistics::SumSqr(IImage& Source, double outVal[4])
@@ -335,7 +335,7 @@ void Statistics::SumSqr(IImage& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceSum_4C(m_PartialResult, outVal);
+   ReduceSum(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 void Statistics::Mean(IImage& Source, double outVal[4])
@@ -346,7 +346,7 @@ void Statistics::Mean(IImage& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceMean_4C(m_PartialResult, outVal);
+   ReduceMean(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 void Statistics::MeanSqr(IImage& Source, double outVal[4])
@@ -357,7 +357,7 @@ void Statistics::MeanSqr(IImage& Source, double outVal[4])
 
    m_PartialResultBuffer->Read(true);
 
-   ReduceMean_4C(m_PartialResult, outVal);
+   ReduceMean(m_PartialResult, Source.NbChannels(), outVal);
 }
 
 }
