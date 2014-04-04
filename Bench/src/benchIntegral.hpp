@@ -22,8 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define INTEGRAL_USE_BUFFER true
-
 template<typename DataType> class IntegralBench;
 
 typedef IntegralBench<float>   CONCATENATE(IntegralBench, F32);
@@ -34,7 +32,7 @@ class IntegralBench : public IBench1in1out
 {
 public:
    IntegralBench()
-   :  IBench1in1out(INTEGRAL_USE_BUFFER),
+   :  IBench1in1out(USE_BUFFER),
       m_Program(nullptr)
    { }
 

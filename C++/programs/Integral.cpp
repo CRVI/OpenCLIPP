@@ -30,9 +30,16 @@
 #include "WorkGroup.h"
 
 
-#define KERNEL_RANGE(src_img) GetRange(src_img), GetLocalRange()
 
 #include "kernel_helpers.h"
+
+#define Kernel_Local(name, in, out, ...) \
+   FOR_EACH(_SEND_IF_NEEDED, in)\
+   cl::make_kernel<FOR_EACH_COMMA(CL_TYPE, in) ADD_COMMA(out) FOR_EACH_COMMA(CL_TYPE, out) ADD_COMMA(__VA_ARGS__) FOR_EACH_COMMA(CL_TYPE, __VA_ARGS__)>\
+      ((cl::Program) SELECT_PROGRAM(_FIRST_IN(in)), SELECT_NAME(name, _FIRST_IN(in)))\
+         (cl::EnqueueArgs(*m_CL, GetRange(_FIRST_IN(in)), GetLocalRange()),\
+            in ADD_COMMA(out) out ADD_COMMA(__VA_ARGS__) __VA_ARGS__);\
+   FOR_EACH(_SET_IN_DEVICE, out)
 
 
 using namespace cl;
@@ -86,16 +93,13 @@ void Integral::IntegralSum(IImage& Source, IImage& Dest)
    uint Width = Source.Width();
    uint Height = Source.Height();
 
-   Kernel(scan1, Source, Dest, Width, Height);
+   Kernel_Local(scan1, Source, Dest, Width, Height);
 
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan2")
          (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height())), Dest, *m_VerticalJunctions);
    }
-
-#undef KERNEL_RANGE
-#define KERNEL_RANGE(src_img) src_img.FullRange()
 
    Kernel(scan3, In(Dest, *m_VerticalJunctions), Dest);
 
@@ -121,16 +125,13 @@ void Integral::SqrIntegral(IImage& Source, IImage& Dest)
    uint Width = Source.Width();
    uint Height = Source.Height();
 
-   Kernel(sqr, Source, Dest, Width, Height);
+   Kernel_Local(sqr, Source, Dest, Width, Height);
 
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan2")
          (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height())), Dest, *m_VerticalJunctions);
    }
-
-#undef KERNEL_RANGE
-#define KERNEL_RANGE(src_img) src_img.FullRange()
 
    Kernel(scan3, In(Dest, *m_VerticalJunctions), Dest);
 

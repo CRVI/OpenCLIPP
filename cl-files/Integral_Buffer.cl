@@ -24,6 +24,8 @@
 
 #include "Buffers.h"
 
+#pragma OPENCL EXTENSION cl_khr_fp64: enable
+
 #define WIDTH1    8    // Number of pixels processed by 1 work item
 #define WG_WIDTH  8
 #define WG_HEIGHT 8
@@ -31,7 +33,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// 32 bits Local sqr (in an area of 256*16)
+// 32 bits Local sqr (in an area of 64*8)
 __attribute__((reqd_work_group_size(WG_WIDTH, WG_HEIGHT, 1)))
 kernel void sqr_F32(INPUT_SPACE const SCALAR * source, global float * dest, int src_step, int dst_step, int width, int height)
 {
@@ -50,14 +52,14 @@ kernel void sqr_F32(INPUT_SPACE const SCALAR * source, global float * dest, int 
    float Sum = 0;
    for (int i = 0; i < WIDTH1; i++)
    {
-	  float v = (float)source[gy * src_step + gx + i];
+     float v = (float)source[gy * src_step + gx + i];
       Sum += v * v;
       TmpSumX[buf_index + i] = Sum;
    }
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // Get the sum of preceding groups of 16 pixels
+   // Get the sum of preceding groups of 8 pixels
    Sum = 0;
    for (int x = WIDTH1 - 1; x < local_x; x += WIDTH1)
       Sum += TmpSumX[local_y * WG_WIDTH * WIDTH1 + x];
@@ -71,7 +73,7 @@ kernel void sqr_F32(INPUT_SPACE const SCALAR * source, global float * dest, int 
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // We now have a full summation on X of 256 pixels
+   // We now have a full summation on X of 64 pixels
 
    // Now sum Y values
    // NOTE : This part assumes that WG_HEIGHT == WG_WIDTH == WIDTH1
@@ -89,12 +91,12 @@ kernel void sqr_F32(INPUT_SPACE const SCALAR * source, global float * dest, int 
       Sum += SumX[i * WG_WIDTH * WIDTH1 + local_x + local_y];
 
       if (Pos.y < height)
-		 dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
+       dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
    }
 
 }
 
-// 32 bits Local scan (in an area of 256*16)
+// 32 bits Local scan (in an area of 64*8)
 __attribute__((reqd_work_group_size(WG_WIDTH, WG_HEIGHT, 1)))
 kernel void scan1_F32(INPUT_SPACE const SCALAR * source, global float * dest, int src_step, int dst_step, int width, int height)
 {
@@ -119,7 +121,7 @@ kernel void scan1_F32(INPUT_SPACE const SCALAR * source, global float * dest, in
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // Get the sum of preceding groups of 16 pixels
+   // Get the sum of preceding groups of 8 pixels
    Sum = 0;
    for (int x = WIDTH1 - 1; x < local_x; x += WIDTH1)
       Sum += TmpSumX[local_y * WG_WIDTH * WIDTH1 + x];
@@ -133,7 +135,7 @@ kernel void scan1_F32(INPUT_SPACE const SCALAR * source, global float * dest, in
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // We now have a full summation on X of 256 pixels
+   // We now have a full summation on X of 64 pixels
 
    // Now sum Y values
    // NOTE : This part assumes that WG_HEIGHT == WG_WIDTH == WIDTH1
@@ -151,7 +153,7 @@ kernel void scan1_F32(INPUT_SPACE const SCALAR * source, global float * dest, in
       Sum += SumX[i * WG_WIDTH * WIDTH1 + local_x + local_y];
 
       if (Pos.y < height)
-		 dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
+       dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
    }
 
 }
@@ -211,8 +213,8 @@ kernel void scan4_F32(global float * dest, global float * horiz, int dest_step, 
    float Sum = 0;
    for (int i = 0; i <= gy; i++)
    {
-	  float v = dest[((i + 1) * WG_HEIGHT - 1) * dest_step + gx];
-	  Sum += v;// Sum value of pixels to the top
+     float v = dest[((i + 1) * WG_HEIGHT - 1) * dest_step + gx];
+     Sum += v;// Sum value of pixels to the top
    }
    horiz[gy * horiz_step + gx] = Sum;
 }
@@ -243,7 +245,7 @@ kernel void scan5_F32(global float * dest_in, global float * horiz, global float
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Local sqr (in an area of 256*16)
+// Local sqr (in an area of 64*8)
 __attribute__((reqd_work_group_size(WG_WIDTH, WG_HEIGHT, 1)))
 kernel void sqr_F64(INPUT_SPACE const SCALAR * source, global double * dest, int src_step, int dst_step, int width, int height)
 {
@@ -262,7 +264,7 @@ kernel void sqr_F64(INPUT_SPACE const SCALAR * source, global double * dest, int
    double Sum = 0;
    for (int i = 0; i < WIDTH1; i++)
    {
-	  double v = (double)source[gy * src_step + gx + i];
+     double v = (double)source[gy * src_step + gx + i];
       Sum += v * v;
       TmpSumX[buf_index + i] = Sum;
    }
@@ -283,7 +285,7 @@ kernel void sqr_F64(INPUT_SPACE const SCALAR * source, global double * dest, int
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // We now have a full summation on X of 256 pixels
+   // We now have a full summation on X of 64 pixels
 
    // Now sum Y values
    // NOTE : This part assumes that WG_HEIGHT == WG_WIDTH == WIDTH1
@@ -301,12 +303,12 @@ kernel void sqr_F64(INPUT_SPACE const SCALAR * source, global double * dest, int
       Sum += SumX[i * WG_WIDTH * WIDTH1 + local_x + local_y];
 
       if (Pos.y < height)
-		 dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
+       dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
    }
 
 }
 
-// Local scan (in an area of 256*16)
+// Local scan (in an area of 64*8)
 __attribute__((reqd_work_group_size(WG_WIDTH, WG_HEIGHT, 1)))
 kernel void scan1_F64(INPUT_SPACE const SCALAR * source, global double * dest, int src_step, int dst_step, int width, int height)
 {
@@ -331,7 +333,7 @@ kernel void scan1_F64(INPUT_SPACE const SCALAR * source, global double * dest, i
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // Get the sum of preceding groups of 16 pixels
+   // Get the sum of preceding groups of 8 pixels
    Sum = 0;
    for (int x = WIDTH1 - 1; x < local_x; x += WIDTH1)
       Sum += TmpSumX[local_y * WG_WIDTH * WIDTH1 + x];
@@ -345,7 +347,7 @@ kernel void scan1_F64(INPUT_SPACE const SCALAR * source, global double * dest, i
 
    barrier(CLK_LOCAL_MEM_FENCE);
 
-   // We now have a full summation on X of 256 pixels
+   // We now have a full summation on X of 64 pixels
 
    // Now sum Y values
    // NOTE : This part assumes that WG_HEIGHT == WG_WIDTH == WIDTH1
@@ -363,7 +365,7 @@ kernel void scan1_F64(INPUT_SPACE const SCALAR * source, global double * dest, i
       Sum += SumX[i * WG_WIDTH * WIDTH1 + local_x + local_y];
 
       if (Pos.y < height)
-		 dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
+       dest[(get_group_id(1) * WG_HEIGHT + i) * dst_step + gx2] = Sum;
    }
 
 }
@@ -423,8 +425,8 @@ kernel void scan4_F64(global double * dest, global double * horiz, int dest_step
    double Sum = 0;
    for (int i = 0; i <= gy; i++)
    {
-	  double v = dest[((i + 1) * WG_HEIGHT - 1) * dest_step + gx];
-	  Sum += v;// Sum value of pixels to the top
+     double v = dest[((i + 1) * WG_HEIGHT - 1) * dest_step + gx];
+     Sum += v;// Sum value of pixels to the top
    }
    horiz[gy * horiz_step + gx] = Sum;
 }

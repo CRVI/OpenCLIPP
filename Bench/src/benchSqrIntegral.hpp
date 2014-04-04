@@ -22,8 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define SQRINTEGRAL_USE_BUFFER true
-
 template<typename DataType> class SqrIntegralBench;
 
 typedef SqrIntegralBench<float>   CONCATENATE(SqrIntegralBench, F32);
@@ -34,7 +32,7 @@ class SqrIntegralBench : public IBench1in1out
 {
 public:
 
-   SqrIntegralBench(): IBench1in1out(SQRINTEGRAL_USE_BUFFER),
+   SqrIntegralBench(): IBench1in1out(USE_BUFFER),
                  m_Program(nullptr) 
    { }
 
@@ -145,7 +143,9 @@ void SqrIntegralBench<double>::RunCL()
 template<typename DataType>
 void SqrIntegralBench<DataType>::RunCV()
 {
-   CV_CODE( sqrIntegral(m_CVSrc, m_CVDst); )    // This does not work well, it recreates m_CVDst as a 32S image...
+   CV_CODE( 
+      oclMat Dummy;
+      integral(m_CVSrc, Dummy, m_CVDst); )    // m_CVDst will be converted to F32
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -31,9 +31,15 @@
 #include "WorkGroup.h"
 
 
-#define KERNEL_RANGE(src_img) GetRange(src_img), GetLocalRange()
-
 #include "kernel_helpers.h"
+
+#define Kernel_Local(name, in, out, ...) \
+   FOR_EACH(_SEND_IF_NEEDED, in)\
+   cl::make_kernel<FOR_EACH_COMMA(CL_TYPE, in) ADD_COMMA(out) FOR_EACH_COMMA(CL_TYPE, out) ADD_COMMA(__VA_ARGS__) FOR_EACH_COMMA(CL_TYPE, __VA_ARGS__)>\
+      ((cl::Program) SELECT_PROGRAM(_FIRST_IN(in)), SELECT_NAME(name, _FIRST_IN(in)))\
+         (cl::EnqueueArgs(*m_CL, GetRange(_FIRST_IN(in)), GetLocalRange()),\
+            in ADD_COMMA(out) out ADD_COMMA(__VA_ARGS__) __VA_ARGS__);\
+   FOR_EACH(_SET_IN_DEVICE, out)
 
 
 using namespace cl;
@@ -148,16 +154,13 @@ void IntegralBuffer::Integral_F32(ImageBuffer& Source, ImageBuffer& Dest)
    CheckSameSize(Source, Dest);
    Check1Channel(Dest);
 
-   Kernel(scan1_F32, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   Kernel_Local(scan1_F32, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<cl::Buffer, cl::Buffer, uint, uint>(SelectProgram(Dest), "scan2_F32")
          (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height(), 1)), Dest, *m_VerticalJunctions_F32, Dest.Step(), m_VerticalJunctions_F32->Step());
    }
-
-   #undef KERNEL_RANGE
-#define KERNEL_RANGE(src_img) src_img.FullRange()
 
    Kernel(scan3_F32, In(Dest, *m_VerticalJunctions_F32), Dest, Dest.Step(), m_VerticalJunctions_F32->Step(), Dest.Step());
 
@@ -177,16 +180,13 @@ void IntegralBuffer::SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest)
    CheckSameSize(Source, Dest);
    Check1Channel(Dest);
 
-   Kernel(sqr_F32, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   Kernel_Local(sqr_F32, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<cl::Buffer, cl::Buffer, uint, uint>(SelectProgram(Dest), "scan2_F32")
          (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height(), 1)), Dest, *m_VerticalJunctions_F32, Dest.Step(), m_VerticalJunctions_F32->Step());
    }
-
-   #undef KERNEL_RANGE
-#define KERNEL_RANGE(src_img) src_img.FullRange()
 
    Kernel(scan3_F32, In(Dest, *m_VerticalJunctions_F32), Dest, Dest.Step(), m_VerticalJunctions_F32->Step(), Dest.Step());
 
@@ -206,16 +206,13 @@ void IntegralBuffer::Integral_F64(ImageBuffer& Source, ImageBuffer& Dest)
    CheckSameSize(Source, Dest);
    Check1Channel(Dest);
 
-   Kernel(scan1_F64, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   Kernel_Local(scan1_F64, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<cl::Buffer, cl::Buffer, uint, uint>(SelectProgram(Dest), "scan2_F64")
          (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height(), 1)), Dest, *m_VerticalJunctions_F64, Dest.Step(), m_VerticalJunctions_F64->Step());
    }
-
-   #undef KERNEL_RANGE
-#define KERNEL_RANGE(src_img) src_img.FullRange()
 
    Kernel(scan3_F64, In(Dest, *m_VerticalJunctions_F64), Dest, Dest.Step(), m_VerticalJunctions_F64->Step(), Dest.Step());
 
@@ -235,16 +232,13 @@ void IntegralBuffer::SqrIntegral_F64(ImageBuffer& Source, ImageBuffer& Dest)
    CheckSameSize(Source, Dest);
    Check1Channel(Dest);
 
-   Kernel(sqr_F64, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   Kernel_Local(sqr_F64, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<cl::Buffer, cl::Buffer, uint, uint>(SelectProgram(Dest), "scan2_F64")
          (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height(), 1)), Dest, *m_VerticalJunctions_F64, Dest.Step(), m_VerticalJunctions_F64->Step());
    }
-
-   #undef KERNEL_RANGE
-#define KERNEL_RANGE(src_img) src_img.FullRange()
 
    Kernel(scan3_F64, In(Dest, *m_VerticalJunctions_F64), Dest, Dest.Step(), m_VerticalJunctions_F64->Step(), Dest.Step());
 
