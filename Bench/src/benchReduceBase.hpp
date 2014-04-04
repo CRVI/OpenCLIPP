@@ -54,6 +54,9 @@ protected:
    double m_DstCL[4];
    SPoint m_IndxCL;
 
+   double m_Dummy;
+   double * m_NPPDummy;
+
    CV_CODE(Scalar m_DstCV;)
    CV_CODE(Scalar m_CVDummy;)
    CV_CODE(Point m_IndxCV;)
@@ -86,7 +89,8 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
       nppiMaxGetBufferHostSize_32f_C4R(m_NPPRoi, &BufferSize);
       cudaMalloc((void**) &m_NPPWorkBuffer, BufferSize);
       cudaMalloc((void**) &m_NPPDst, sizeof(DstT) * 4);
-      cudaMalloc((void**) &m_IndxNPP, sizeof(m_IndxNPP));
+      cudaMalloc((void**) &m_IndxNPP, sizeof(*m_IndxNPP));
+      cudaMalloc((void**) &m_NPPDummy, sizeof(*m_NPPDummy));
       )
 
    if (std::is_same<float, DataType>::value)

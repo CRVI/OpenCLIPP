@@ -42,9 +42,9 @@
 #define SEL_CHAN(code) (code).x
 
 // This version handles images of any size - it will be a bit slower
-#define REDUCE(name, type, preop, fun1, postop1, fun2, postop2) \
+#define REDUCE(name, type, preop, fun1, postop1, fun2, postop2, param) \
 __attribute__((reqd_work_group_size(LW, LW, 1)))\
-kernel void name(INPUT source, global float * result, int img_width, int img_height)\
+kernel void name(INPUT source, global float * result, int img_width, int img_height param() )\
 {\
    local type buffer[BUFFER_LENGTH];\
    local int  nb_pixels[BUFFER_LENGTH];/*BUG : For some reason, the kernel does not run (error -5) on Intel platform when this second buffer is there*/\
@@ -117,9 +117,9 @@ kernel void name(INPUT source, global float * result, int img_width, int img_hei
 }
 
 // This version is for images that have a Width that is a multiple of LW*WIDTH1 and a height that is a multiple of LW
-#define REDUCE_FLUSH(name, type, preop, fun1, postop1, fun2, postop2) \
+#define REDUCE_FLUSH(name, type, preop, fun1, postop1, fun2, postop2, param) \
 __attribute__((reqd_work_group_size(LW, LW, 1)))\
-kernel void name(INPUT source, global float * result, int img_width, int img_height)\
+kernel void name(INPUT source, global float * result, int img_width, int img_height param() )\
 {\
    local type buffer[BUFFER_LENGTH];\
    const int gx = get_global_id(0) * WIDTH1;\
@@ -180,9 +180,16 @@ kernel void name(INPUT source, global float * result, int img_width, int img_hei
    }\
 }
 
+#define EMPTY()
+#define AVG_PARAM() , float4 Avg
+
 #define REDUCE_KERNEL(name, type, preop, fun1, postop1, fun2, postop2) \
-REDUCE(name, type, preop, fun1, postop1, fun2, postop2)\
-REDUCE_FLUSH(CONCATENATE(name, _flush), type, preop, fun1, postop1, fun2, postop2)
+REDUCE(name, type, preop, fun1, postop1, fun2, postop2, EMPTY)\
+REDUCE_FLUSH(CONCATENATE(name, _flush), type, preop, fun1, postop1, fun2, postop2, EMPTY)
+
+#define REDUCE_KERNEL_P(name, type, preop, fun1, postop1, fun2, postop2, param) \
+REDUCE(name, type, preop, fun1, postop1, fun2, postop2, param)\
+REDUCE_FLUSH(CONCATENATE(name, _flush), type, preop, fun1, postop1, fun2, postop2, param)
 
 #define NOOP(a)      a
 #define NOOP2(a, nb) a
@@ -191,6 +198,7 @@ REDUCE_FLUSH(CONCATENATE(name, _flush), type, preop, fun1, postop1, fun2, postop
 #define SUM(a, b)    (a + b)
 #define MEAN(a, b)   ((a + b) / 2)
 #define DIV(a, b)    (a / b)
+#define SQAVGD(a)    (a - SEL_CHAN(Avg)) * (a - SEL_CHAN(Avg))
 
 // These have a additional w parameter that is the weight of the b value, used only for MEAN2
 #define MIN2(a, b, w)   min(a, b)
@@ -256,30 +264,32 @@ void store_value_4C(global float * buffer, float4 value, int nb_pixels)
 }
 
 
-//            name             type    preop fun1  post1  fun2  postop2
-REDUCE_KERNEL(reduce_min,      SCALAR, NOOP, min,  NOOP2, MIN2,  atomic_minf)
-REDUCE_KERNEL(reduce_max,      SCALAR, NOOP, max,  NOOP2, MAX2,  atomic_maxf)
-REDUCE_KERNEL(reduce_minabs,   SCALAR, ABS,  min,  NOOP2, MIN2,  atomic_minf)
-REDUCE_KERNEL(reduce_maxabs,   SCALAR, ABS,  max,  NOOP2, MAX2,  atomic_maxf)
-REDUCE_KERNEL(reduce_sum,      float,  NOOP, SUM,  NOOP2, SUM2,  store_value)
-REDUCE_KERNEL(reduce_sum_sqr,  float,  SQR,  SUM,  NOOP2, SUM2,  store_value)
-REDUCE_KERNEL(reduce_count_nz, float,  NO_Z, SUM,  NOOP2, SUM2,  store_value)
-REDUCE_KERNEL(reduce_mean,     float,  NOOP, SUM,  DIV,   MEAN2, store_value)
-REDUCE_KERNEL(reduce_mean_sqr, float,  SQR,  SUM,  DIV,   MEAN2, store_value)
+//            name               type    preop     fun1  post1  fun2   postop2
+REDUCE_KERNEL(reduce_min,        SCALAR, NOOP,     min,  NOOP2, MIN2,  atomic_minf)
+REDUCE_KERNEL(reduce_max,        SCALAR, NOOP,     max,  NOOP2, MAX2,  atomic_maxf)
+REDUCE_KERNEL(reduce_minabs,     SCALAR, ABS,      min,  NOOP2, MIN2,  atomic_minf)
+REDUCE_KERNEL(reduce_maxabs,     SCALAR, ABS,      max,  NOOP2, MAX2,  atomic_maxf)
+REDUCE_KERNEL(reduce_sum,        float,  NOOP,     SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_sum_sqr,    float,  SQR,      SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_count_nz,   float,  NO_Z,     SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_mean,       float,  NOOP,     SUM,  DIV,   MEAN2, store_value)
+REDUCE_KERNEL(reduce_mean_sqr,   float,  SQR,      SUM,  DIV,   MEAN2, store_value)
+REDUCE_KERNEL_P(reduce_stddev,   float,  SQAVGD,   SUM,  DIV,   MEAN2, store_value, AVG_PARAM)
 
 
 #undef SEL_CHAN
 #define SEL_CHAN(code) code
 
-//            name                  type     preop fun1  post1  fun2  postop2
-REDUCE_KERNEL(reduce_min_4C,        TYPE,    NOOP, min,  NOOP2, MIN2,  atomic_minf_4C)
-REDUCE_KERNEL(reduce_max_4C,        TYPE,    NOOP, max,  NOOP2, MAX2,  atomic_maxf_4C)
-REDUCE_KERNEL(reduce_minabs_4C,     TYPE,    ABS,  min,  NOOP2, MIN2,  atomic_minf_4C)
-REDUCE_KERNEL(reduce_maxabs_4C,     TYPE,    ABS,  max,  NOOP2, MAX2,  atomic_maxf_4C)
-REDUCE_KERNEL(reduce_sum_4C,        float4,  NOOP, SUM,  NOOP2, SUM2,  store_value_4C)
-REDUCE_KERNEL(reduce_sum_sqr_4C,    float4,  SQR,  SUM,  NOOP2, SUM2,  store_value_4C)
-REDUCE_KERNEL(reduce_mean_4C,       float4,  NOOP, SUM,  DIV,   MEAN2, store_value_4C)
-REDUCE_KERNEL(reduce_mean_sqr_4C,   float4,  SQR,  SUM,  DIV,   MEAN2, store_value_4C)
+//            name                  type     preop    fun1  post1  fun2   postop2
+REDUCE_KERNEL(reduce_min_4C,        TYPE,    NOOP,    min,  NOOP2, MIN2,  atomic_minf_4C)
+REDUCE_KERNEL(reduce_max_4C,        TYPE,    NOOP,    max,  NOOP2, MAX2,  atomic_maxf_4C)
+REDUCE_KERNEL(reduce_minabs_4C,     TYPE,    ABS,     min,  NOOP2, MIN2,  atomic_minf_4C)
+REDUCE_KERNEL(reduce_maxabs_4C,     TYPE,    ABS,     max,  NOOP2, MAX2,  atomic_maxf_4C)
+REDUCE_KERNEL(reduce_sum_4C,        float4,  NOOP,    SUM,  NOOP2, SUM2,  store_value_4C)
+REDUCE_KERNEL(reduce_sum_sqr_4C,    float4,  SQR,     SUM,  NOOP2, SUM2,  store_value_4C)
+REDUCE_KERNEL(reduce_mean_4C,       float4,  NOOP,    SUM,  DIV,   MEAN2, store_value_4C)
+REDUCE_KERNEL(reduce_mean_sqr_4C,   float4,  SQR,     SUM,  DIV,   MEAN2, store_value_4C)
+REDUCE_KERNEL_P(reduce_stddev_4C,   float4,  SQAVGD,  SUM,  DIV,   MEAN2, store_value_4C, AVG_PARAM)
 
 
 // Initialize result to a valid value

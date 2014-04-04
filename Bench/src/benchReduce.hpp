@@ -48,7 +48,7 @@ void CONCATENATE(BENCH_NAME, Bench)<unsigned char>::RunIPP()
 {
    IPP_CODE(
       CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _8u_C1R)(
-         this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, &this->m_DstIPP[0] IPP_ADDITIONAL_PARAMS);
+         this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, MIDDLE_PARAM &this->m_DstIPP[0] IPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ void CONCATENATE(BENCH_NAME, Bench)<unsigned short>::RunIPP()
 {
    IPP_CODE(
       CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _16u_C1R)(
-         (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, &this->m_DstIPP[0] IPP_ADDITIONAL_PARAMS);
+         (Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, MIDDLE_PARAM &this->m_DstIPP[0] IPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ void CONCATENATE(BENCH_NAME, Bench)<float>::RunIPP()
 {
    IPP_CODE(
       CONCATENATE(CONCATENATE(ippi, BENCH_NAME), _32f_C1R)(
-         (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, &this->m_DstIPP[0] IPP_REDUCE_HINT IPP_ADDITIONAL_PARAMS);
+         (Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_IPPRoi, MIDDLE_PARAM &this->m_DstIPP[0] IPP_REDUCE_HINT IPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -74,9 +74,9 @@ template<typename DataType>
 void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCL()
 {
    if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_Program, this->m_CLBufferSrc, this->m_DstCL CL_ADDITIONAL_PARAMS);
+      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_Program, this->m_CLBufferSrc, MIDDLE_PARAM this->m_DstCL CL_ADDITIONAL_PARAMS);
    else
-      CONCATENATE(ocip, BENCH_NAME)(this->m_Program, this->m_CLSrc, this->m_DstCL CL_ADDITIONAL_PARAMS);
+      CONCATENATE(ocip, BENCH_NAME)(this->m_Program, this->m_CLSrc, MIDDLE_PARAM this->m_DstCL CL_ADDITIONAL_PARAMS);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
@@ -84,7 +84,7 @@ void CONCATENATE(BENCH_NAME, Bench)<unsigned char>::RunNPP()
 {
    NPP_CODE(
       CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _8u_C1R)(
-         (Npp8u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst NPP_ADDITIONAL_PARAMS);
+         (Npp8u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, NPP_MIDDLE_PARAM m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void CONCATENATE(BENCH_NAME, Bench)<unsigned short>::RunNPP()
 {
    NPP_CODE(
       CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _16u_C1R)(
-         (Npp16u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst NPP_ADDITIONAL_PARAMS);
+         (Npp16u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, NPP_MIDDLE_PARAM m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ void CONCATENATE(BENCH_NAME, Bench)<float>::RunNPP()
 {
    NPP_CODE(
       CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _32f_C1R)(
-         (Npp32f*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, m_NPPDst NPP_ADDITIONAL_PARAMS);
+         (Npp32f*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, NPP_MIDDLE_PARAM m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------

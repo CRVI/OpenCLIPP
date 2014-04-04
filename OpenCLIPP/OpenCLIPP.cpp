@@ -612,11 +612,17 @@ REDUCE_ARG_OP(   ocipSum,           Sum,           double)
 REDUCE_ARG_OP(   ocipSumSqr,        SumSqr,        double)
 REDUCE_ARG_OP(   ocipMean,          Mean,          double)
 REDUCE_ARG_OP(   ocipMeanSqr,       MeanSqr,       double)
+REDUCE_ARG_OP(   ocipStdDev,        StdDev,        double)
 REDUCE_RETURN_OP(ocipCountNonZero,  CountNonZero,  uint)
 REDUCE_INDEX_OP( ocipMinIndx,       Min,           double)
 REDUCE_INDEX_OP( ocipMaxIndx,       Max,           double)
 REDUCE_INDEX_OP( ocipMinAbsIndx,    MinAbs,        double)
 REDUCE_INDEX_OP( ocipMaxAbsIndx,    MaxAbs,        double)
+
+ocipError ocip_API ocipMean_StdDev(PROGRAM_ARG IMAGE_ARG Source, double * Mean, double * StdDev)
+{
+   H( CLASS.StdDev(CONV(Source), StdDev, Mean) )
+}
 
 
 #undef CLASS
@@ -810,11 +816,17 @@ REDUCE_ARG_OP(   ocipSum_V,            Sum,           double)
 REDUCE_ARG_OP(   ocipSumSqr_V,         SumSqr,        double)
 REDUCE_ARG_OP(   ocipMean_V,           Mean,          double)
 REDUCE_ARG_OP(   ocipMeanSqr_V,        MeanSqr,       double)
+REDUCE_ARG_OP(   ocipStdDev_V,         StdDev,        double)
 REDUCE_RETURN_OP(ocipCountNonZero_V,   CountNonZero,  uint)
 REDUCE_INDEX_OP( ocipMinIndx_V,        Min,           double)
 REDUCE_INDEX_OP( ocipMaxIndx_V,        Max,           double)
 REDUCE_INDEX_OP( ocipMinAbsIndx_V,     MinAbs,        double)
 REDUCE_INDEX_OP( ocipMaxAbsIndx_V,     MaxAbs,        double)
+
+ocipError ocip_API ocipMean_StdDev_V(PROGRAM_ARG IMAGE_ARG Source, double * Mean, double * StdDev)
+{
+   H( CLASS.StdDev(CONV(Source), StdDev, Mean) )
+}
 
 
 #undef CLASS

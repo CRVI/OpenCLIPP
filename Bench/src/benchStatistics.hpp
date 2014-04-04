@@ -31,6 +31,8 @@
 #define IPP_ADDITIONAL_PARAMS
 #define CL_ADDITIONAL_PARAMS
 #define NPP_ADDITIONAL_PARAMS
+#define MIDDLE_PARAM
+#define NPP_MIDDLE_PARAM
 
 #define BENCH_NAME Min
 #define CV_OPERATION(src, dst) minMax(src, &dst[0])
@@ -108,6 +110,19 @@
 #define BENCH_NAME Mean
 #include "benchReduce4C.hpp"
 
+#undef  MIDDLE_PARAM
+#undef  NPP_MIDDLE_PARAM
+#undef  IPP_REDUCE_HINT
+#define MIDDLE_PARAM &m_Dummy,
+#define NPP_MIDDLE_PARAM m_NPPDummy,
+#define IPP_REDUCE_HINT
+
+#define BENCH_NAME Mean_StdDev
+#define CV_OPERATION(src, dst) { Scalar Mean = 0; meanStdDev(src, Mean, dst); }
+#include "benchReduce.hpp"
+
+#undef MIDDLE_PARAM
+#undef NPP_MIDDLE_PARAM
 #undef IPP_REDUCE_HINT
 #undef REDUCE_DST_TYPE
 #undef REDUCE_CMP_TOLERANCE

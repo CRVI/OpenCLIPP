@@ -217,6 +217,23 @@ double Statistics::MeanSqr(IImage& Source)
    return ReduceMean(m_PartialResult);
 }
 
+double Statistics::StdDev(IImage& Source)
+{
+   double mean;
+   return StdDev(Source, mean);
+}
+
+double Statistics::StdDev(IImage& Source, double& mean)
+{
+   mean = Mean(Source);
+
+   Kernel(reduce_stddev, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height(), float(mean));
+
+   m_PartialResultBuffer->Read(true);
+
+   return sqrt(ReduceMean(m_PartialResult));
+}
+
 // Reductions that also find the coordinate
 double Statistics::Min(IImage& Source, int& outX, int& outY)
 {
@@ -358,6 +375,29 @@ void Statistics::MeanSqr(IImage& Source, double outVal[4])
    m_PartialResultBuffer->Read(true);
 
    ReduceMean(m_PartialResult, Source.NbChannels(), outVal);
+}
+
+void Statistics::StdDev(IImage& Source, double outVal[4])
+{
+   double means[4] = {0};
+
+   StdDev(Source, outVal, means);
+}
+
+void Statistics::StdDev(IImage& Source, double outVal[4], double outMean[4])
+{
+   Mean(Source, outMean);
+
+   cl_float4 fmeans = {float(outMean[0]), float(outMean[1]), float(outMean[2]), float(outMean[3])};
+
+   Kernel(reduce_stddev_4C, In(Source), Out(*m_PartialResultBuffer), Source.Width(), Source.Height(), fmeans);
+
+   m_PartialResultBuffer->Read(true);
+
+   ReduceMean(m_PartialResult, Source.NbChannels(), outVal);
+
+   for (uint i = 0; i < Source.NbChannels(); i++)
+      outVal[i] = sqrt(outVal[i]);
 }
 
 }

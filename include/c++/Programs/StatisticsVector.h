@@ -39,15 +39,17 @@ public:
    { }
 
    // These are for 1 channel images
-   double Min(    ImageBuffer& Source);      ///< Finds the minimum value in the image
-   double Max(    ImageBuffer& Source);      ///< Finds the maximum value in the image
-   double MinAbs( ImageBuffer& Source);      ///< Finds the minimum of the absolute of the values in the image
-   double MaxAbs( ImageBuffer& Source);      ///< Finds the maxumum of the absolute of the values in the image
-   double Sum(    ImageBuffer& Source);      ///< Calculates the sum of all pixel values
+   double Min(    ImageBuffer& Source);                  ///< Finds the minimum value in the image
+   double Max(    ImageBuffer& Source);                  ///< Finds the maximum value in the image
+   double MinAbs( ImageBuffer& Source);                  ///< Finds the minimum of the absolute of the values in the image
+   double MaxAbs( ImageBuffer& Source);                  ///< Finds the maxumum of the absolute of the values in the image
+   double Sum(    ImageBuffer& Source);                  ///< Calculates the sum of all pixel values
    double SumSqr( ImageBuffer& Source);      ///< Calculates the sum of the square of all pixel values
-   double Mean(   ImageBuffer& Source);      ///< Calculates the mean value of all pixel values
-   double MeanSqr(ImageBuffer& Source);      ///< Calculates the mean of the square of all pixel values
-   uint   CountNonZero(ImageBuffer& Source); ///< Calculates the number of non zero pixels
+   double Mean(   ImageBuffer& Source);                  ///< Calculates the mean value of all pixel values
+   double MeanSqr(ImageBuffer& Source);                  ///< Calculates the mean of the square of all pixel values
+   double StdDev( ImageBuffer& Source);                  ///< Calculates the standard deviation of all pixel values
+   double StdDev( ImageBuffer& Source, double& outmean); ///< Calculates the standard deviation and mean of all pixel values
+   uint   CountNonZero(ImageBuffer& Source);             ///< Calculates the number of non zero pixels
 
    double Min(    ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the minimum value
    double Max(    ImageBuffer& Source, int& outX, int& outY);  ///< Finds the position in the image that has the maximum value
@@ -63,6 +65,8 @@ public:
    void SumSqr(   ImageBuffer& Source, double outVal[4]);   ///< Calculates the sum of the square of all pixel values
    void Mean(     ImageBuffer& Source, double outVal[4]);   ///< Calculates the mean value of all pixel values
    void MeanSqr(  ImageBuffer& Source, double outVal[4]);   ///< Calculates the mean of the square of all pixel values
+   void StdDev(   ImageBuffer& Source, double outVal[4]);   ///< Calculates the standard deviation of all pixel values
+   void StdDev(   ImageBuffer& Source, double outVal[4], double outMean[4]);  ///< Calculates the standard deviation and mean of all pixel values
 
 protected:
    float m_Result[4];

@@ -111,7 +111,8 @@ void RunBench()
    B(Max);
    B(Sum);
 #ifndef HAS_CV
-   B(Mean);  // mean crashes with NPP
+   B(Mean);  // mean crashes with OpenCV OCL
+   B(Mean_StdDev);
 #endif
    B(MinIndx);
    B(MaxIndx);
@@ -132,7 +133,7 @@ void RunBench()
 #endif
 
    // Reduce size
-   /*Bench(__ID(ResizeBench<unsigned char, 5, 10, false>)); // These work well but come compiler have difficulties with commas in macro calls
+   /*Bench(__ID(ResizeBench<unsigned char, 5, 10, false>)); // These work well but some compilers have difficulties with commas in macro calls
    Bench(__ID(ResizeBench<unsigned char, 5, 10, true>));
    Bench(__ID(ResizeBench<unsigned char, 10, 5, false>));
    Bench(__ID(ResizeBench<unsigned char, 10, 5, true>));
@@ -218,9 +219,7 @@ void RunBench()
    B(Threshold_ImgGQ);
    B(Threshold_ImgGT);*/
 
-   Bench(SqrDistanceBenchU8);
-   Bench(SqrDistanceBenchU16);
-   Bench(SqrDistanceBenchF32);
+   B(SqrDistance);
 
    if (ocipIsFFTAvailable())
    {
@@ -231,7 +230,10 @@ void RunBench()
    Bench(IntegralBenchF32);
    //Bench(IntegralBenchF64);       // Not supported by IPP
    //Bench(SqrIntegralBenchF32);    // Not supported by IPP
-   Bench(SqrIntegralBenchF64);
+   if (USE_BUFFER)                  // F64 is only supported using buffer
+   {
+      Bench(SqrIntegralBenchF64);
+   }
 
 #else // FULL_TESTS
    // Benchmark mode
