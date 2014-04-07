@@ -227,8 +227,6 @@ void FFT::Inverse(ImageBuffer& ComplexSource, ImageBuffer& RealDest)
    cl_int err = clfftEnqueueTransform(m_BackwardPlan, CLFFT_BACKWARD, 1, &m_Queue, 0, NULL, NULL,
       &Input, &Output, *m_BackwardTempBuffer);
 
-   RealDest.Read(true);
-
    if (err != CL_SUCCESS)
       throw cl::Error(err, "FFT:: clfftEnqueueTransform");
 

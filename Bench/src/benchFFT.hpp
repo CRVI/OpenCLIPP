@@ -77,6 +77,8 @@ public:
 
    float CompareTolerance() const { return 0.005f; }
 
+   bool CompareTolRelative() const { return true; }
+
 private:
    ocipProgram m_Program;
 
@@ -182,6 +184,33 @@ void FFTBackwardBench::Create(uint Width, uint Height)
       )
 
    NPP_CODE( cufftPlan2d(&m_NPPPlan, Width, Height, CUFFT_C2R); )
+
+   // Make a forward FFT to m_ImgSrc
+   FillRandomImg(m_ImgDstCL);
+   ocipFFTForward(m_Program, m_CLBufferDst, m_CLBufferSrc);
+   ocipReadImageBuffer(m_CLBufferSrc);
+
+   bool TestInversion = false;
+   if (TestInversion)
+   {
+      // Test if we can get back the source image with the inverse transformation
+      ocipFFTInverse(m_Program, m_CLBufferSrc, m_CLBufferDst);
+      ocipDivC_V(m_CLBufferDst, m_CLBufferDst, Width * Height);
+      ocipReadImageBuffer(m_CLBufferDst);
+      // m_ImgDstCL should be exaclty the same as it was before calling ocipFFTInverse()
+   }
+
+   // Send m_ImgSrc back to the GPU
+   ocipSendImageBuffer(m_CLBufferSrc);
+
+   CV_CODE(
+      m_CVSrc.upload(toMat(m_ImgSrc));
+      )
+
+   NPP_CODE(
+      cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
+         m_ImgSrc.BytesWidth(), Height, cudaMemcpyHostToDevice);
+      )
 }
 
 void FFTBackwardBench::Free()
