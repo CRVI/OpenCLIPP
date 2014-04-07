@@ -159,7 +159,10 @@ public:
 
    /// Selects the appropriate program version for this image.
    /// Also builds the program version if it was not already built.
-   Program& SelectProgram(const ImageBase& Source);
+   Program& SelectProgram(const ImageBase& Img1);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
 
 private:
    static const std::vector<std::string> GetOptions();
@@ -194,7 +197,10 @@ public:
 
    /// Selects the appropriate program version for this image.
    /// Also builds the program version if it was not already built.
-   Program& SelectProgram(const ImageBase& Source);
+   Program& SelectProgram(const ImageBase& Img1);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
 
 private:
    static const std::vector<std::string> GetOptions();
@@ -209,6 +215,15 @@ private:
 class CL_API VectorProgram : public MultiProgram
 {
 public:
+
+   /// Lists the three program versions
+   enum EProgramVersions
+   {
+      Fast,          // Fast version for "flush" images
+      Standard,      // Standard version
+      Unaligned,     // Slow version for unaligned images
+      NbVersions,
+   };
 
    /// Initialize the program with a .cl file.
    /// Program is not built by the constructor, it will be built when needed.
@@ -230,15 +245,36 @@ public:
    /// the program during when starting so it will be ready when needed.
    void PrepareFor(const ImageBase& Source);
 
-   /// Selects the appropriate program version for this image.
+   /// Selects the appropriate program version for the images.
    /// Also builds the program version if it was not already built.
-   Program& SelectProgram(const ImageBase& Source);
+   Program& SelectProgram(const ImageBase& Img1);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
+   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
+
+   /// Selects the appropriate program version for the images.
+   static EProgramVersions SelectVersion(const ImageBase& Img1);
+   static EProgramVersions SelectVersion(const ImageBase& Img1, const ImageBase& Img2);
+   static EProgramVersions SelectVersion(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
+   static EProgramVersions SelectVersion(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
 
    /// Returns true if the image has no padding and has a width that is a multiple
    /// of the vector width
    static bool IsImageFlush(const ImageBase& Source);
 
-   static cl::NDRange GetRange(const ImageBase& Source);
+   /// Returns true if the step of the image is a multiple of the vector width
+   static bool IsImageAligned(const ImageBase& Source);
+
+   static cl::NDRange GetRange(EProgramVersions Version, const ImageBase& Img1);
+   static cl::NDRange GetRange(const ImageBase& Img1);
+   static cl::NDRange GetRange(const ImageBase& Img1, const ImageBase& Img2);
+   static cl::NDRange GetRange(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
+   static cl::NDRange GetRange(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
+
+   /// Builds the program specified by Id and returns a reference to it
+   Program& GetProgram(SImage::EDataType Type, EProgramVersions Version);
+
+   static uint GetProgramId(SImage::EDataType Type, EProgramVersions Version);
 
    ///< Returns the vector operation width to use for the given data type
    static int GetVectorWidth(SImage::EDataType Type);

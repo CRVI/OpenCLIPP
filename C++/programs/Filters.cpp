@@ -153,7 +153,7 @@ void Filters::Median(IImage& Source, IImage& Dest, int Width)
    {
       if (RangeFit(Source, 16, 16))
       {
-         Kernel_(*m_CL, SelectProgram(Source), median3_cached, cl::NDRange(16, 16, 1), Source, Dest);
+         Kernel_(*m_CL, SelectProgram(Source), median3_cached, Source.FullRange(), cl::NDRange(16, 16, 1), Source, Dest);
          return;
       }
 

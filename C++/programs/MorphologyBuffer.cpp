@@ -25,8 +25,9 @@
 #include "Programs/MorphologyBuffer.h"
 
 
-#define KERNEL_RANGE(src_img) GetRange(src_img, UseLocalRange(Width)), GetLocalRange(UseLocalRange(Width))
-#define SELECT_NAME(name, src_img) SelectName( #name , Width)
+#define KERNEL_RANGE(...)           GetRange(_FIRST(__VA_ARGS__), UseLocalRange(Width))
+#define LOCAL_RANGE                 GetLocalRange(UseLocalRange(Width))
+#define SELECT_NAME(name, src_img)  SelectName( #name , Width)
 
 #include "kernel_helpers.h"
 

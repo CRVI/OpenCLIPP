@@ -25,8 +25,9 @@
 #include "Programs/StatisticsVector.h"
 
 
-#define KERNEL_RANGE(src_img) GetRange(src_img), GetLocalRange()
-#define SELECT_NAME(name, src_img) SelectSVName( #name , src_img)
+#define KERNEL_RANGE(...)           GetRange(_FIRST(__VA_ARGS__))
+#define LOCAL_RANGE                 GetLocalRange()
+#define SELECT_NAME(name, src_img)  SelectSVName( #name , src_img)
 
 #include "kernel_helpers.h"
 
@@ -110,7 +111,7 @@ double StatisticsVector::Min(ImageBuffer& Source)
 
    Init(Source);
 
-   Kernel(reduce_min, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_min, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -123,7 +124,7 @@ double StatisticsVector::Max(ImageBuffer& Source)
 
    Init(Source);
 
-   Kernel(reduce_max, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_max, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -136,7 +137,7 @@ double StatisticsVector::MinAbs(ImageBuffer& Source)
 
    InitAbs(Source);
 
-   Kernel(reduce_minabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_minabs, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -149,7 +150,7 @@ double StatisticsVector::MaxAbs(ImageBuffer& Source)
 
    InitAbs(Source);
 
-   Kernel(reduce_maxabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_maxabs, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -162,7 +163,7 @@ double StatisticsVector::Sum(ImageBuffer& Source)
 
    PrepareBuffer(Source);
 
-   Kernel(reduce_sum, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_sum, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -175,7 +176,7 @@ double StatisticsVector::SumSqr(ImageBuffer& Source)
 
    PrepareBuffer(Source);
 
-   Kernel(reduce_sum_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_sum_sqr, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -188,7 +189,7 @@ uint StatisticsVector::CountNonZero(ImageBuffer& Source)
 
    PrepareBuffer(Source);
 
-   Kernel(reduce_count_nz, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_count_nz, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -201,7 +202,7 @@ double StatisticsVector::Mean(ImageBuffer& Source)
 
    PrepareBuffer(Source);
 
-   Kernel(reduce_mean, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_mean, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -214,7 +215,7 @@ double StatisticsVector::MeanSqr(ImageBuffer& Source)
 
    PrepareBuffer(Source);
 
-   Kernel(reduce_mean_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_mean_sqr, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -231,7 +232,7 @@ double StatisticsVector::StdDev(ImageBuffer& Source, double& mean)
 {
    mean = Mean(Source);
 
-   Kernel(reduce_stddev, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height(), float(mean));
+   Kernel(reduce_stddev, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height(), float(mean));
 
    m_PartialResultBuffer->Read(true);
 
@@ -246,7 +247,7 @@ double StatisticsVector::Min(ImageBuffer& Source, int& outX, int& outY)
 
    PrepareCoords(Source);
 
-   Kernel(min_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(min_coord, In(Source), Out(), *m_PartialResultBuffer, *m_PartialCoordBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read();
    m_PartialCoordBuffer->Read(true);
@@ -260,7 +261,7 @@ double StatisticsVector::Max(ImageBuffer& Source, int& outX, int& outY)
 
    PrepareCoords(Source);
 
-   Kernel(max_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(max_coord, In(Source), Out(), *m_PartialResultBuffer, *m_PartialCoordBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read();
    m_PartialCoordBuffer->Read(true);
@@ -274,7 +275,7 @@ double StatisticsVector::MinAbs(ImageBuffer& Source, int& outX, int& outY)
 
    PrepareCoords(Source);
 
-   Kernel(min_abs_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(min_abs_coord, In(Source), Out(), *m_PartialResultBuffer, *m_PartialCoordBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read();
    m_PartialCoordBuffer->Read(true);
@@ -288,7 +289,7 @@ double StatisticsVector::MaxAbs(ImageBuffer& Source, int& outX, int& outY)
 
    PrepareCoords(Source);
 
-   Kernel(max_abs_coord, In(Source), Out(*m_PartialResultBuffer, *m_PartialCoordBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(max_abs_coord, In(Source), Out(), *m_PartialResultBuffer, *m_PartialCoordBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read();
    m_PartialCoordBuffer->Read(true);
@@ -302,7 +303,7 @@ void StatisticsVector::Min(ImageBuffer& Source, double outVal[4])
 {
    Init(Source);
 
-   Kernel(reduce_min, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_min, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -314,7 +315,7 @@ void StatisticsVector::Max(ImageBuffer& Source, double outVal[4])
 {
    Init(Source);
 
-   Kernel(reduce_max, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_max, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -326,7 +327,7 @@ void StatisticsVector::MinAbs(ImageBuffer& Source, double outVal[4])
 {
    InitAbs(Source);
 
-   Kernel(reduce_minabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_minabs, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -338,7 +339,7 @@ void StatisticsVector::MaxAbs(ImageBuffer& Source, double outVal[4])
 {
    InitAbs(Source);
 
-   Kernel(reduce_maxabs, In(Source), Out(m_ResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_maxabs, In(Source), Out(), m_ResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_ResultBuffer.Read(true);
 
@@ -350,7 +351,7 @@ void StatisticsVector::Sum(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_sum, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_sum, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -361,7 +362,7 @@ void StatisticsVector::SumSqr(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_sum_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_sum_sqr, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -372,7 +373,7 @@ void StatisticsVector::Mean(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_mean, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_mean, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -383,7 +384,7 @@ void StatisticsVector::MeanSqr(ImageBuffer& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
-   Kernel(reduce_mean_sqr, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height());
+   Kernel(reduce_mean_sqr, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height());
 
    m_PartialResultBuffer->Read(true);
 
@@ -403,7 +404,7 @@ void StatisticsVector::StdDev(ImageBuffer& Source, double outVal[4], double outM
 
    cl_float4 fmeans = {float(outMean[0]), float(outMean[1]), float(outMean[2]), float(outMean[3])};
    
-   Kernel(reduce_stddev, In(Source), Out(*m_PartialResultBuffer), Source.Step(), Source.Width(), Source.Height(), fmeans);
+   Kernel(reduce_stddev, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height(), fmeans);
 
    m_PartialResultBuffer->Read(true);
 

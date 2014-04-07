@@ -150,7 +150,7 @@ void FiltersVector::Median(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    {
       /*if (RangeFit(Source, 16, 16))  // The cached version is slower on my GTX 680
       {
-         Kernel_(*m_CL, SelectProgram(Source), median3_cached, cl::NDRange(16, 16, 1), Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+         Kernel_(*m_CL, SelectProgram(Source), median3_cached, Source.FullRange(), cl::NDRange(16, 16, 1), Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
          return;
       }*/
 

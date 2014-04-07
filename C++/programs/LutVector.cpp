@@ -26,7 +26,7 @@
 
 #define VEC_WIDTH 4
 
-#define KERNEL_RANGE(src_img) src_img.VectorRange(VEC_WIDTH)
+#define KERNEL_RANGE(...) _FIRST(__VA_ARGS__).VectorRange(VEC_WIDTH)
 
 #include "kernel_helpers.h"
 
@@ -100,7 +100,7 @@ void LutVector::BasicLut(ImageBuffer& Source, ImageBuffer& Dest, unsigned char *
    else
    {
       // Faster version
-      Kernel_(*m_CL, SelectProgram(Source), lut_256_cached, cl::NDRange(16, 16, 1), Source, Dest, Source.Step(), Dest.Step(), Values)
+      Kernel_(*m_CL, SelectProgram(Source), lut_256_cached, Source.VectorRange(VEC_WIDTH), cl::NDRange(16, 16, 1), Source, Dest, Source.Step(), Dest.Step(), Values)
    }
 
 }

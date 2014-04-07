@@ -25,6 +25,7 @@
 #include "Programs/IntegralBuffer.h"
 
 
+// With 16 and 16, too much local memory is used so we use 8 and 8
 #define LOCAL_SIZE 8
 #define PIXELS_PER_WORKITEM 8
 
@@ -32,14 +33,6 @@
 
 
 #include "kernel_helpers.h"
-
-#define Kernel_Local(name, in, out, ...) \
-   FOR_EACH(_SEND_IF_NEEDED, in)\
-   cl::make_kernel<FOR_EACH_COMMA(CL_TYPE, in) ADD_COMMA(out) FOR_EACH_COMMA(CL_TYPE, out) ADD_COMMA(__VA_ARGS__) FOR_EACH_COMMA(CL_TYPE, __VA_ARGS__)>\
-      ((cl::Program) SELECT_PROGRAM(_FIRST_IN(in)), SELECT_NAME(name, _FIRST_IN(in)))\
-         (cl::EnqueueArgs(*m_CL, GetRange(_FIRST_IN(in)), GetLocalRange()),\
-            in ADD_COMMA(out) out ADD_COMMA(__VA_ARGS__) __VA_ARGS__);\
-   FOR_EACH(_SET_IN_DEVICE, out)
 
 
 using namespace cl;

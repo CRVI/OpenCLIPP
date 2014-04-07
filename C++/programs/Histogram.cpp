@@ -41,7 +41,7 @@ void Histogram::Histogram1C(IImage& Source, uint * Histogram)
    Buffer Buffer(*m_CL, Histogram, Length);
    Buffer.Send();
 
-   Kernel(histogram_1C, Source, Buffer);
+   Kernel(histogram_1C, In(Source), Out(), Buffer);
 
    Buffer.Read(true);
 }
@@ -57,7 +57,7 @@ void Histogram::Histogram4C(IImage& Source, uint * Histogram)
    Buffer Buffer(*m_CL, Histogram, Length);
    Buffer.Send();
 
-   Kernel(histogram_4C, Source, Buffer);
+   Kernel(histogram_4C, In(Source), Out(), Buffer);
 
    Buffer.Read(true);
 }

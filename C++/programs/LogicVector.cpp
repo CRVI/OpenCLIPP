@@ -25,7 +25,7 @@
 #include "Programs/LogicVector.h"
 
 
-#define KERNEL_RANGE(src_img) GetRange(src_img)
+#define KERNEL_RANGE(...) GetRange(__VA_ARGS__)
 
 #include "kernel_helpers.h"
 

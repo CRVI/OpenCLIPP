@@ -61,7 +61,7 @@ bool AbsDiff(const CSimpleImage& Source1, const CSimpleImage& Source2, CSimpleIm
          ocipCreateImageBuffer(&buf2, Source2, (void *) Source2.Data(), CL_MEM_READ_WRITE);
          ocipCreateImageBuffer(&dest, Dest, (void *) Dest.Data(), CL_MEM_READ_WRITE);
 
-         ocipAbsDiff_V(buf2, buf1, dest);
+         ocipAbsDiff_V(buf1, buf2, dest);
 
          ocipReadImageBuffer(dest);
 

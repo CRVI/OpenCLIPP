@@ -113,8 +113,8 @@ The macro LAUNCH(program, in, out, ...) works like this :
 #define IMAGE_KERNEL(CL, code, in, out, ...) ImageProgram(CL, true, IMAGE_KERNEL_SOURCE(custom_kernel, #code, in, out, __VA_ARGS__))
 #define IMAGE_KERNEL_T(CL, code, in, out, ...) ImageProgram(CL, true, IMAGE_KERNEL_SOURCE(custom_kernel, code, in, out, __VA_ARGS__))
 
-#define LAUNCH(program, in, out, ...) Kernel_(program.GetCL(), program.SelectProgram(_FIRST_IN(in)),\
-   custom_kernel, DEFAULT_LOCAL_RANGE, in, out, __VA_ARGS__);
+#define LAUNCH(program, in, out, ...) Kernel_(program.GetCL(), program.SelectProgram(in, out),\
+   custom_kernel, _FIRST(in).FullRange(), LOCAL_RANGE, in, out, __VA_ARGS__);
 
 /*inline void Test()
 {

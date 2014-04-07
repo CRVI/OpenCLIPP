@@ -73,6 +73,12 @@ static cl::NDRange GetLocalRange(bool UseLocalSize = true);                     
 
 static uint GetNbGroups(const ImageBase& Image);     // Number of work groups for the image - GetNbGroupsW() * GetNbGroupsH()
 
+// Equivalent of the Kernel() macro but using the 
+#define Kernel_Local(name, in, out, ...) \
+   Kernel_(*m_CL, SELECT_PROGRAM(_FIRST(in)), name, \
+      GetRange(_FIRST(in)), GetLocalRange(), \
+      In(in), Out(out), __VA_ARGS__ )
+
 
 static bool FlushWidth(const ImageBase& Image)
 {

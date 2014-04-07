@@ -186,15 +186,33 @@ void ImageProgram::PrepareFor(const ImageBase& Source)
    SelectProgram(Source).Build();
 }
 
-Program& ImageProgram::SelectProgram(const ImageBase& Source)
+Program& ImageProgram::SelectProgram(const ImageBase& Img1)
 {
-   if (Source.IsFloat())
+   if (Img1.IsFloat())
       return GetProgram(Float);
 
-   if (Source.IsUnsigned())
+   if (Img1.IsUnsigned())
       return GetProgram(Unsigned);
 
    return GetProgram(Signed);
+}
+
+Program& ImageProgram::SelectProgram(const ImageBase& Img1, const ImageBase&)
+{
+   // Only Img1 is used to select the program
+   return SelectProgram(Img1);
+}
+
+Program& ImageProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&)
+{
+   // Only Img1 is used to select the program
+   return SelectProgram(Img1);
+}
+
+Program& ImageProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&, const ImageBase&)
+{
+   // Only Img1 is used to select the program
+   return SelectProgram(Img1);
 }
 
 
@@ -230,12 +248,30 @@ void ImageBufferProgram::PrepareFor(const ImageBase& Source)
    SelectProgram(Source).Build();
 }
 
-Program& ImageBufferProgram::SelectProgram(const ImageBase& Source)
+Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1)
 {
-   if (Source.DataType() < 0 || Source.DataType() >= SImage::NbDataTypes)
+   if (Img1.DataType() < 0 || Img1.DataType() >= SImage::NbDataTypes)
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageBufferProgram");
 
-   return GetProgram(Source.DataType());
+   return GetProgram(Img1.DataType());
+}
+
+Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&)
+{
+   // Only Img1 is used to select the program
+   return GetProgram(Img1.DataType());
+}
+
+Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&)
+{
+   // Only Img1 is used to select the program
+   return GetProgram(Img1.DataType());
+}
+
+Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&, const ImageBase&)
+{
+   // Only Img1 is used to select the program
+   return GetProgram(Img1.DataType());
 }
 
 
@@ -256,22 +292,27 @@ VectorProgram::VectorProgram(COpenCL& CL, bool fromSource, const char * Source)
    SetProgramInfo(fromSource, Source, Options);
 }
 
+uint VectorProgram::GetProgramId(SImage::EDataType Type, EProgramVersions Version)
+{
+   return Version * SImage::NbDataTypes + Type;
+}
+
 const vector<string> VectorProgram::GetOptions()
 {
-   vector<string> Options(SImage::NbDataTypes * 3);
+   vector<string> Options(SImage::NbDataTypes * NbVersions);
 
    for (int i = 0; i < SImage::NbDataTypes; i++)
    {
-      int VectorWidth = GetVectorWidth(SImage::EDataType(i));
+      SImage::EDataType Type = SImage::EDataType(i);
 
-      Options[i] = string("-D VEC_WIDTH=") + to_string(VectorWidth) + " -D " + GetDataTypeList()[i];
+      int VectorWidth = GetVectorWidth(Type);
+
+      string options = string("-D VEC_WIDTH=") + to_string(VectorWidth) + " -D " + GetDataTypeList()[i];
+
+      Options[GetProgramId(Type, Fast)]      = options;
+      Options[GetProgramId(Type, Standard)]  = options + " -D WITH_PADDING";
+      Options[GetProgramId(Type, Unaligned)] = options + " -D WITH_PADDING -D UNALIGNED";
    }
-
-   for (int i = 0; i < SImage::NbDataTypes; i++)
-      Options[SImage::NbDataTypes + i] = Options[i] + " -D WITH_PADDING";
-
-   for (int i = 0; i < SImage::NbDataTypes; i++)
-      Options[SImage::NbDataTypes * 2 + i] = Options[i] + " -D WITH_PADDING -D UNALIGNED";
 
    return Options;
 }
@@ -311,15 +352,55 @@ bool VectorProgram::IsImageFlush(const ImageBase& Source)
    return true;
 }
 
-cl::NDRange VectorProgram::GetRange(const ImageBase& Source)
+bool VectorProgram::IsImageAligned(const ImageBase& Source)
 {
-   if (IsImageFlush(Source))
+   uint BytesPerWorker = Source.DepthBytes() * Source.NbChannels() * GetVectorWidth(Source.DataType());
+   return (Source.Step() % BytesPerWorker == 0);
+}
+
+cl::NDRange VectorProgram::GetRange(EProgramVersions Version, const ImageBase& Img1)
+{
+   switch (Version)
    {
-      // The fast version uses a simpler 1D range
-      return cl::NDRange(Source.Width() * Source.Height() * Source.NbChannels() / GetVectorWidth(Source.DataType()), 1, 1);
+   case Fast:
+      // The fast version uses a 1D range
+      return cl::NDRange(Img1.Width() * Img1.Height() * Img1.NbChannels() / GetVectorWidth(Img1.DataType()), 1, 1);
+
+   case Standard:
+   case Unaligned:
+      // The other versions use a 2D range
+      return Img1.VectorRange(GetVectorWidth(Img1.DataType()));
+
+   case NbVersions:
+   default:
+      throw cl::Error(CL_INVALID_PROGRAM, "Invalid program version in VectorProgram");
    }
 
-   return Source.VectorRange(GetVectorWidth(Source.DataType()));
+}
+
+cl::NDRange VectorProgram::GetRange(const ImageBase& Img1)
+{
+   return GetRange(SelectVersion(Img1), Img1);
+}
+
+cl::NDRange VectorProgram::GetRange(const ImageBase& Img1, const ImageBase& Img2)
+{
+   return GetRange(SelectVersion(Img1, Img2), Img1);
+}
+
+cl::NDRange VectorProgram::GetRange(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3)
+{
+  return GetRange(SelectVersion(Img1, Img2, Img3), Img1);
+}
+
+cl::NDRange VectorProgram::GetRange(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4)
+{
+   return GetRange(SelectVersion(Img1, Img2, Img3, Img4), Img1);
+}
+
+Program& VectorProgram::GetProgram(SImage::EDataType Type, EProgramVersions Version)
+{
+   return MultiProgram::GetProgram(GetProgramId(Type, Version));
 }
 
 void VectorProgram::PrepareFor(const ImageBase& Source)
@@ -327,23 +408,68 @@ void VectorProgram::PrepareFor(const ImageBase& Source)
    SelectProgram(Source).Build();
 }
 
-Program& VectorProgram::SelectProgram(const ImageBase& Source)
+VectorProgram::EProgramVersions VectorProgram::SelectVersion(const ImageBase& Img1)
 {
-   if (Source.DataType() < 0 || Source.DataType() >= SImage::NbDataTypes)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageBufferProgram");
+   if (!IsImageAligned(Img1))
+      return Unaligned;    // Use the slow unaligned version
 
-   if (IsImageFlush(Source))
-      return GetProgram(Source.DataType());  // Use fast version
+   if (!IsImageFlush(Img1))
+      return Standard;     // Use standard version
 
-   // Use slower WITH_PADDING version
+   return Fast;  // Use fast version
+}
 
-   uint BytesPerWorker = Source.DepthBytes() * Source.NbChannels() * GetVectorWidth(Source.DataType());
-   bool Aligned = (Source.Step() % BytesPerWorker == 0);
+VectorProgram::EProgramVersions VectorProgram::SelectVersion(const ImageBase& Img1, const ImageBase& Img2)
+{
+   if (!IsImageAligned(Img1) || !IsImageAligned(Img2))
+      return Unaligned;   // Use the slow unaligned version
 
-   if (!Aligned)
-      return GetProgram(Source.DataType() + SImage::NbDataTypes * 2);
+   if (!IsImageFlush(Img2))
+      return Standard;     // Use standard version
 
-   return GetProgram(Source.DataType() + SImage::NbDataTypes);
+   return SelectVersion(Img1);
+}
+
+VectorProgram::EProgramVersions VectorProgram::SelectVersion(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3)
+{
+   if (!IsImageAligned(Img1) || !IsImageAligned(Img2) || !IsImageAligned(Img3))
+      return Unaligned;   // Use the slow unaligned version
+
+   if (!IsImageFlush(Img3))
+      return Standard;     // Use standard version
+
+   return SelectVersion(Img1, Img2);
+}
+
+VectorProgram::EProgramVersions VectorProgram::SelectVersion(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4)
+{
+   if (!IsImageAligned(Img1) || !IsImageAligned(Img2) || !IsImageAligned(Img3) || !IsImageAligned(Img4))
+      return Unaligned;   // Use the slow unaligned version
+
+   if (!IsImageFlush(Img4))
+      return Standard;     // Use standard version
+
+   return SelectVersion(Img1, Img2, Img3);
+}
+
+Program& VectorProgram::SelectProgram(const ImageBase& Img1)
+{
+   return GetProgram(Img1.DataType(), SelectVersion(Img1));
+}
+
+Program& VectorProgram::SelectProgram(const ImageBase& Img1, const ImageBase& Img2)
+{
+   return GetProgram(Img1.DataType(), SelectVersion(Img1, Img2));
+}
+
+Program& VectorProgram::SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3)
+{
+   return GetProgram(Img1.DataType(), SelectVersion(Img1, Img2, Img3));
+}
+
+Program& VectorProgram::SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4)
+{
+   return GetProgram(Img1.DataType(), SelectVersion(Img1, Img2, Img3, Img4));
 }
 
 
