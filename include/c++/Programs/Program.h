@@ -202,10 +202,10 @@ private:
 
 
 /// A program that operates on ImageBuffers using vector operations.
-/// Contains two program versions for each data type : S8, U8, S16, U16, S32, U32, F32
-/// One standard version that can operate on images of any sizes and on images with padding
-/// And one faster version that can operate on images with no padding and a width that is 
-/// a multiple of the vector width.
+/// Contains three program versions for each data type : S8, U8, S16, U16, S32, U32, F32
+/// And one fast version that can operate on "flush" images with no padding and a width that is a multiple of the vector width
+/// One standard version that can operate on images of any sizes and on images with padding, but with a step that is a multiple of the vector width
+/// And one slower unaligned version that operates on any images.
 class CL_API VectorProgram : public MultiProgram
 {
 public:

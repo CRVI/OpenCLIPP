@@ -109,29 +109,57 @@
 // If using a small ROI on a big image, this version will be faster
 // must be called with img_type.VectorRange(VEC_WIDTH)
 
-#define READ_IMAGE(img, step, x, y) CONVERT_INTERNAL(img[(y * step) / VEC_WIDTH + x])
-#define WRITE_IMAGE(img, step, x, y, val) img[(y * step) / VEC_WIDTH + x] = CONVERT_DST(val)
+#define READ_IMAGE(img, step, x, y) CONVERT_INTERNAL(*(const INPUT_SPACE TYPE *)(img + y * step + x * VEC_WIDTH))
+#define WRITE_IMAGE(img, step, x, y, val) *(global DST *)(img + y * step + x * VEC_WIDTH) = CONVERT_DST(val)
 
-#define READ_SCALAR(img, step, x, y) CONVERT_INTERNAL_SCALAR(img[(y * step) + x])
-#define WRITE_SCALAR(img, step, x, y, val) img[(y * step) + x] = CONVERT_DST_SCALAR(val)
-
-
-#define PREPARE_SCALAR(i) \
-   const INPUT_SPACE SCALAR * src_scalar = (const INPUT_SPACE SCALAR *) source;\
-   global SCALAR * dst_scalar = (global SCALAR *) dest;\
-   const INTERNAL_SCALAR src = READ_SCALAR(src_scalar, src_step, i, gy);
-
-#define PREPARE_SCALAR2(i) \
-   const INPUT_SPACE SCALAR * src1_scalar = (const INPUT_SPACE SCALAR *) source1;\
-   const INPUT_SPACE SCALAR * src2_scalar = (const INPUT_SPACE SCALAR *) source2;\
-   global SCALAR * dst_scalar = (global SCALAR *) dest;\
-   const INTERNAL_SCALAR src1 = READ_SCALAR(src1_scalar, src1_step, i, gy);\
-   const INTERNAL_SCALAR src2 = READ_SCALAR(src2_scalar, src2_step, i, gy);
-
-#define SCALAR_OP(code) WRITE_SCALAR(dst_scalar, dst_step, i, gy, (code))
+#define READ_SCALAR(img, step, x, y) CONVERT_INTERNAL_SCALAR(img[(y * step) + (x)])
+#define WRITE_SCALAR(img, step, x, y, val) img[(y * step) + (x)] = CONVERT_DST_SCALAR(val)
 
 
-#define LAST_WORKER(code) \
+#define PREPARE_SCALAR(x) \
+   const INTERNAL_SCALAR src = READ_SCALAR(source, src_step, x, gy);
+
+#define PREPARE_SCALAR2(x) \
+   const INTERNAL_SCALAR src1 = READ_SCALAR(source1, src1_step, x, gy);\
+   const INTERNAL_SCALAR src2 = READ_SCALAR(source2, src2_step, x, gy);
+
+#define SCALAR_OP(code) WRITE_SCALAR(dest, dst_step, i, gy, (code))
+
+//#define UNALIGNED    // Is defined by runtime when needed
+
+#ifdef UNALIGNED
+
+// If the step of the image is not a multiple of VEC_WIDTH * sizeof(SCALAR),
+// accessing the pixels using a pointer to a vector type will not work (will either read the wrong pixels or will have an undefied behaviour).
+// See https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/dataTypes.html
+// This code operates on the image using scalar operations and is significantly slower
+
+#define UNALIGNED_CODE(code) \
+   for (int i = gx * VEC_WIDTH; i < (gx + 1) * VEC_WIDTH; i++)\
+   {\
+      PREPARE_SCALAR(i)\
+      SCALAR_OP(code);\
+   }\
+   return;
+
+#define UNALIGNED_CODE2(code) \
+   for (int i = gx * VEC_WIDTH; i < (gx + 1) * VEC_WIDTH; i++)\
+   {\
+      PREPARE_SCALAR2(i)\
+      SCALAR_OP(code);\
+   }\
+   return;
+
+#else
+
+// For normal images, the step is a multiple of VEC_WIDTH * sizeof(SCALAR) and we can use the vector operations
+
+#define UNALIGNED_CODE(code)
+#define UNALIGNED_CODE2(code)
+
+#endif // UNALIGNED
+
+#define SCALAR_CODE(code) \
    if ((gx + 1) * VEC_WIDTH > width)\
    {\
       /* Last worker on the current row for an image that has a width that is not a multiple of VEC_WIDTH*/\
@@ -141,9 +169,10 @@
          SCALAR_OP(code);\
       }\
       return;\
-   }
+   }\
+   UNALIGNED_CODE(code)
 
-#define LAST_WORKER2(code) \
+#define SCALAR_CODE2(code) \
    if ((gx + 1) * VEC_WIDTH > width)\
    {\
       /* Last worker on the current row for an image that has a width that is not a multiple of VEC_WIDTH*/\
@@ -153,22 +182,24 @@
          SCALAR_OP(code);\
       }\
       return;\
-   }
+   }\
+   UNALIGNED_CODE2(code)
 
 #else // WITH_PADDING
 
-// This versions is simpler and a bit faster. It only handles images that have :
+// This version handles "flush" images, it is simpler and a bit faster.
+// It only handles images that have :
 //    Width that is a multiple of VEC_WIDTH
 //       Improper width will cause the last few pixels not to be processed
 //    Step == Width * Channels * Depth / 8 (no ROI and no padding at the end of the line)
 //       All data between the image lines will be processed
 // This version needs a 1D Range : cl::NDRange(Width * Height * Channels / VEC_WIDTH, 1, 1)
 
-#define READ_IMAGE(img, step, x, y) CONVERT_INTERNAL(img[x])
-#define WRITE_IMAGE(img, step, x, y, val) img[x] = CONVERT_DST((val))
+#define READ_IMAGE(img, step, x, y) CONVERT_INTERNAL(*(const INPUT_SPACE TYPE *)(img + x * VEC_WIDTH))
+#define WRITE_IMAGE(img, step, x, y, val) *(global DST *)(img + x * VEC_WIDTH) = CONVERT_DST((val))
 
-#define LAST_WORKER(code)
-#define LAST_WORKER2(code)
+#define SCALAR_CODE(code)
+#define SCALAR_CODE2(code)
 
 #endif   // WITH_PADDING
 
@@ -184,58 +215,84 @@
 
 
 #define BINARY_OP(name, code) \
-kernel void name(INPUT_SPACE const TYPE * source1, INPUT_SPACE const TYPE * source2,\
-                global DST * dest, int src1_step, int src2_step, int dst_step, int width)\
+kernel void name(INPUT_SPACE const SCALAR * source1, INPUT_SPACE const SCALAR * source2,\
+                global DST_SCALAR * dest, int src1_step, int src2_step, int dst_step, int width)\
 {\
    BEGIN2\
-   LAST_WORKER2(code)\
+   SCALAR_CODE2(code)\
    PREPARE_VECTOR2\
    VECTOR_OP(code);\
 }
 
 #define CONSTANT_OP(name, code) \
-kernel void name(INPUT_SPACE const TYPE * source, global DST * dest, int src_step, int dst_step, int width, ARG_TYPE value_arg)\
+kernel void name(INPUT_SPACE const SCALAR * source, global DST_SCALAR * dest, int src_step, int dst_step, int width, ARG_TYPE value_arg)\
 {\
    BEGIN\
    INTERNAL_SCALAR value = value_arg;\
-   LAST_WORKER(code)\
+   SCALAR_CODE(code)\
    PREPARE_VECTOR\
    VECTOR_OP(code);\
 }
 
 #define UNARY_OP(name, code) \
-kernel void name(INPUT_SPACE const TYPE * source, global DST * dest, int src_step, int dst_step, int width)\
+kernel void name(INPUT_SPACE const SCALAR * source, global DST_SCALAR * dest, int src_step, int dst_step, int width)\
 {\
    BEGIN\
-   LAST_WORKER(code)\
+   SCALAR_CODE(code)\
    PREPARE_VECTOR\
    VECTOR_OP(code);\
 }
 
 // Un-macroed version - For debugging purposes
-/*kernel void add_constant(global const ushort8 * source, global ushort8 * dest, int src_step, int dst_step, int width, float value_arg)
+/*kernel void add_constant(global const ushort * source, global ushort * dest, int src_step, int dst_step, int width, float value)
 {
-   BEGIN
+   const int gx = get_global_id(0);	// x divided by VEC_WIDTH
+   const int gy = get_global_id(1);
+   src_step /= sizeof(ushort);
+   dst_step /= sizeof(ushort);
+
+   float value = value_arg;
 
    //if (gx != 0 || gy != 0)
    //   return;
 
-   float value = value_arg;
-
-   if ((gx + 1) * 8 > width)
+   if ((gx + 1) * 4 > width)
    {
       // Last worker on the current row for an image that has a width that is not a multiple of VEC_WIDTH
-      for (int i = gx * 8; i < width; i++)
+      for (int i = gx * 4; i < width; i++)
       {
-         const global ushort * src_scalar = (const global ushort *) source;
-         global ushort * dst_scalar = (global ushort *) dest;
-         const float src = convert_float(src_scalar[(gy * src_step) + i]);
-
-         dst_scalar[(gy * dst_step) + i] = convert_ushort_sat(src + value);
+         const float src = convert_float(source[(gy * src_step) + i]);
+         dest[(gy * dst_step) + i] = convert_ushort_sat(src + value);
       }
       return;
    }
 
-   const float8 src = convert_float8(source[(gy * src_step) / 8 + gx]);
-   dest[(gy * dst_step) / 8 + gx] = convert_ushort8_sat(src + value);
+   if (Unaligned)
+   {
+      for (int i = gx * VEC_WIDTH; i < (gx + 1) * VEC_WIDTH; i++)
+      {
+         const float src = convert_float(source[(gy * src_step) + i]);
+         dest[(gy * dst_step) + i] = convert_ushort_sat(src + value);
+      }
+      return;
+   }
+
+   const float4 src = convert_float4(*(const global ushort4 *)(source + gy * src_step + gx * VEC_WIDTH));
+   *(global ushort4 *)(img + gy * dst_step + gx * VEC_WIDTH) = convert_ushort4_sat(src + value);
+}
+
+kernel void add_constant_flush(global const ushort * source, global ushort * dest, int src_step, int dst_step, int width, float value)
+{
+   const int gx = get_global_id(0);	// x divided by VEC_WIDTH
+   const int gy = get_global_id(1);
+   src_step /= sizeof(ushort);
+   dst_step /= sizeof(ushort);
+
+   float value = value_arg;
+
+   //if (gx != 0 || gy != 0)
+   //   return;
+
+   const float4 src = convert_float4(*(const global ushort4 *)(source + gx * VEC_WIDTH));
+   *(global ushort4 *)(img + gx * VEC_WIDTH) = convert_ushort4_sat(src + value);
 }*/

@@ -258,7 +258,7 @@ VectorProgram::VectorProgram(COpenCL& CL, bool fromSource, const char * Source)
 
 const vector<string> VectorProgram::GetOptions()
 {
-   vector<string> Options(SImage::NbDataTypes * 2);
+   vector<string> Options(SImage::NbDataTypes * 3);
 
    for (int i = 0; i < SImage::NbDataTypes; i++)
    {
@@ -269,6 +269,9 @@ const vector<string> VectorProgram::GetOptions()
 
    for (int i = 0; i < SImage::NbDataTypes; i++)
       Options[SImage::NbDataTypes + i] = Options[i] + " -D WITH_PADDING";
+
+   for (int i = 0; i < SImage::NbDataTypes; i++)
+      Options[SImage::NbDataTypes * 2 + i] = Options[i] + " -D WITH_PADDING -D UNALIGNED";
 
    return Options;
 }
@@ -333,6 +336,13 @@ Program& VectorProgram::SelectProgram(const ImageBase& Source)
       return GetProgram(Source.DataType());  // Use fast version
 
    // Use slower WITH_PADDING version
+
+   uint BytesPerWorker = Source.DepthBytes() * Source.NbChannels() * GetVectorWidth(Source.DataType());
+   bool Aligned = (Source.Step() % BytesPerWorker == 0);
+
+   if (!Aligned)
+      return GetProgram(Source.DataType() + SImage::NbDataTypes * 2);
+
    return GetProgram(Source.DataType() + SImage::NbDataTypes);
 }
 

@@ -25,23 +25,23 @@
 #include "Vector.h"
 
 
-kernel void thresholdGTLT(INPUT_SPACE const TYPE * source, global TYPE * dest, int src_step, int dst_step, int width, 
+kernel void thresholdGTLT(INPUT_SPACE const SCALAR * source, global DST_SCALAR * dest, int src_step, int dst_step, int width, 
                     float threshLT, float valueLower, float threshGT, float valueHigher)
 {
    BEGIN
-   LAST_WORKER(src < threshLT ? valueLower : (src > threshGT ? valueHigher : src))
+   SCALAR_CODE(src < threshLT ? valueLower : (src > threshGT ? valueHigher : src))
    PREPARE_VECTOR
    VECTOR_OP(src < (TYPE)((SCALAR)threshLT) ? (DST)((DST_SCALAR)valueLower) : (src > (TYPE)((SCALAR)threshGT) ? (DST)((DST_SCALAR)valueHigher) : src));
 }
 
 
 #define THRESHOLD_OP(name, code) \
-kernel void name(INPUT_SPACE const TYPE * source, global DST * dest, int src_step, int dst_step, int width, float thresh_arg, float value_arg)\
+kernel void name(INPUT_SPACE const SCALAR * source, global DST_SCALAR * dest, int src_step, int dst_step, int width, float thresh_arg, float value_arg)\
 {\
    BEGIN\
    INTERNAL_SCALAR value = value_arg;\
    INTERNAL_SCALAR thresh = thresh_arg;\
-   LAST_WORKER(code)\
+   SCALAR_CODE(code)\
    PREPARE_VECTOR\
    VECTOR_OP(code);\
 }
@@ -80,7 +80,7 @@ BINARY_OP(img_thresh_GT, (src1 >  src2 ? src1 : src2))
 #ifdef SCALAR_OP
 #undef SCALAR_OP
 #endif
-#define SCALAR_OP(code) WRITE_SCALAR(dst_scalar, dst_step, i, gy, (code).x)
+#define SCALAR_OP(code) WRITE_SCALAR(dest, dst_step, i, gy, (code).x)
 
 
 BINARY_OP(img_compare_LT, (src1 <  src2 ? WHITE : BLACK))

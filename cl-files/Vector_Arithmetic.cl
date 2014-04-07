@@ -62,27 +62,55 @@ UNARY_OP(cos_image, cos(src))
 
 
 // Un-macroed version - For debugging purposes
-/*kernel void add_constant(global const ushort8 * source, global ushort8 * dest, int src_step, int dst_step, int width, float value)
+/*kernel void add_constant(global const ushort * source, global ushort * dest, int src_step, int dst_step, int width, float value)
 {
-   BEGIN
+   const int gx = get_global_id(0);	// x divided by VEC_WIDTH
+   const int gy = get_global_id(1);
+   src_step /= sizeof(ushort);
+   dst_step /= sizeof(ushort);
+
+   float value = value_arg;
 
    //if (gx != 0 || gy != 0)
    //   return;
 
-   if ((gx + 1) * 8 > width)
+   if ((gx + 1) * 4 > width)
    {
       // Last worker on the current row for an image that has a width that is not a multiple of VEC_WIDTH
-      for (int i = gx * 8; i < width; i++)
+      for (int i = gx * 4; i < width; i++)
       {
-         const global ushort * src_scalar = (const global ushort *) source;
-         global ushort * dst_scalar = (global ushort *) dest;
-         const float src = convert_float(src_scalar[(gy * src_step) + i]);
-
-         dst_scalar[(gy * dst_step) + i] = convert_ushort_sat(src + value);
+         const float src = convert_float(source[(gy * src_step) + i]);
+         dest[(gy * dst_step) + i] = convert_ushort_sat(src + value);
       }
       return;
    }
 
-   const float8 src = convert_float8(source[(gy * src_step) / 8 + gx]);
-   dest[(gy * dst_step) / 8 + gx] = convert_ushort8_sat(src + value);
+   if (Unaligned)
+   {
+      for (int i = gx * VEC_WIDTH; i < (gx + 1) * VEC_WIDTH; i++)
+      {
+         const float src = convert_float(source[(gy * src_step) + i]);
+         dest[(gy * dst_step) + i] = convert_ushort_sat(src + value);
+      }
+      return;
+   }
+
+   const float4 src = convert_float4(*(const global ushort4 *)(source + gy * src_step + gx * VEC_WIDTH));
+   *(global ushort4 *)(img + gy * dst_step + gx * VEC_WIDTH) = convert_ushort4_sat(src + value);
+}
+
+kernel void add_constant_flush(global const ushort * source, global ushort * dest, int src_step, int dst_step, int width, float value)
+{
+   const int gx = get_global_id(0);	// x divided by VEC_WIDTH
+   const int gy = get_global_id(1);
+   src_step /= sizeof(ushort);
+   dst_step /= sizeof(ushort);
+
+   float value = value_arg;
+
+   //if (gx != 0 || gy != 0)
+   //   return;
+
+   const float4 src = convert_float4(*(const global ushort4 *)(source + gx * VEC_WIDTH));
+   *(global ushort4 *)(img + gx * VEC_WIDTH) = convert_ushort4_sat(src + value);
 }*/
