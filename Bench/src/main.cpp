@@ -353,6 +353,8 @@ int main()
 
    RunBench();
 
+   printf("Testing complete\n");
+
    #ifdef WAITFORKEY_AT_END
       getchar();
    #endif

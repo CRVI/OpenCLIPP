@@ -53,11 +53,6 @@ public:
       return 0.005f;
    }
 
-   bool CompareTolRelative() const
-   {
-      return true;
-   }
-
 protected:
    ocipProgram m_Program;
    CSimpleImage m_IppIntegral;

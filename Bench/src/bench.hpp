@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define USE_BUFFER true // Set to false to use Image mode
-#define HAS_CL_BUFFER
 
 #include "benchBase.hpp"
 #include "benchArithmetic.hpp"

@@ -67,7 +67,7 @@ inline void CLASS_NAME<DataType>::Create(uint Width, uint Height)
 
    // CL
    m_ImgTemp = std::unique_ptr<CImageROI>(new CImageROI(m_ImgSrc, 10, 10,
-      min(16, m_ImgSrc.Width - 10), min(16, m_ImgSrc.Height - 10)));
+      min(16, int(m_ImgSrc.Width) - 10), min(16, int(m_ImgSrc.Height) - 10)));
 
    ocipCreateImage(&m_CLTmp, m_ImgTemp->ToSImage(), m_ImgTemp->Data(), CL_MEM_READ_WRITE);
 

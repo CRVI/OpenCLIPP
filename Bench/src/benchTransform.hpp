@@ -23,9 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // These are image only
-#undef USE_BUFFER
-#define USE_BUFFER false
-#undef HAS_CL_BUFFER
+#define NO_CL_BUFFER
 
 #define HAS_FLOAT
 #define CONSTANT_MIDDLE
@@ -64,3 +62,5 @@
    }
 
 #include "benchUnary.hpp"
+
+#undef NO_CL_BUFFER

@@ -52,6 +52,12 @@ bool AbsDiff(const CSimpleImage& Source1, const CSimpleImage& Source2, CSimpleIm
          (Ipp32f*) Source2.Data(), Source2.Step,
          (Ipp32f*) Dest.Data(), Dest.Step, Roi);
       break;
+   case SImage::S32:
+      Roi.width *= 4;
+      ippiAbsDiff_8u_C1R(Source1.Data(), Source1.Step,
+         Source2.Data(), Source2.Step,
+         Dest.Data(), Dest.Step, Roi);
+      break;
    case SImage::F64:
       // IPP does not support AbsDiff for 64b
       // Use OpenCLIPP instead
@@ -166,11 +172,11 @@ static inline bool CompareImages(const CSimpleImage& Img1,
       else if (Img1.Type == Img1.F32)
          Value = static_cast<const CImage<float>&>(Img1)(Index.X, Index.Y);
       else if (Img1.Type == Img1.F64)
-         Value = static_cast<const CImage<double>&>(Img1)(Index.X, Index.Y);
+         Value = (float) static_cast<const CImage<double>&>(Img1)(Index.X, Index.Y);
       /*else
          assert(false);*/
 
-      Success = (Max / Value) < Tolerance;
+      Success = abs(Max / Value) < Tolerance;
    }
 
    return Success;
