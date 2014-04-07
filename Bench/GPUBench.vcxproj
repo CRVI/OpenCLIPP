@@ -213,6 +213,7 @@
     <ClInclude Include="src\benchArithmeticBinary.hpp" />
     <ClInclude Include="src\benchBase.hpp" />
     <ClInclude Include="src\benchBinary.hpp" />
+    <ClInclude Include="src\benchBlob.hpp" />
     <ClInclude Include="src\benchCompare.hpp" />
     <ClInclude Include="src\benchCompareBase.hpp" />
     <ClInclude Include="src\benchCompareImgBase.hpp" />

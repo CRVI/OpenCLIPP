@@ -50,6 +50,7 @@
 #include "benchThresholdImg.hpp"
 #include "benchFFT.hpp"
 #include "benchTransform.hpp"
+#include "benchBlob.hpp"
 
 void RunBench()
 {
@@ -233,6 +234,8 @@ void RunBench()
    {
       Bench(SqrIntegralBenchF64);
    }
+
+   Bench(BlobBench);
 
 #else // FULL_TESTS
    // Benchmark mode
