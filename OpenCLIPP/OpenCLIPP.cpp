@@ -59,6 +59,7 @@ struct SProgramList
       morphologyBuffer(CL),
       imageProximity(CL),
       transform(CL),
+      transformBuffer(CL),
       thresholding(CL),
       thresholdingVector(CL)
    { }
@@ -77,6 +78,7 @@ struct SProgramList
    MorphologyBuffer morphologyBuffer;
    ImageProximity imageProximity;
    Transform transform;
+   TransformBuffer transformBuffer;
    Thresholding thresholding;
    ThresholdingVector thresholdingVector;
 };
@@ -780,6 +782,22 @@ MORPHO(ocipOpen, Open)
 MORPHO(ocipClose, Close)
 MORPHO(ocipTopHat, TopHat)
 MORPHO(ocipBlackHat, BlackHat)
+
+
+
+#undef CLASS
+#define CLASS GetList().transformBuffer
+
+UNARY_OP(ocipMirrorX_V, MirrorX)
+UNARY_OP(ocipMirrorY_V, MirrorY)
+UNARY_OP(ocipFlip_V, Flip)
+UNARY_OP(ocipTranspose_V, Transpose)
+
+ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
+{
+   H( CLASS.SetAll(Buf(Dest), Value) )
+}
+
 
 
 #undef CLASS

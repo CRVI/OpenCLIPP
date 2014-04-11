@@ -22,9 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-// These are image only
-#define NO_CL_BUFFER
-
 #define HAS_FLOAT
 #define CONSTANT_MIDDLE
 #define CONSTANT_LAST
@@ -62,5 +59,3 @@
    }
 
 #include "benchUnary.hpp"
-
-#undef NO_CL_BUFFER

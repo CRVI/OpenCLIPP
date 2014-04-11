@@ -201,6 +201,7 @@
     <ClInclude Include="..\include\c++\Programs\ThresholdingVector.h" />
     <ClInclude Include="..\include\c++\Programs\Transform.h" />
     <ClInclude Include="..\include\c++\Programs\Thresholding.h" />
+    <ClInclude Include="..\include\c++\Programs\TransformBuffer.h" />
     <ClInclude Include="..\include\OpenCLIPP.hpp" />
     <ClInclude Include="..\include\SImage.h" />
     <ClInclude Include="preprocessor.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="programs\ThresholdingVector.cpp" />
     <ClCompile Include="programs\Transform.cpp" />
     <ClCompile Include="programs\Thresholding.cpp" />
+    <ClCompile Include="programs\TransformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\cl-files\Arithmetic.cl" />
@@ -269,6 +271,7 @@
     <None Include="..\cl-files\Statistics.cl" />
     <None Include="..\cl-files\Thresholding.cl" />
     <None Include="..\cl-files\Transform.cl" />
+    <None Include="..\cl-files\Transform_Buffer.cl" />
     <None Include="..\cl-files\Vector_Arithmetic.cl" />
     <None Include="..\cl-files\Vector_Filters.cl" />
     <None Include="..\cl-files\Integral_Buffer.cl" />

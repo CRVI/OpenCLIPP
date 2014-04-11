@@ -148,6 +148,9 @@
     <ClInclude Include="..\include\c++\Programs\IntegralBuffer.h">
       <Filter>Programs</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\TransformBuffer.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -237,6 +240,9 @@
     <ClCompile Include="programs\IntegralBuffer.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
+    <ClCompile Include="programs\TransformBuffer.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\cl-files\Arithmetic.cl">
@@ -303,6 +309,9 @@
       <Filter>OpenCL Files</Filter>
     </None>
     <None Include="..\cl-files\Integral_Buffer.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Transform_Buffer.cl">
       <Filter>OpenCL Files</Filter>
     </None>
   </ItemGroup>

@@ -45,6 +45,7 @@
 #include "c++/Programs/Statistics.h"
 #include "c++/Programs/StatisticsVector.h"
 #include "c++/Programs/Transform.h"
+#include "c++/Programs/TransformBuffer.h"
 #include "c++/Programs/Thresholding.h"
 #include "c++/Programs/ThresholdingVector.h"
 #include "c++/Programs/FFT.h"

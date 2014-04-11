@@ -738,6 +738,31 @@ ocipError ocip_API ocipBlackHat_B( ocipBuffer Source, ocipBuffer Dest, ocipBuffe
 
 
 
+// Transformations on image buffers ----------------------------------------------------------------
+ocipError ocip_API ocipPrepareImageBufferTransform(ocipBuffer Image);   ///< See ocipPrepareExample
+
+/// Mirrors the image along X.
+/// D(x,y) = D(width - x - 1, y)
+ocipError ocip_API ocipMirrorX_V(   ocipBuffer Source, ocipBuffer Dest);
+
+/// Mirrors the image along Y.
+/// D(x,y) = D(x, height - y - 1)
+ocipError ocip_API ocipMirrorY_V(   ocipBuffer Source, ocipBuffer Dest);
+
+/// Flip : Mirrors the image along X and Y.
+/// D(x,y) = D(width - x - 1, height - y - 1)
+ocipError ocip_API ocipFlip_V(      ocipBuffer Source, ocipBuffer Dest);
+
+/// Transposes the image.
+/// Dest must have a width >= as Source's height and a height >= as Source's width
+/// D(x,y) = D(y, x)
+ocipError ocip_API ocipTranspose_V( ocipBuffer Source, ocipBuffer Dest);
+
+/// Sets all values of Dest to value
+ocipError ocip_API ocipSet_V(       ocipBuffer Dest, float Value);
+
+
+
 // Filters on image buffers ------------------------------------------------------------------------
 ocipError ocip_API ocipPrepareImageBufferFilters(ocipBuffer Image);  ///< See ocipPrepareExample
 
