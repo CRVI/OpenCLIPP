@@ -142,7 +142,7 @@ void CLASS_NAME<float>::RunNPP()
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCV()
 {
-   CV_CODE( CV_NAME (m_CVSrcB, m_CVSrc, m_CVDst); )
+   CV_CODE( CV_NAME (this->m_CVSrcB, this->m_CVSrc, this->m_CVDst); )
 }
 
 #undef CLASS_NAME

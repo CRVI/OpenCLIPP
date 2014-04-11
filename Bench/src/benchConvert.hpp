@@ -77,71 +77,71 @@ void ConvertBench<SrcType, DstType>::RunCV()
 template<>
 void ConvertBench<unsigned char, unsigned short>::RunNPP()
 {
-   NPP_CODE(nppiConvert_8u16u_C1R((Npp8u*) m_NPPSrc, m_NPPSrcStep, (Npp16u*) m_NPPDst, m_NPPDstStep, m_NPPRoi);)
+   NPP_CODE(nppiConvert_8u16u_C1R((Npp8u*) this->m_NPPSrc, this->m_NPPSrcStep, (Npp16u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<unsigned short, float>::RunNPP()
 {
-   NPP_CODE(nppiConvert_16u32f_C1R((Npp16u*) m_NPPSrc, m_NPPSrcStep, (Npp32f*) m_NPPDst, m_NPPDstStep, m_NPPRoi);)
+   NPP_CODE(nppiConvert_16u32f_C1R((Npp16u*) this->m_NPPSrc, this->m_NPPSrcStep, (Npp32f*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<short, float>::RunNPP()
 {
-   NPP_CODE(nppiConvert_16s32f_C1R((Npp16s*) m_NPPSrc, m_NPPSrcStep, (Npp32f*) m_NPPDst, m_NPPDstStep, m_NPPRoi);)
+   NPP_CODE(nppiConvert_16s32f_C1R((Npp16s*) this->m_NPPSrc, this->m_NPPSrcStep, (Npp32f*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<int, float>::RunNPP()
 {
-   NPP_CODE(nppiConvert_32s32f_C1R((Npp32s*) m_NPPSrc, m_NPPSrcStep, (Npp32f*) m_NPPDst, m_NPPDstStep, m_NPPRoi);)
+   NPP_CODE(nppiConvert_32s32f_C1R((Npp32s*) this->m_NPPSrc, this->m_NPPSrcStep, (Npp32f*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<float, unsigned short>::RunNPP()
 {
-   NPP_CODE(nppiConvert_32f16u_C1R((Npp32f*) m_NPPSrc, m_NPPSrcStep, (Npp16u*) m_NPPDst, m_NPPDstStep, m_NPPRoi, NPP_RND_NEAR);)
+   NPP_CODE(nppiConvert_32f16u_C1R((Npp32f*) this->m_NPPSrc, this->m_NPPSrcStep, (Npp16u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, NPP_RND_NEAR);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<float, unsigned char>::RunNPP()
 {
-   NPP_CODE(nppiConvert_32f8u_C1R((Npp32f*) m_NPPSrc, m_NPPSrcStep, (Npp8u*) m_NPPDst, m_NPPDstStep, m_NPPRoi, NPP_RND_NEAR);)
+   NPP_CODE(nppiConvert_32f8u_C1R((Npp32f*) this->m_NPPSrc, this->m_NPPSrcStep, (Npp8u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, NPP_RND_NEAR);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<unsigned char, unsigned short>::RunIPP()
 {
-   IPP_CODE(ippiConvert_8u16u_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi);)
+   IPP_CODE(ippiConvert_8u16u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<unsigned short, float>::RunIPP()
 {
-   IPP_CODE(ippiConvert_16u32f_C1R((Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi);)
+   IPP_CODE(ippiConvert_16u32f_C1R((Ipp16u*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<short, float>::RunIPP()
 {
-   IPP_CODE(ippiConvert_16s32f_C1R((Ipp16s*) m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi);)
+   IPP_CODE(ippiConvert_16s32f_C1R((Ipp16s*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<int, float>::RunIPP()
 {
-   IPP_CODE(ippiConvert_32s32f_C1R((Ipp32s*) m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi);)
+   IPP_CODE(ippiConvert_32s32f_C1R((Ipp32s*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<float, unsigned short>::RunIPP()
 {
-   IPP_CODE(ippiConvert_32f16u_C1R((Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, ippRndNear);)
+   IPP_CODE(ippiConvert_32f16u_C1R((Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippRndNear);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
 void ConvertBench<float, unsigned char>::RunIPP()
 {
-   IPP_CODE(ippiConvert_32f8u_C1R((Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp8u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, ippRndNear);)
+   IPP_CODE(ippiConvert_32f8u_C1R((Ipp32f*) this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp8u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, ippRndNear);)
 }

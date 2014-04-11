@@ -33,6 +33,8 @@
 
 #include "StatisticsHelpers.h"
 
+#include <cmath>
+
 
 using namespace std;
 
@@ -402,7 +404,7 @@ void StatisticsVector::StdDev(ImageBuffer& Source, double outVal[4], double outM
 {
    Mean(Source, outMean);
 
-   cl_float4 fmeans = {float(outMean[0]), float(outMean[1]), float(outMean[2]), float(outMean[3])};
+   cl_float4 fmeans = {{float(outMean[0]), float(outMean[1]), float(outMean[2]), float(outMean[3])}};
    
    Kernel(reduce_stddev, In(Source), Out(), *m_PartialResultBuffer, Source.Step(), Source.Width(), Source.Height(), fmeans);
 

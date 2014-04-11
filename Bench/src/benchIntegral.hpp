@@ -99,11 +99,11 @@ void IntegralBench<DataType>::Free()
 template<typename DataType>
 void IntegralBench<DataType>::RunIPP()
 {
-   IPP_CODE(ippiIntegral_8u32f_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, 0);)
+   IPP_CODE(ippiIntegral_8u32f_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, 0);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
-template<>
-void IntegralBench<float>::RunCL()
+template<typename DataType>
+void IntegralBench<DataType>::RunCL()
 {
    if (m_UsesBuffer)
    {
@@ -111,22 +111,11 @@ void IntegralBench<float>::RunCL()
    }
    else
    {
+      if (is_same<DataType, double>::value)  //There's no function for output image type of F64(double)
+         return;
+
       ocipIntegral(m_Program, m_CLSrc, m_CLDst);
    }
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<>
-void IntegralBench<double>::RunCL()
-{
-   if (m_UsesBuffer)
-   {
-      ocipIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
-   }
-   else
-   {
-      //There's no function for output image type of F64(double)
-   }
-
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>

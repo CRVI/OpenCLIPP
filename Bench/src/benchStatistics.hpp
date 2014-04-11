@@ -57,9 +57,9 @@
 #undef IPP_ADDITIONAL_PARAMS
 #undef CL_ADDITIONAL_PARAMS
 #undef NPP_ADDITIONAL_PARAMS
-#define IPP_ADDITIONAL_PARAMS , (int*) &m_IndxIPP.X, (int*) &m_IndxIPP.Y
-#define CL_ADDITIONAL_PARAMS  , (int*) &m_IndxCL.X,  (int*) &m_IndxCL.Y
-#define NPP_ADDITIONAL_PARAMS , (int*) &m_IndxNPP->X, (int*) &m_IndxNPP->Y
+#define IPP_ADDITIONAL_PARAMS , (int*) &this->m_IndxIPP.X,  (int*) &this->m_IndxIPP.Y
+#define CL_ADDITIONAL_PARAMS  , (int*) &this->m_IndxCL.X,   (int*) &this->m_IndxCL.Y
+#define NPP_ADDITIONAL_PARAMS , (int*) &this->m_IndxNPP->X, (int*) &this->m_IndxNPP->Y
 
 // NOTE : Coordinates returned are not currently checked
 // custom image generation would be needed for a good check
@@ -113,8 +113,8 @@
 #undef  MIDDLE_PARAM
 #undef  NPP_MIDDLE_PARAM
 #undef  IPP_REDUCE_HINT
-#define MIDDLE_PARAM &m_Dummy,
-#define NPP_MIDDLE_PARAM m_NPPDummy,
+#define MIDDLE_PARAM &this->m_Dummy,
+#define NPP_MIDDLE_PARAM this->m_NPPDummy,
 #define IPP_REDUCE_HINT
 
 #define BENCH_NAME Mean_StdDev

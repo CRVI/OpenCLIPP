@@ -98,8 +98,8 @@ void LinearLutBench<DataType>::Free()
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
-template<typename DataType>
-void LinearLutBench<DataType>::RunIPP()
+template<>
+void LinearLutBench<float>::RunIPP()
 {
    IPP_CODE(
       ippiLUT_Linear_32f_C1R((Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step,

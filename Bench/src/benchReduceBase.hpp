@@ -200,7 +200,7 @@ bool BenchReduceBase<DataType, DstT>::CompareNPP(BenchReduceBase *)
       cudaMemcpy(&Index, m_IndxNPP, sizeof(Index), cudaMemcpyDeviceToHost);
       )
 
-   double NPPd[4] = {NPP[0], NPP[1], NPP[2], NPP[3]};
+   double NPPd[4] = {double(NPP[0]), double(NPP[1]), double(NPP[2]), double(NPP[3])};
 
    if (m_IndxIPP.X != 0 && m_IndxIPP.X != 0)
    {

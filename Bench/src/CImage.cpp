@@ -65,9 +65,11 @@ uint Depth(SImage::EDataType Type)
       return 32;
    case SImage::F64:
       return 64;
+   case SImage::NbDataTypes:
+   default:
+      return 0;
    }
 
-   return 0;
 }
 
 uint CSimpleImage::Depth() const

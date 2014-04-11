@@ -33,6 +33,8 @@
 
 #include "StatisticsHelpers.h"
 
+#include <cmath>
+
 
 using namespace std;
 
@@ -389,7 +391,7 @@ void Statistics::StdDev(IImage& Source, double outVal[4], double outMean[4])
 {
    Mean(Source, outMean);
 
-   cl_float4 fmeans = {float(outMean[0]), float(outMean[1]), float(outMean[2]), float(outMean[3])};
+   cl_float4 fmeans = {{float(outMean[0]), float(outMean[1]), float(outMean[2]), float(outMean[3])}};
 
    Kernel(reduce_stddev_4C, In(Source), Out(), *m_PartialResultBuffer, Source.Width(), Source.Height(), fmeans);
 

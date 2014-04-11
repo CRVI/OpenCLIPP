@@ -26,10 +26,13 @@
 
 #include "kernel_helpers.h"
 
-#ifdef max
-#undef max
-#undef min
-#endif
+#include <cmath>
+
+using namespace std;
+
+
+static const double Pi = atan(1) * 4;
+
 
 namespace OpenCLIPP
 {
@@ -72,9 +75,6 @@ void Transform::Rotate(IImage& Source, IImage& Dest,
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
 
-#pragma warning ( suppress : 4640)
-   static const double Pi = atan(1) * 4;
-
    // Convert to radians
    Angle *= Pi / 180.;
 
@@ -115,7 +115,7 @@ void Transform::Resize(IImage& Source, IImage& Dest, bool LinearInterpolation, b
 
    if (KeepRatio)
    {
-      float Ratio = std::max(RatioX, RatioY);
+      float Ratio = max(RatioX, RatioY);
       RatioX = Ratio;
       RatioY = Ratio;
 

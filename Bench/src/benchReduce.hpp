@@ -84,7 +84,7 @@ void CONCATENATE(BENCH_NAME, Bench)<unsigned char>::RunNPP()
 {
    NPP_CODE(
       CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _8u_C1R)(
-         (Npp8u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, NPP_MIDDLE_PARAM m_NPPDst NPP_ADDITIONAL_PARAMS);
+         (Npp8u*) this->m_NPPSrc, this->m_NPPSrcStep, this->m_NPPRoi, this->m_NPPWorkBuffer, NPP_MIDDLE_PARAM this->m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void CONCATENATE(BENCH_NAME, Bench)<unsigned short>::RunNPP()
 {
    NPP_CODE(
       CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _16u_C1R)(
-         (Npp16u*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, NPP_MIDDLE_PARAM m_NPPDst NPP_ADDITIONAL_PARAMS);
+         (Npp16u*) this->m_NPPSrc, this->m_NPPSrcStep, this->m_NPPRoi, this->m_NPPWorkBuffer, NPP_MIDDLE_PARAM this->m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ void CONCATENATE(BENCH_NAME, Bench)<float>::RunNPP()
 {
    NPP_CODE(
       CONCATENATE(CONCATENATE(nppi, BENCH_NAME), _32f_C1R)(
-         (Npp32f*) m_NPPSrc, m_NPPSrcStep, m_NPPRoi, m_NPPWorkBuffer, NPP_MIDDLE_PARAM m_NPPDst NPP_ADDITIONAL_PARAMS);
+         (Npp32f*) this->m_NPPSrc, this->m_NPPSrcStep, this->m_NPPRoi, this->m_NPPWorkBuffer, NPP_MIDDLE_PARAM this->m_NPPDst NPP_ADDITIONAL_PARAMS);
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------

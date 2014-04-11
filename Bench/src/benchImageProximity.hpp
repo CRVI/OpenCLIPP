@@ -93,9 +93,9 @@ template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
    IPP_CODE(
-      ippiSqrDistanceSame_Norm_8u32f_C1R( m_ImgSrc.Data(), m_ImgSrc.Step, 
-                                          m_SrcSize, m_ImgTemp->Data(), m_ImgTemp->Step, m_TempSize, 
-                                          (Ipp32f*)m_ImgDstIPP.Data(), m_ImgDstIPP.Step);
+      ippiSqrDistanceSame_Norm_8u32f_C1R( this->m_ImgSrc.Data(), this->m_ImgSrc.Step, 
+                                          this->m_SrcSize, this->m_ImgTemp->Data(), this->m_ImgTemp->Step, this->m_TempSize, 
+                                          (Ipp32f*)this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step);
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -103,9 +103,9 @@ template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
    IPP_CODE(
-         ippiSqrDistanceSame_Norm_16u32f_C1R((Ipp16u*)m_ImgSrc.Data(), m_ImgSrc.Step, m_SrcSize, 
-                                             (Ipp16u*)m_ImgTemp->Data(), m_ImgTemp->Step, m_TempSize, 
-                                             (Ipp32f*)m_ImgDstIPP.Data(), m_ImgDstIPP.Step);
+         ippiSqrDistanceSame_Norm_16u32f_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_SrcSize, 
+                                             (Ipp16u*)this->m_ImgTemp->Data(), this->m_ImgTemp->Step, this->m_TempSize, 
+                                             (Ipp32f*)this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step);
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -113,9 +113,9 @@ template<>
 void CLASS_NAME<float>::RunIPP()
 {
    IPP_CODE(
-         ippiSqrDistanceSame_Norm_32f_C1R((Ipp32f*)m_ImgSrc.Data(), m_ImgSrc.Step, m_SrcSize, 
-                                          (Ipp32f*)m_ImgTemp->Data(), m_ImgTemp->Step, m_TempSize, 
-                                          (Ipp32f*)m_ImgDstIPP.Data(), m_ImgDstIPP.Step);
+         ippiSqrDistanceSame_Norm_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, this->m_SrcSize, 
+                                          (Ipp32f*)this->m_ImgTemp->Data(), this->m_ImgTemp->Step, this->m_TempSize, 
+                                          (Ipp32f*)this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step);
       )
 }
 
