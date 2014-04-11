@@ -32,12 +32,20 @@
 //  When working with a specific local size (workgroup size), the global range (number of workitems) must be a multiple of the local size
 //  This file presents a few functions to help using a local range
 
-#ifndef PIXELS_PER_WORKITEM
-#define PIXELS_PER_WORKITEM   1
+#ifndef PIXELS_PER_WORKITEM_H
+#define PIXELS_PER_WORKITEM_H   1
 #endif
 
-#ifndef LOCAL_SIZE
-#define LOCAL_SIZE 16
+#ifndef PIXELS_PER_WORKITEM_V
+#define PIXELS_PER_WORKITEM_V   1
+#endif
+
+#ifndef LOCAL_WIDTH
+#define LOCAL_WIDTH 16
+#endif
+
+#ifndef LOCAL_HEIGHT
+#define LOCAL_HEIGHT LOCAL_WIDTH
 #endif
 
 // Disable warning about unused static functions
@@ -53,10 +61,12 @@
 namespace OpenCLIPP
 {
 
-const static int GroupWidth = LOCAL_SIZE;                      // Width of a workgroup8
-const static int GroupHeight = LOCAL_SIZE;                     // Height of a workgroup
-const static int PixelsPerWorker = PIXELS_PER_WORKITEM;        // Number of pixels processed per workitem
-const static int GroupPxWidth = GroupWidth * PixelsPerWorker;  // Number of pixels that 1 workgroup will process one 1 row
+const static int GroupWidth = LOCAL_WIDTH;                        // Width of a workgroup
+const static int GroupHeight = LOCAL_HEIGHT;                      // Height of a workgroup
+const static int PixelsPerWorkerH = PIXELS_PER_WORKITEM_H;        // Number of pixels along x processed per workitem
+const static int PixelsPerWorkerV = PIXELS_PER_WORKITEM_V;        // Number of pixels along y processed per workitem
+const static int GroupPxWidth = GroupWidth * PixelsPerWorkerH;    // Number of pixels that 1 workgroup will process one 1 row
+const static int GroupPxHeight = GroupHeight * PixelsPerWorkerV;  // Number of pixels that 1 workgroup will process one 1 column
 
 static bool FlushWidth(const ImageBase& Image);      // Is Width a multiple of GroupWidth*PixelsPerWorker
 static bool FlushHeight(const ImageBase& Image);     // Is Height a multiple of GroupHeight
@@ -90,7 +100,7 @@ static bool FlushWidth(const ImageBase& Image)
 
 static bool FlushHeight(const ImageBase& Image)
 {
-   if (Image.Height() % GroupHeight > 0)
+   if (Image.Height() % GroupPxHeight > 0)
       return false;
 
    return true;
@@ -112,7 +122,7 @@ static uint GetNbWorkersW(const ImageBase& Image)
 
 static uint GetNbWorkersH(const ImageBase& Image)
 {
-   uint Nb = Image.Height() / GroupHeight * GroupHeight;
+   uint Nb = Image.Height() / GroupPxHeight * GroupHeight;
    if (!FlushHeight(Image))
       Nb += GroupHeight;
 
@@ -134,13 +144,13 @@ static cl::NDRange GetRange(const ImageBase& Image, bool UseLocalSize)
    if (UseLocalSize)
       return cl::NDRange(GetNbWorkersW(Image), GetNbWorkersH(Image), 1);
 
-   return cl::NDRange(Image.Width() / PixelsPerWorker, Image.Height(), 1);
+   return cl::NDRange(Image.Width() / PixelsPerWorkerH, Image.Height() / PixelsPerWorkerV, 1);
 }
 
 static cl::NDRange GetLocalRange(bool UseLocalSize)
 {
    if (UseLocalSize)
-      return cl::NDRange(GroupWidth, GroupWidth, 1);
+      return cl::NDRange(GroupWidth, GroupHeight, 1);
 
    return cl::NullRange;
 }

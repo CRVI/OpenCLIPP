@@ -38,7 +38,7 @@
 #include "Image.h"
 
 
-#define PIXELS_PER_WORKITEM 16
+#define PIXELS_PER_WORKITEM_H 16
 
 #include "WorkGroup.h"
 

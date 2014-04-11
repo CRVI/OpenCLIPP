@@ -47,7 +47,9 @@
 UNARY_OP(mirror_x, dest[gy * dst_step + gx] = source[gy * src_step + width - gx - 1])
 UNARY_OP(mirror_y, dest[gy * dst_step + gx] = source[(height - gy - 1) * src_step + gx])
 UNARY_OP(flip, dest[gy * dst_step + gx] = source[(height - gy - 1) * src_step + width - gx - 1])
-UNARY_OP(transpose, dest[gx * dst_step + gy] = source[gy * src_step + gx])
+
+//UNARY_OP(transpose, dest[gx * dst_step + gy] = source[gy * src_step + gx])  // This naive transpose version is very slow
+
 
 kernel void set_all_1C(global SCALAR * dest, int dst_step, float value)
 {
@@ -78,66 +80,68 @@ kernel void set_all_4C(global TYPE4 * dest, int dst_step, float value)
 }
 
 
-/*kernel void resize(INPUT source, OUTPUT dest, float ratioX, float ratioY)
-{
-   BEGIN
+// Implementation of fast GPU image transposition
+// Uses a local temporary buffer to store a block of data
+// Then does coalesced writes to dest using the data from the temp buffer
+// Inspired by http://devblogs.nvidia.com/parallelforall/efficient-matrix-transpose-cuda-cc/
 
-   float2 src_pos = {(pos.x + .4998f) * ratioX, (pos.y + .4998f) * ratioY};
+#define LW 32
+#define LH 8
+#define WIDTH1 4
 
-   TYPE px = READ_IMAGE(source, src_pos);
+#define TRANSPOSE_IMPL(type, suffix) \
+   __attribute__((reqd_work_group_size(LW, LH, 1)))\
+   kernel void CONCATENATE(transpose, suffix) (INPUT_SPACE const type * source, global type * dest, int src_step, int dst_step, int width, int height)\
+   {\
+      src_step /= sizeof(type);\
+      dst_step /= sizeof(type);\
+      local type temp[LW][LW + 1];\
+      const int local_x = get_local_id(0);\
+      const int local_y = get_local_id(1);\
+      const int srcx = get_group_id(0) * LW + local_x;\
+      const int srcy = get_group_id(1) * LW + local_y;\
+      const int dstx = get_group_id(1) * LW + local_x;\
+      const int dsty = get_group_id(0) * LW + local_y;\
+      if (srcx < width)\
+         for (int j = 0; j < LW; j += LH)\
+            if ((srcy + j) < height)\
+               temp[local_y + j][local_x] = source[(srcy + j) * src_step + srcx];\
+      barrier(CLK_LOCAL_MEM_FENCE);\
+      if (dstx >= height || dsty >= width)\
+         return;\
+      for (int j = 0; j < LW; j += LH)\
+         if ((dsty + j) < width)\
+            dest[(dsty + j) * dst_step + dstx] = temp[local_x][local_y + j];\
+   }
 
-   WRITE_IMAGE(dest, pos, px);
-}
+#define TRANSPOSE_FLUSH_IMPL(type, suffix) \
+   __attribute__((reqd_work_group_size(LW, LH, 1)))\
+   kernel void CONCATENATE(transpose_flush, suffix) (INPUT_SPACE const type * source, global type * dest, int src_step, int dst_step, int width, int height)\
+   {\
+      src_step /= sizeof(SCALAR);\
+      dst_step /= sizeof(SCALAR);\
+      local type temp[LW][LW + 1];\
+      const int local_x = get_local_id(0);\
+      const int local_y = get_local_id(1);\
+      const int srcx = get_group_id(0) * LW + local_x;\
+      const int srcy = get_group_id(1) * LW + local_y;\
+      const int dstx = get_group_id(1) * LW + local_x;\
+      const int dsty = get_group_id(0) * LW + local_y;\
+      for (int j = 0; j < LW; j += LH)\
+         temp[local_y + j][local_x] = source[(srcy + j) * src_step + srcx];\
+      barrier(CLK_LOCAL_MEM_FENCE);\
+      for (int j = 0; j < LW; j += LH)\
+         dest[(dsty + j) * dst_step + dstx] = temp[local_x][local_y + j];\
+   }
 
+// Standard version with bounds checking
+TRANSPOSE_IMPL(SCALAR, _1C)
+TRANSPOSE_IMPL(TYPE2,  _2C)
+TRANSPOSE_IMPL(TYPE3,  _3C)
+TRANSPOSE_IMPL(TYPE4,  _4C)
 
-kernel void set_all(OUTPUT dest, float value)
-{
-   BEGIN 
-
-   TYPE px = {value, value, value, value};
-   WRITE_IMAGE(dest, pos, px);
-}
-
-
-#undef SAMPLER
-#define SAMPLER lin_sampler
-
-kernel void resize_linear(INPUT source, OUTPUT dest, float ratioX, float ratioY)
-{
-   BEGIN
-
-   float2 src_pos = {(pos.x + .4995f) * ratioX, (pos.y + .4995f) * ratioY};
-
-   TYPE px = READ_IMAGE(source, src_pos);
-
-   WRITE_IMAGE(dest, pos, px);
-}
-
-
-#undef SAMPLER
-#define SAMPLER rotate_sampler
-
-kernel void rotate_img(INPUT source, OUTPUT dest, float sina, float cosa, float xshift, float yshift)
-{
-   BEGIN
-
-   float srcx = gx - xshift;
-   float srcy = gy - yshift;
-   float2 srcpos = (float2)(cosa * srcx - sina * srcy + .5f, sina * srcx + cosa * srcy + .5f);
-
-   WRITE_IMAGE(dest, pos, READ_IMAGE(source, srcpos));
-}
-
-#undef SAMPLER
-#define SAMPLER rotate_lin_sampler
-
-kernel void rotate_linear(INPUT source, OUTPUT dest, float sina, float cosa, float xshift, float yshift)
-{
-   BEGIN
-
-   float srcx = gx - xshift;
-   float srcy = gy - yshift;
-   float2 srcpos = (float2)(cosa * srcx - sina * srcy + .5f, sina * srcx + cosa * srcy + .5f);
-
-   WRITE_IMAGE(dest, pos, READ_IMAGE(source, srcpos));
-}*/
+// Faster version for images that have a width and height that are multiples of 32
+TRANSPOSE_FLUSH_IMPL(SCALAR, _1C)
+TRANSPOSE_FLUSH_IMPL(TYPE2,  _2C)
+TRANSPOSE_FLUSH_IMPL(TYPE3,  _3C)
+TRANSPOSE_FLUSH_IMPL(TYPE4,  _4C)

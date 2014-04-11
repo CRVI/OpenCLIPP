@@ -26,8 +26,8 @@
 
 
 // With 16 and 16, too much local memory is used so we use 8 and 8
-#define LOCAL_SIZE 8
-#define PIXELS_PER_WORKITEM 8
+#define LOCAL_WIDTH 8
+#define PIXELS_PER_WORKITEM_H 8
 
 #include "WorkGroup.h"
 

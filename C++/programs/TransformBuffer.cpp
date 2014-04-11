@@ -29,6 +29,13 @@
 
 #include "kernel_helpers.h"
 
+// Transpose uses a local array and a local size of 32*8
+#define PIXELS_PER_WORKITEM_V   4
+#define LOCAL_WIDTH  32
+#define LOCAL_HEIGHT 8
+
+#include "WorkGroup.h"
+
 
 namespace OpenCLIPP
 {
@@ -74,7 +81,15 @@ void TransformBuffer::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
 
-   Kernel(transpose, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   if (IsFlushImage(Source))
+   {
+      Kernel_Local(transpose_flush, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   }
+   else
+   {
+      Kernel_Local(transpose, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   }
+
 }
 
 void TransformBuffer::SetAll(ImageBuffer& Dest, float Value)
