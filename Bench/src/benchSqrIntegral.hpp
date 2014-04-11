@@ -41,7 +41,7 @@ public:
    void RunCL();
    void RunCV();
 
-   bool HasCUDATest() const { return false; }
+   bool HasNPPTest() const { return false; }
 
    void Create(uint Width, uint Height);
    void Free();

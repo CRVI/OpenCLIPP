@@ -174,6 +174,7 @@ void BenchReduceBase<DataType, DstT>::Free()
       cudaFree(m_NPPWorkBuffer);
       cudaFree(m_NPPDst);
       cudaFree(m_IndxNPP);
+      cudaFree(m_NPPDummy);
       )
 }
 //-----------------------------------------------------------------------------------------------------------------------------

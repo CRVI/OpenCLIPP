@@ -195,7 +195,7 @@ void FFTBackwardBench::Create(uint Width, uint Height)
    {
       // Test if we can get back the source image with the inverse transformation
       ocipFFTInverse(m_Program, m_CLBufferSrc, m_CLBufferDst);
-      ocipDivC_V(m_CLBufferDst, m_CLBufferDst, Width * Height);
+      ocipDivC_V(m_CLBufferDst, m_CLBufferDst, float(Width * Height));
       ocipReadImageBuffer(m_CLBufferDst);
       // m_ImgDstCL should be exaclty the same as it was before calling ocipFFTInverse()
    }

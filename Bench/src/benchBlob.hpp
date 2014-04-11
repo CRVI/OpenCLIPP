@@ -127,7 +127,7 @@ void BlobBench::Create(uint Width, uint Height)
    // OpenCV
    CV_CODE(
       m_ImgDstCV.Create<int>(Width, Height);
-      m_CVDst.create(Height, Width, GetCVType<int>());
+      m_CVDst.create(Height, Width, GetCVType<int>(1));
       )
 
    IPP_CODE(
