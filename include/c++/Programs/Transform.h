@@ -55,6 +55,10 @@ public:
    /// D(x,y) = D(y, x)
    void Transpose(IImage& Source, IImage& Dest);
 
+   /// Rotates the source image aroud the origin (0,0) and then shifts it.
+   void Rotate(IImage& Source, IImage& Dest,
+      double Angle, double XShift, double YShift, bool LinearInterpolation = true);
+
    /// Resizes the image.
    /// \param Source : Source image
    /// \param Dest : Destination image

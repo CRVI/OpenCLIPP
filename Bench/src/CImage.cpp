@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cstddef>
+#include <memory.h>
 #include "CImage.h"
 
 uint CalculateStep(uint W, uint C, uint D, uint Align);
@@ -128,6 +129,12 @@ void CSimpleImage::Free()
 const SImage& CSimpleImage::ToSImage() const
 {
    return *this;
+}
+
+void CSimpleImage::MakeBlack()
+{
+   for (uint y = 0; y < Height; y++)
+      memset(Data(y), 0, BytesWidth());
 }
 
 CImageROI::CImageROI(CSimpleImage& Image, uint X, uint Y, uint W, uint H)

@@ -50,6 +50,7 @@
 #include "benchThresholdImg.hpp"
 #include "benchFFT.hpp"
 #include "benchTransform.hpp"
+#include "benchRotate.hpp"
 #include "benchBlob.hpp"
 
 void RunBench()
@@ -131,6 +132,9 @@ void RunBench()
 #ifndef HAS_CV
    B(Transpose);  // OpenCV OCL does not accept U16 for transpose
 #endif
+
+   /*B(Rotate);      // Rotation works well but we seem to handle the image border in a slightly different way from IPP
+   B(RotateLinear);*/
 
    // Reduce size
    /*Bench(__ID(ResizeBench<unsigned char, 5, 10, false>)); // These work well but some compilers have difficulties with commas in macro calls

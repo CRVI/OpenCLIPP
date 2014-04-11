@@ -394,6 +394,9 @@ ocipError ocip_API ocipFlip(     ocipImage Source, ocipImage Dest);
 /// D(x,y) = D(y, x)
 ocipError ocip_API ocipTranspose(ocipImage Source, ocipImage Dest);
 
+/// Rotates the source image aroud the origin (0,0) and then shifts it.
+ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation);
+
 /// Resizes the image.
 /// \param Source : Source image
 /// \param Dest : Destination image

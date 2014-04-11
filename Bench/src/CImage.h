@@ -82,6 +82,8 @@ public:
 
    const SImage& ToSImage() const;
 
+   void MakeBlack();
+
 protected:
    unsigned char * m_Data;
    uint m_Offset;

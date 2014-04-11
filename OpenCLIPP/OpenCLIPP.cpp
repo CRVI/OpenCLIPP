@@ -491,6 +491,11 @@ UNARY_OP(ocipMirrorY, MirrorY)
 UNARY_OP(ocipFlip, Flip)
 UNARY_OP(ocipTranspose, Transpose)
 
+ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation)
+{
+   H( CLASS.Rotate(Img(Source), Img(Dest), Angle, XShift, YShift, LinearInterpolation != 0) )
+}
+
 ocipError ocip_API ocipResize(ocipImage Source, ocipImage Dest, ocipBool LinearInterpolation, ocipBool KeepRatio)
 {
    H( CLASS.Resize(Img(Source), Img(Dest), LinearInterpolation != 0, KeepRatio != 0) )

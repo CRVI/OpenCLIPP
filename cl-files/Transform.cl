@@ -24,6 +24,10 @@
 
 #include "Images.h"
 
+constant sampler_t lin_sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_LINEAR;
+constant sampler_t rotate_sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST;
+constant sampler_t rotate_lin_sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_LINEAR;
+
 
 kernel void mirror_x(read_only image2d_t source, write_only image2d_t dest)
 {
@@ -86,8 +90,6 @@ kernel void set_all(write_only image2d_t dest, float value)
 #undef SAMPLER
 #define SAMPLER lin_sampler
 
-constant sampler_t lin_sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_LINEAR;
-
 kernel void resize_linear(read_only image2d_t source, write_only image2d_t dest, float ratioX, float ratioY)
 {
    BEGIN
@@ -97,4 +99,33 @@ kernel void resize_linear(read_only image2d_t source, write_only image2d_t dest,
    TYPE px = READ_IMAGE(source, src_pos);
 
    WRITE_IMAGE(dest, pos, px);
+}
+
+
+#undef SAMPLER
+#define SAMPLER rotate_sampler
+
+kernel void rotate_img(read_only image2d_t source, write_only image2d_t dest, float sina, float cosa, float xshift, float yshift)
+{
+   BEGIN
+
+   float srcx = gx - xshift;
+   float srcy = gy - yshift;
+   float2 srcpos = (float2)(cosa * srcx - sina * srcy + .5f, sina * srcx + cosa * srcy + .5f);
+
+   WRITE_IMAGE(dest, pos, READ_IMAGE(source, srcpos));
+}
+
+#undef SAMPLER
+#define SAMPLER rotate_lin_sampler
+
+kernel void rotate_linear(read_only image2d_t source, write_only image2d_t dest, float sina, float cosa, float xshift, float yshift)
+{
+   BEGIN
+
+   float srcx = gx - xshift;
+   float srcy = gy - yshift;
+   float2 srcpos = (float2)(cosa * srcx - sina * srcy + .5f, sina * srcx + cosa * srcy + .5f);
+
+   WRITE_IMAGE(dest, pos, READ_IMAGE(source, srcpos));
 }

@@ -60,15 +60,45 @@ void Transform::Transpose(IImage& Source, IImage& Dest)
    if (Dest.Width() < Source.Height() || Dest.Height() < Source.Width())
       throw cl::Error(CL_INVALID_IMAGE_SIZE, "Destination image too small to receive Transform::Transpose");
 
-   if (Source.IsFloat() != Dest.IsFloat())
+   if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
 
    Kernel(transpose, Source, Dest);
 }
 
+void Transform::Rotate(IImage& Source, IImage& Dest,
+      double Angle, double XShift, double YShift, bool LinearInterpolation)
+{
+   if (!SameType(Source, Dest))
+      throw cl::Error(CL_INVALID_VALUE, "Different image types used");
+
+#pragma warning ( suppress : 4640)
+   static const double Pi = atan(1) * 4;
+
+   // Convert to radians
+   Angle *= Pi / 180.;
+
+   float cosa = (float) cos(Angle);
+   float sina = (float) sin(Angle);
+   float xshift = (float) XShift;
+   float yshift = (float) YShift;
+
+   if (LinearInterpolation)
+   {
+      Kernel_(*m_CL, SelectProgram(Source), rotate_linear, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, sina, cosa, xshift, yshift);
+   }
+   else
+   {
+      Kernel_(*m_CL, SelectProgram(Source), rotate_img, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, sina, cosa, xshift, yshift);
+   }
+
+}
+
 void Transform::Resize(IImage& Source, IImage& Dest, bool LinearInterpolation, bool KeepRatio)
 {
-   if (Source.IsFloat() != Dest.IsFloat())
+   if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
 
    // This kernel works differently - we use the range of the destination
@@ -89,7 +119,7 @@ void Transform::Resize(IImage& Source, IImage& Dest, bool LinearInterpolation, b
       RatioX = Ratio;
       RatioY = Ratio;
 
-      Range = cl::NDRange(size_t(Source.Width() / RatioX), size_t(Source.Height() / RatioY));
+      Range = cl::NDRange(size_t(Source.Width() / RatioX), size_t(Source.Height() / RatioY), 1);
    }
 
    auto kernel = cl::make_kernel<cl::Image2D, cl::Image2D, float, float>(SelectProgram(Source), name);
