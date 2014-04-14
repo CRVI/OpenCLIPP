@@ -793,6 +793,11 @@ UNARY_OP(ocipMirrorY_V, MirrorY)
 UNARY_OP(ocipFlip_V, Flip)
 UNARY_OP(ocipTranspose_V, Transpose)
 
+ocipError ocip_API ocipRotate_V(ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation)
+{
+   H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, LinearInterpolation != 0) )
+}
+
 ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
 {
    H( CLASS.SetAll(Buf(Dest), Value) )

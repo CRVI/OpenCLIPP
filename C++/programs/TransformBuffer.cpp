@@ -36,6 +36,11 @@
 
 #include "WorkGroup.h"
 
+#include <cmath>
+
+
+static const double Pi = atan(1) * 4;
+
 
 namespace OpenCLIPP
 {
@@ -88,6 +93,38 @@ void TransformBuffer::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
    else
    {
       Kernel_Local(transpose, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
+   }
+
+}
+
+void TransformBuffer::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
+      double Angle, double XShift, double YShift, bool LinearInterpolation)
+{
+   if (!SameType(Source, Dest))
+      throw cl::Error(CL_INVALID_VALUE, "Different image types used");
+
+   // Convert to radians
+   Angle *= Pi / 180.;
+
+   float cosa = (float) cos(Angle);
+   float sina = (float) sin(Angle);
+   float xshift = (float) XShift;
+   float yshift = (float) YShift;
+
+   const SImage& SrcImg = Source;
+   const SImage& DstImg = Dest;
+
+   if (LinearInterpolation)
+   {
+      Kernel_(*m_CL, SelectProgram(Source), rotate_linear, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, SrcImg, DstImg,
+         sina, cosa, xshift, yshift);
+   }
+   else
+   {
+      Kernel_(*m_CL, SelectProgram(Source), rotate_img, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, SrcImg, DstImg,
+         sina, cosa, xshift, yshift);
    }
 
 }

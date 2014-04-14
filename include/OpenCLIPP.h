@@ -758,6 +758,9 @@ ocipError ocip_API ocipFlip_V(      ocipBuffer Source, ocipBuffer Dest);
 /// D(x,y) = D(y, x)
 ocipError ocip_API ocipTranspose_V( ocipBuffer Source, ocipBuffer Dest);
 
+/// Rotates the source image aroud the origin (0,0) and then shifts it.
+ocipError ocip_API ocipRotate_V(    ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation);
+
 /// Sets all values of Dest to value
 ocipError ocip_API ocipSet_V(       ocipBuffer Dest, float Value);
 

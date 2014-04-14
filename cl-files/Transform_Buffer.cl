@@ -145,3 +145,86 @@ TRANSPOSE_FLUSH_IMPL(SCALAR, _1C)
 TRANSPOSE_FLUSH_IMPL(TYPE2,  _2C)
 TRANSPOSE_FLUSH_IMPL(TYPE3,  _3C)
 TRANSPOSE_FLUSH_IMPL(TYPE4,  _4C)
+
+
+
+struct SImage
+{
+   uint Width;    ///< Width of the image, in pixels
+   uint Height;   ///< Height of the image, in pixels
+   uint Step;     ///< Nb of bytes between each row
+   uint Channels; ///< Number of channels in the image, allowed values : 1, 2, 3 or 4
+
+   /// EDataType : Lists possible types of data
+   int Type;  ///< Data type of each channel in the image
+};
+
+
+#define SAMPLE_NN(type, suffix) \
+   type CONCATENATE(sample_nn, suffix) (INPUT_SPACE const type * source, int src_step, float2 pos)\
+   {\
+      pos += (float2)(0.5f, 0.5f);\
+      int2 ipos = convert_int2(pos);\
+      return source[ipos.y * src_step + ipos.x];\
+   }
+
+#define SAMPLE_LINEAR(type, float_type, suffix) \
+   type CONCATENATE(sample_linear, suffix) (INPUT_SPACE const type * source, int src_step, float2 pos)\
+   {\
+      int x1 = (int)(pos.x);\
+      float factorx1 = 1 - (pos.x - x1);\
+      int x2 = (int)(pos.x + 1);\
+      float factorx2 = 1 - factorx1;\
+      int y1 = (int)(pos.y);\
+      float factory1 = 1 - (pos.y - y1);\
+      int y2 = (int)(pos.y + 1);\
+      float factory2 = 1 - factory1;\
+      float_type f1 = factorx1 * factory1;\
+      float_type f2 = factorx2 * factory1;\
+      float_type f3 = factorx1 * factory2;\
+      float_type f4 = factorx2 * factory2;\
+      float_type v1 = CONCATENATE(convert_, float_type)(source[y1 * src_step + x1]);\
+      float_type v2 = CONCATENATE(convert_, float_type)(source[y1 * src_step + x2]);\
+      float_type v3 = CONCATENATE(convert_, float_type)(source[y2 * src_step + x1]);\
+      float_type v4 = CONCATENATE(convert_, float_type)(source[y2 * src_step + x2]);\
+      return CONCATENATE(convert_, type)(v1 * f1 + v2 * f2 + v3 * f3 + v4 * f4);\
+   }
+
+#define ROTATE(name, sampling, type, suffix) \
+   kernel void CONCATENATE(name, suffix) (INPUT_SPACE const type * source, global type * dest,\
+      struct SImage src_img, struct SImage dst_img, \
+      float sina, float cosa, float xshift, float yshift)\
+   {\
+      BEGIN\
+      int src_step = src_img.Step / sizeof(type);\
+      int dst_step = dst_img.Step / sizeof(type);\
+      if (pos.x >= dst_img.Width || pos.y >= dst_img.Height)\
+         return;\
+      float srcx = gx - xshift;\
+      float srcy = gy - yshift;\
+      float2 srcpos = (float2)(cosa * srcx - sina * srcy, sina * srcx + cosa * srcy);\
+      type value = 0;\
+      if (srcpos.x >= 0 && srcpos.x + 1 < src_img.Width && srcpos.y >= 0 && srcpos.y + 1 < src_img.Height)\
+         value = CONCATENATE(sampling, suffix) (source, src_step, srcpos);\
+      dest[pos.y * dst_step + pos.x] = value;\
+   }
+
+SAMPLE_NN(SCALAR, _1C)
+SAMPLE_NN(TYPE2,  _2C)
+SAMPLE_NN(TYPE3,  _3C)
+SAMPLE_NN(TYPE4,  _4C)
+
+SAMPLE_LINEAR(SCALAR, float,  _1C)
+SAMPLE_LINEAR(TYPE2,  float2, _2C)
+SAMPLE_LINEAR(TYPE3,  float3, _3C)
+SAMPLE_LINEAR(TYPE4,  float4, _4C)
+
+ROTATE(rotate_img, sample_nn, SCALAR, _1C)
+ROTATE(rotate_img, sample_nn, TYPE2,  _2C)
+ROTATE(rotate_img, sample_nn, TYPE3,  _3C)
+ROTATE(rotate_img, sample_nn, TYPE4,  _4C)
+
+ROTATE(rotate_linear, sample_linear, SCALAR, _1C)
+ROTATE(rotate_linear, sample_linear, TYPE2,  _2C)
+ROTATE(rotate_linear, sample_linear, TYPE3,  _3C)
+ROTATE(rotate_linear, sample_linear, TYPE4,  _4C)

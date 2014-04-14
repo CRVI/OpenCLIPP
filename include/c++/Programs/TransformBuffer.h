@@ -54,6 +54,10 @@ public:
    /// D(x,y) = D(y, x)
    void Transpose(ImageBuffer& Source, ImageBuffer& Dest);
 
+   /// Rotates the source image aroud the origin (0,0) and then shifts it.
+   void Rotate(ImageBuffer& Source, ImageBuffer& Dest,
+      double Angle, double XShift, double YShift, bool LinearInterpolation = true);
+
    /// Sets all values of Dest to value
    void SetAll(ImageBuffer& Dest, float Value);
 };

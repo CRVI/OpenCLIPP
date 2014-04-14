@@ -11,7 +11,7 @@ typedef RotateLinearBench<unsigned short>  RotateLinearBenchU16;
 typedef RotateLinearBench<float>           RotateLinearBenchF32;
 
 template<typename DataType>
-class RotateBench : public BenchUnaryBase<DataType, false>
+class RotateBench : public BenchUnaryBase<DataType, USE_BUFFER>
 {
 public:
    RotateBench(bool Interpolation = false)
@@ -25,7 +25,7 @@ public:
 
    void Create(uint Width, uint Height)
    {
-      BenchUnaryBase<DataType, false>::Create(Width, Height);
+      BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height);
 
       IPP_CODE(
          m_ImgDstIPP.MakeBlack();
@@ -33,6 +33,13 @@ public:
          m_IPPRotROI.y = 0;
          m_IPPRotROI.width = Width;
          m_IPPRotROI.height = Height;
+         )
+
+      NPP_CODE(
+         m_NPPRotROI.x = 0;
+         m_NPPRotROI.y = 0;
+         m_NPPRotROI.width = Width;
+         m_NPPRotROI.height = Height;
          )
 
       m_Angle = 10;
@@ -81,9 +88,10 @@ public:
 template<typename DataType>
 void RotateBench<DataType>::RunCL()
 {
-   ocipRotate(this->m_CLSrc, this->m_CLDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
-
-   ocipReadImage(this->m_CLDst);
+   if (this->m_UsesBuffer)
+      ocipRotate_V(this->m_CLBufferSrc, this->m_CLBufferDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
+   else
+      ocipRotate(this->m_CLSrc, this->m_CLDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>
