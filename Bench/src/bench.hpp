@@ -133,8 +133,8 @@ void RunBench()
    B(Transpose);  // OpenCV OCL does not accept U16 for transpose
 #endif
 
-   /*B(Rotate);      // Rotation works well but we seem to handle the image border in a slightly different way from IPP
-   B(RotateLinear);*/
+   //B(Rotate);      // Rotation works well but but a few pixels end up with a value different from IPP
+   B(RotateLinear);  // We should use a different compare that counts the number of pixels that have a too high difference
 
    // Reduce size
    B(Resize);  // Resize half

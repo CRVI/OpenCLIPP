@@ -23,6 +23,9 @@ public:
    void RunNPP();
    void RunCV();
 
+   float CompareTolerance() const { return 0.01f; }
+   bool CompareTolRelative() const { return true; }
+
    void Create(uint Width, uint Height)
    {
       BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height);
@@ -36,6 +39,9 @@ public:
          )
 
       NPP_CODE(
+         m_ImgDstNPP.MakeBlack();
+         cudaMemcpy2D(m_NPPDst, m_NPPDstStep, m_ImgDstNPP.Data(), m_ImgDstNPP.Step,
+            m_ImgDstNPP.BytesWidth(), Height, cudaMemcpyHostToDevice);
          m_NPPRotROI.x = 0;
          m_NPPRotROI.y = 0;
          m_NPPRotROI.width = Width;
@@ -56,9 +62,9 @@ public:
 
    IPP_CODE(int IppInterpol()
       {
-         int interpol_mode = IPPI_INTER_NN | IPPI_SMOOTH_EDGE;
+         int interpol_mode = IPPI_INTER_NN;
          if (m_Interpolation)
-            interpol_mode = IPPI_INTER_LINEAR | IPPI_SMOOTH_EDGE;
+            interpol_mode = IPPI_INTER_LINEAR;
          return interpol_mode;
       } )
 
