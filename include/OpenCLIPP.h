@@ -761,6 +761,17 @@ ocipError ocip_API ocipTranspose_V( ocipBuffer Source, ocipBuffer Dest);
 /// Rotates the source image aroud the origin (0,0) and then shifts it.
 ocipError ocip_API ocipRotate_V(    ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation);
 
+/// Resizes the image.
+/// \param Source : Source image
+/// \param Dest : Destination image
+/// \param LinearInterpolation : If true, linear interpolation will be used when stretching images.
+///      If false, the nearest pixel value will be used.
+///      Linear Interpolation can be used only with F32 images.
+/// \param KeepRatio : If false, Dest will be filled with the image from source, potentially changing
+///      the aspect ratio of the image. \n If true, the aspect ratio of the image will be kept, potentially
+///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
+ocipError ocip_API ocipResize_V(    ocipBuffer Source, ocipBuffer Dest, ocipBool LinearInterpolation, ocipBool KeepRatio);
+
 /// Sets all values of Dest to value
 ocipError ocip_API ocipSet_V(       ocipBuffer Dest, float Value);
 

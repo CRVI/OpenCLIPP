@@ -798,6 +798,11 @@ ocipError ocip_API ocipRotate_V(ocipBuffer Source, ocipBuffer Dest, double Angle
    H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, LinearInterpolation != 0) )
 }
 
+ocipError ocip_API ocipResize_V(ocipBuffer Source, ocipBuffer Dest, ocipBool LinearInterpolation, ocipBool KeepRatio)
+{
+   H( CLASS.Resize(Buf(Source), Buf(Dest), LinearInterpolation != 0, KeepRatio != 0) )
+}
+
 ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
 {
    H( CLASS.SetAll(Buf(Dest), Value) )

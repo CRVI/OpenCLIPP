@@ -22,16 +22,29 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-template<typename DataType, int FactorX = 5, int FactorY = 5, bool LinearInterpolation = false>
+template<typename DataType, int FactorX = 7, int FactorY = 3, bool LinearInterpolation = false>
 class ResizeBench;
 
-typedef ResizeBench<unsigned char> ResizeHalfBenchU8;
+template<typename DataType, bool LinearInterpolation = false>
+class ResizeBiggerBench : public ResizeBench<DataType, 13, 17, LinearInterpolation>
+{ };
+
+template<typename DataType>
+class ResizeLinearBench : public ResizeBench<DataType, 7, 3, true>
+{ };
+
+template<typename DataType>
+class ResizeBiggerLinearBench : public ResizeBench<DataType, 13, 17, true>
+{ };
 
 // FactorX and FactorX are in 1/10th, so 10 will mean same size
 template<typename DataType>
 class ResizeBenchBase : public IBench1in1out
 {
 public:
+   ResizeBenchBase()
+   :  IBench1in1out(USE_BUFFER)
+   { }
    void Create(uint Width, uint Height);
    void Free();
 
@@ -182,7 +195,10 @@ void ResizeBenchBase<DataType>::Free()
 template<typename DataType>
 void ResizeBenchBase<DataType>::RunCL()
 {
-   ocipResize(m_CLSrc, m_CLDst, m_LinearInterpolation, false);
+   if (m_UsesBuffer)
+      ocipResize_V(m_CLBufferSrc, m_CLBufferDst, m_LinearInterpolation, false);
+   else
+      ocipResize(m_CLSrc, m_CLDst, m_LinearInterpolation, false);
 }
 
 template<typename DataType>

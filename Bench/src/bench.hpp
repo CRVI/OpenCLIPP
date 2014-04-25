@@ -137,27 +137,12 @@ void RunBench()
    B(RotateLinear);*/
 
    // Reduce size
-   /*Bench(__ID(ResizeBench<unsigned char, 5, 10, false>)); // These work well but some compilers have difficulties with commas in macro calls
-   Bench(__ID(ResizeBench<unsigned char, 5, 10, true>));
-   Bench(__ID(ResizeBench<unsigned char, 10, 5, false>));
-   Bench(__ID(ResizeBench<unsigned char, 10, 5, true>));
-   Bench(__ID(ResizeBench<unsigned short, 5, 5, false>));
-   Bench(__ID(ResizeBench<unsigned short, 5, 5, true>));
-   Bench(__ID(ResizeBench<float, 5, 5, false>));
-   Bench(__ID(ResizeBench<float, 5, 5, true>));*/
+   B(Resize);  // Resize half
+   B(ResizeLinear);  // Resize half with linear interpolation
 
    // Increase size
-   // NOTE : When increasing the size of images, at some sizes, we get a result slighly different than IPP
-   /*Bench(__ID(ResizeBench<unsigned char, 11, 11, false>));
-   Bench(__ID(ResizeBench<unsigned char, 11, 11, true>));
-   Bench(__ID(ResizeBench<unsigned char, 14, 10, false>));
-   Bench(__ID(ResizeBench<unsigned char, 14, 10, true>));
-   Bench(__ID(ResizeBench<unsigned char, 10, 14, false>));
-   Bench(__ID(ResizeBench<unsigned char, 10, 14, true>));
-   Bench(__ID(ResizeBench<unsigned short, 11, 11, false>));
-   Bench(__ID(ResizeBench<unsigned short, 11, 11, true>));
-   Bench(__ID(ResizeBench<float, 11, 11, false>));
-   Bench(__ID(ResizeBench<float, 11, 11, true>));*/
+   B(ResizeBigger);
+   B(ResizeBiggerLinear);
 
    // Filters
    Bench(Sobel3_1Bench);
@@ -262,8 +247,6 @@ void RunBench()
    Bench(MeanBenchF32);
 
 #endif // FULL_TESTS
-
-   Bench(ResizeHalfBenchU8);
 
    Bench(TopHatBench);
    Bench(BlackHatBench);

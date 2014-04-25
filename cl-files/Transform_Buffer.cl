@@ -161,16 +161,16 @@ struct SImage
 
 
 #define SAMPLE_NN(type, suffix) \
-   type CONCATENATE(sample_nn, suffix) (INPUT_SPACE const type * source, int src_step, float2 pos)\
+   type CONCATENATE(sample_nn, suffix) (INPUT_SPACE const type * source, int src_step, float2 pos, int width, int height)\
    {\
-      pos += (float2)(0.5f, 0.5f);\
       int2 ipos = convert_int2(pos);\
       return source[ipos.y * src_step + ipos.x];\
    }
 
 #define SAMPLE_LINEAR(type, float_type, suffix) \
-   type CONCATENATE(sample_linear, suffix) (INPUT_SPACE const type * source, int src_step, float2 pos)\
+   type CONCATENATE(sample_linear, suffix) (INPUT_SPACE const type * source, int src_step, float2 pos, int width, int height)\
    {\
+      pos -= (float2)(0.5f, 0.5f);\
       int x1 = (int)(pos.x);\
       float factorx1 = 1 - (pos.x - x1);\
       int x2 = (int)(pos.x + 1);\
@@ -190,6 +190,7 @@ struct SImage
       return CONCATENATE(convert_, type)(v1 * f1 + v2 * f2 + v3 * f3 + v4 * f4);\
    }
 
+
 #define ROTATE(name, sampling, type, suffix) \
    kernel void CONCATENATE(name, suffix) (INPUT_SPACE const type * source, global type * dest,\
       struct SImage src_img, struct SImage dst_img, \
@@ -202,12 +203,34 @@ struct SImage
          return;\
       float srcx = gx - xshift;\
       float srcy = gy - yshift;\
-      float2 srcpos = (float2)(cosa * srcx - sina * srcy, sina * srcx + cosa * srcy);\
+      float2 srcpos = (float2)(cosa * srcx - sina * srcy + .5f, sina * srcx + cosa * srcy + .5f);\
       type value = 0;\
-      if (srcpos.x >= 0 && srcpos.x + 1 < src_img.Width && srcpos.y >= 0 && srcpos.y + 1 < src_img.Height)\
-         value = CONCATENATE(sampling, suffix) (source, src_step, srcpos);\
+      if (srcpos.x >= 0.5f && srcpos.x + 0.5f < src_img.Width && srcpos.y >= 0.5f && srcpos.y + 0.5f < src_img.Height)\
+         value = CONCATENATE(sampling, suffix) (source, src_step, srcpos, src_img.Width, src_img.Height);\
       dest[pos.y * dst_step + pos.x] = value;\
    }
+
+
+#define RESIZE(name, sampling, type, suffix) \
+   kernel void CONCATENATE(name, suffix)(INPUT_SPACE const type * source, global type * dest,\
+      struct SImage src_img, struct SImage dst_img, float ratioX, float ratioY)\
+   {\
+      BEGIN\
+      int src_step = src_img.Step / sizeof(type);\
+      int dst_step = dst_img.Step / sizeof(type);\
+      if (pos.x >= dst_img.Width || pos.y >= dst_img.Height)\
+         return;\
+      float2 srcpos = {(pos.x + 0.4995f) * ratioX, (pos.y + 0.4995f) * ratioY};\
+      type value = 0;\
+      if ((int)(srcpos.x + .5f) == src_img.Width)\
+         srcpos.x = src_img.Width - 0.5001f;\
+      if ((int)(srcpos.y + .5f) == src_img.Height)\
+         srcpos.y = src_img.Height - 0.5001f;\
+      if (srcpos.x >= -1 && srcpos.x < src_img.Width - .5f && srcpos.y >= -1 && srcpos.y < src_img.Height - .5f)\
+         value = CONCATENATE(sampling, suffix) (source, src_step, srcpos, src_img.Width, src_img.Height);\
+      dest[pos.y * dst_step + pos.x] = value;\
+   }
+
 
 SAMPLE_NN(SCALAR, _1C)
 SAMPLE_NN(TYPE2,  _2C)
@@ -228,3 +251,13 @@ ROTATE(rotate_linear, sample_linear, SCALAR, _1C)
 ROTATE(rotate_linear, sample_linear, TYPE2,  _2C)
 ROTATE(rotate_linear, sample_linear, TYPE3,  _3C)
 ROTATE(rotate_linear, sample_linear, TYPE4,  _4C)
+
+RESIZE(resize, sample_nn, SCALAR, _1C)
+RESIZE(resize, sample_nn, TYPE2 , _2C)
+RESIZE(resize, sample_nn, TYPE3 , _3C)
+RESIZE(resize, sample_nn, TYPE4 , _4C)
+
+RESIZE(resize_linear, sample_linear, SCALAR, _1C)
+RESIZE(resize_linear, sample_linear, TYPE2 , _2C)
+RESIZE(resize_linear, sample_linear, TYPE3 , _3C)
+RESIZE(resize_linear, sample_linear, TYPE4 , _4C)

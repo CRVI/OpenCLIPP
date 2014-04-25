@@ -58,6 +58,17 @@ public:
    void Rotate(ImageBuffer& Source, ImageBuffer& Dest,
       double Angle, double XShift, double YShift, bool LinearInterpolation = true);
 
+   /// Resizes the image.
+   /// \param Source : Source image
+   /// \param Dest : Destination image
+   /// \param LinearInterpolation : If true, linear interpolation will be used when stretching images.
+   ///      If false, the nearest pixel value will be used.
+   ///      Linear interpolation can be used only with F32 images.
+   /// \param KeepRatio : If false, Dest will be filled with the image from source, potentially changing
+   ///      the aspect ratio of the image. If true, the aspect ratio of the image will be kept, potentially
+   ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
+   void Resize(ImageBuffer& Source, ImageBuffer& Dest, bool LinearInterpolation = true, bool KeepRatio = false);
+
    /// Sets all values of Dest to value
    void SetAll(ImageBuffer& Dest, float Value);
 };

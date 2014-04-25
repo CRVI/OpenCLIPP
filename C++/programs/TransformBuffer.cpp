@@ -129,6 +129,43 @@ void TransformBuffer::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
 
 }
 
+void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, bool LinearInterpolation, bool KeepRatio)
+{
+   if (!SameType(Source, Dest))
+      throw cl::Error(CL_INVALID_VALUE, "Different image types used");
+
+   float RatioX = Source.Width() * 1.f / Dest.Width();
+   float RatioY = Source.Height() * 1.f / Dest.Height();
+
+   cl::NDRange Range = Dest.FullRange();
+
+   if (KeepRatio)
+   {
+      float Ratio = max(RatioX, RatioY);
+      RatioX = Ratio;
+      RatioY = Ratio;
+
+      Range = cl::NDRange(size_t(Source.Width() / RatioX), size_t(Source.Height() / RatioY), 1);
+   }
+
+   const SImage& SrcImg = Source;
+   const SImage& DstImg = Dest;
+
+   if (LinearInterpolation)
+   {
+      // Linear interpolation resize
+      Kernel_(*m_CL, SelectProgram(Source), resize_linear, Dest.FullRange(), LOCAL_RANGE,
+         In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);      
+   }
+   else
+   {
+      // Nearest neighbour resize
+      Kernel_(*m_CL, SelectProgram(Source), resize, Dest.FullRange(), LOCAL_RANGE,
+         In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
+   }
+
+}
+
 void TransformBuffer::SetAll(ImageBuffer& Dest, float Value)
 {
    Kernel(set_all, In(Dest), Out(), Dest.Step(), Value);
