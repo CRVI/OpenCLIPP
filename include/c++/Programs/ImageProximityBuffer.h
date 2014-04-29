@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: ImageProximity.h
+//! @file	: ImageProximityBuffer.h
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching on images
+//! @brief  : Pattern Matching on image buffers
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -28,30 +28,31 @@
 
 namespace OpenCLIPP
 {
-	/// A program that does Pattern Matching
-class CL_API ImageProximity : public ImageProgram
+
+/// A program for convolution-type filters on images
+class CL_API ImageProximityBuffer : public ImageBufferProgram
 {
 public:
-   ImageProximity(COpenCL& CL)
-   : ImageProgram(CL, "ImageProximity.cl")
+   ImageProximityBuffer(COpenCL& CL)
+   :  ImageBufferProgram(CL, "ImageProximity_Buffer.cl")
    { }
 
    //Computes the Euclidean distance between an image and a tamplate
-   void SqrDistance(IImage& Source, IImage& Template, IImage& Dest);
+   void SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
    // Use only small template images (<=16x16 pixels)
    // Will be very slow if big template images are used
    //Computes the normalized Euclidean distance between an image and a tamplate
-   void SqrDistance_Norm(IImage& Source, IImage& Template, IImage& Dest);
+   void SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
    //Computes the sum of the absolute difference between an image and a tamplate
-   void AbsDistance(IImage& Source, IImage& Template, IImage& Dest);
+   void AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
    //Computes normalized cross-correlation between an image and a template.
-   void CrossCorr(IImage& Source, IImage& Template, IImage& Dest);
+   void CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
    //Computes normalized the cross-correlation between an image and a tamplate
-   void CrossCorr_Norm(IImage& Source, IImage& Template, IImage& Dest);
+   void CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
    
 };
 

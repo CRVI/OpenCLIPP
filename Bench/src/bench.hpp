@@ -208,7 +208,11 @@ void RunBench()
    B(Threshold_ImgGQ);
    B(Threshold_ImgGT);*/
 
-   B(SqrDistance);
+   B(SqrDistance_Norm);
+   /*B(SqrDistance);    // These are not supported in IPP
+   B(AbsDistance);
+   B(CrossCorr);*/
+   B(CrossCorr_Norm);
 
    if (ocipIsFFTAvailable())
    {

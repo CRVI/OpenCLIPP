@@ -24,8 +24,22 @@
 
 #include <memory>
 
-#define PROXIMITY_USE_BUFFER false
+#define PROXIMITY_USE_BUFFER USE_BUFFER
 
-#define BENCH_NAME SqrDistance
+#define BENCH_NAME SqrDistance_Norm
+#define IPP_NAME SqrDistanceSame_Norm
 #include "benchImageProximity.hpp"
-#undef BENCH_NAME
+
+/* // These are not supported in IPP
+#define BENCH_NAME SqrDistance    
+#include "benchImageProximity.hpp"
+
+#define BENCH_NAME AbsDistance
+#include "benchImageProximity.hpp"
+
+#define BENCH_NAME CrossCorr
+#include "benchImageProximity.hpp"*/
+
+#define BENCH_NAME CrossCorr_Norm
+#define IPP_NAME CrossCorrSame_Norm
+#include "benchImageProximity.hpp"

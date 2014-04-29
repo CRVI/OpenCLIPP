@@ -623,14 +623,24 @@ ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels);
 
 
 
-// ImageProximity ---------------------------------------------------------------------------------------
+// Image Proximity ---------------------------------------------------------------------------------------
 // All ImageProximity operations are Syncrhonous, meaning they block until the ImageProximity is calculated and set to the result
 ocipError ocip_API ocipPrepareImageProximity(ocipImage Image);   ///< See ocipPrepareExample
 
-/// Output the coordinate of the template which is found in the source image
+/// Computes normalized Euclidean distance between an image and a template.
+ocipError ocip_API ocipSqrDistance_Norm(ocipImage Source, ocipImage Template, ocipImage Dest);
+
+/// Computes Euclidean distance between an image and a template.
 ocipError ocip_API ocipSqrDistance(ocipImage Source, ocipImage Template, ocipImage Dest);
 
+//Computes the sum of the absolute difference between an image and a tamplate
+ocipError ocip_API ocipAbsDistance(ocipImage Source, ocipImage Template, ocipImage Dest);
 
+//Computes normalized cross-correlation between an image and a template.
+ocipError ocip_API ocipCrossCorr(ocipImage Source, ocipImage Template, ocipImage Dest);
+
+//Computes normalized the cross-correlation between an image and a tamplate
+ocipError ocip_API ocipCrossCorr_Norm(ocipImage Source, ocipImage Template, ocipImage Dest);
 
 
 
@@ -932,6 +942,28 @@ ocipError ocip_API ocipIntegral_B( ocipProgram Program, ocipBuffer Source, ocipB
 
 ///< Scans the image buffer and generates the Square Integral sum into Dest buffer - Dest must be F32 or F64 - 1 channel
 ocipError ocip_API ocipSqrIntegral_B( ocipProgram Program, ocipBuffer Source, ocipBuffer Dest);
+
+
+
+// Image buffer Proximity ---------------------------------------------------------------------------------------
+// All ImageProximity operations are Syncrhonous, meaning they block until the ImageProximity is calculated and set to the result
+ocipError ocip_API ocipPrepareImageBufferProximity(ocipBuffer Image);   ///< See ocipPrepareExample
+
+/// Computes normalized Euclidean distance between an image and a template.
+ocipError ocip_API ocipSqrDistance_Norm_B(ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+/// Computes Euclidean distance between an image and a template.
+ocipError ocip_API ocipSqrDistance_B(ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+//Computes the sum of the absolute difference between an image and a tamplate
+ocipError ocip_API ocipAbsDistance_B(ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+//Computes normalized cross-correlation between an image and a template.
+ocipError ocip_API ocipCrossCorr_B(ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+//Computes normalized the cross-correlation between an image and a tamplate
+ocipError ocip_API ocipCrossCorr_Norm_B(ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
 
 
 #ifdef __cplusplus

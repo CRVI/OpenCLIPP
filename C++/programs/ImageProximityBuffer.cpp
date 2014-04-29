@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: ImageProximity.cpp
+//! @file	: ImageProximityBuffer.cpp
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching on images
+//! @brief  : Pattern Matching on image buffers
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -22,13 +22,25 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Programs/ImageProximity.h"
+#include "Programs/ImageProximityBuffer.h"
+#define SELECT_NAME(name, src_img) SelectName( #name , src_img)
+
 #include "kernel_helpers.h"
 
 namespace OpenCLIPP
 {
+static std::string SelectName(const char * Name, const ImageBase& Img)
+{
+   if (Img.NbChannels() < 1 || Img.NbChannels() > 4)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Filters are supported only on images that have between 1 and 4 channels");
 
-   void ImageProximity::SqrDistance(IImage& Source, IImage& Template, IImage& Dest)
+   std::string KernelName = Name;
+   KernelName += "_" + std::to_string(Img.NbChannels()) + "C";
+
+   return KernelName;
+}
+
+   void ImageProximityBuffer::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
    {
       if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
          throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -39,10 +51,10 @@ namespace OpenCLIPP
       CheckSameSize(Source, Dest);
       CheckFloat(Dest);
 
-      Kernel(SqrDistance, In(Source, Template), Out(Dest), Source.Width(), Source.Height(), Template.Width(), Template.Height());
+      Kernel(SqrDistance, In(Source, Template), Out(Dest), Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
    }
 
-   void ImageProximity::SqrDistance_Norm(IImage& Source, IImage& Template, IImage& Dest)
+   void ImageProximityBuffer::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
    {
       if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
          throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -53,10 +65,10 @@ namespace OpenCLIPP
       CheckSameSize(Source, Dest);
       CheckFloat(Dest);
 
-      Kernel(SqrDistance_Norm, In(Source, Template), Out(Dest), Source.Width(), Source.Height(), Template.Width(), Template.Height());
+      Kernel(SqrDistance_Norm, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
    }
 
-   void ImageProximity::AbsDistance(IImage& Source, IImage& Template, IImage& Dest)
+   void ImageProximityBuffer::AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
    {
       if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
          throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -67,10 +79,10 @@ namespace OpenCLIPP
       CheckSameSize(Source, Dest);
       CheckFloat(Dest);
 
-      Kernel(AbsDistance, In(Source, Template), Out(Dest), Source.Width(), Source.Height(), Template.Width(), Template.Height());
+      Kernel(AbsDistance, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
    }
 
-   void ImageProximity::CrossCorr(IImage& Source, IImage& Template, IImage& Dest)
+   void ImageProximityBuffer::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
    {
       if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
          throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -81,10 +93,10 @@ namespace OpenCLIPP
       CheckSameSize(Source, Dest);
       CheckFloat(Dest);
 
-      Kernel(CrossCorr, In(Source, Template), Out(Dest), Source.Width(), Source.Height(), Template.Width(), Template.Height());
+      Kernel(CrossCorr, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
    }
 
-   void ImageProximity::CrossCorr_Norm(IImage& Source, IImage& Template, IImage& Dest)
+   void ImageProximityBuffer::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
    {
       if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
          throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -95,6 +107,6 @@ namespace OpenCLIPP
       CheckSameSize(Source, Dest);
       CheckFloat(Dest);
 
-      Kernel(CrossCorr_Norm, In(Source, Template), Out(Dest), Source.Width(), Source.Height(), Template.Width(), Template.Height());
+      Kernel(CrossCorr_Norm, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
    }
 }

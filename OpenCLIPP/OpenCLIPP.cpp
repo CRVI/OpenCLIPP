@@ -58,6 +58,7 @@ struct SProgramList
       morphology(CL),
       morphologyBuffer(CL),
       imageProximity(CL),
+      imageProximityBuffer(CL),
       transform(CL),
       transformBuffer(CL),
       thresholding(CL),
@@ -77,6 +78,7 @@ struct SProgramList
    Morphology morphology;
    MorphologyBuffer morphologyBuffer;
    ImageProximity imageProximity;
+   ImageProximityBuffer imageProximityBuffer;
    Transform transform;
    TransformBuffer transformBuffer;
    Thresholding thresholding;
@@ -480,10 +482,11 @@ MORPHO(ocipBlackHat, BlackHat)
 #undef CLASS
 #define CLASS GetList().imageProximity
 
-ocipError ocip_API ocipSqrDistance(ocipImage Source, ocipImage Template, ocipImage Dest)
-{
-   H( CLASS.SqrDistance(Img(Source), Img(Template), Img(Dest)) )
-}
+BINARY_OP(ocipSqrDistance_Norm, SqrDistance_Norm);
+BINARY_OP(ocipSqrDistance, SqrDistance);
+BINARY_OP(ocipAbsDistance, AbsDistance);
+BINARY_OP(ocipCrossCorr, CrossCorr);
+BINARY_OP(ocipCrossCorr_Norm, CrossCorr_Norm);
 
 #undef CLASS
 #define CLASS GetList().transform
@@ -664,6 +667,7 @@ ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
 #define PROGRAM_ARG 
 
 PREPARE(ocipPrepareImageBufferArithmetic, arithmeticVector)
+PREPARE(ocipPrepareImageBufferProximity, imageProximityBuffer)
 PREPARE(ocipPrepareImageBufferLogic, logicVector)
 PREPARE(ocipPrepareImageBufferLUT, lutVector)
 PREPARE(ocipPrepareImageBufferMorphology, morphologyBuffer)
@@ -712,6 +716,14 @@ UNARY_OP(ocipSqrt_V, Sqrt)
 UNARY_OP(ocipSin_V, Sin)
 UNARY_OP(ocipCos_V, Cos)
 
+#undef CLASS
+#define CLASS GetList().imageProximityBuffer
+
+BINARY_OP(ocipSqrDistance_Norm_B, SqrDistance_Norm)
+BINARY_OP(ocipSqrDistance_B, SqrDistance)
+BINARY_OP(ocipAbsDistance_B, AbsDistance)
+BINARY_OP(ocipCrossCorr_B, CrossCorr)
+BINARY_OP(ocipCrossCorr_Norm_B, CrossCorr_Norm)
 
 #undef CLASS
 #define CLASS GetList().logicVector
