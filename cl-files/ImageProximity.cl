@@ -38,21 +38,19 @@ kernel void SqrDistance(INPUT source, INPUT template, OUTPUT image_dest, int src
    const int top  = -templateHeight / 2;
 
    for(int h = 0; h < templateHeight; ++h)
-   {
-		for(int w = 0; w < templateWidth; ++w)
-		{   
-			const int2 posTemplate = { w, h };
+      for(int w = 0; w < templateWidth; ++w)
+      {   
+         const int2 posTemplate = { w, h };
 
-			int posSrcX = gx + w + left;
-			int posSrcY = gy + h + top;
-			const int2 posSrc = { posSrcX, posSrcY };
+         int posSrcX = gx + w + left;
+         int posSrcY = gy + h + top;
+         const int2 posSrc = { posSrcX, posSrcY };
 
-			TYPE temp = READ_IMAGE(template, posTemplate);
-			TYPE Src = READ_IMAGE(source, posSrc);
-			sum += convert_float4((Src - temp)*(Src - temp));
-		}
-   }
-		
+         TYPE temp = READ_IMAGE(template, posTemplate);
+         TYPE Src = READ_IMAGE(source, posSrc);
+         sum += convert_float4((Src - temp)*(Src - temp));
+      }
+
    write_imagef(image_dest, pos, sum);
 }
 
@@ -69,23 +67,21 @@ kernel void SqrDistance_Norm(INPUT source,INPUT template, OUTPUT image_dest, int
    const int top  = -templateHeight / 2;
 
    for(int h = 0; h < templateHeight; ++h)
-   {
-		for(int w = 0; w < templateWidth; ++w)
-		{   
-			const int2 posTemplate = { w, h };
+      for(int w = 0; w < templateWidth; ++w)
+      {   
+         const int2 posTemplate = { w, h };
 
-			int posSrcX = gx + w + left;
-			int posSrcY = gy + h + top;
-			const int2 posSrc = { posSrcX, posSrcY };
+         int posSrcX = gx + w + left;
+         int posSrcY = gy + h + top;
+         const int2 posSrc = { posSrcX, posSrcY };
 
-			TYPE temp = READ_IMAGE(template, posTemplate);
-			TYPE Src = READ_IMAGE(source, posSrc);
-			sum += CONVERT_FLOAT((Src - temp) * (Src - temp));
-			sumSS += CONVERT_FLOAT(Src * Src);
-			sumTT += CONVERT_FLOAT(temp * temp);
-		}
-   }
-		
+         TYPE temp = READ_IMAGE(template, posTemplate);
+         TYPE Src = READ_IMAGE(source, posSrc);
+         sum += CONVERT_FLOAT((Src - temp) * (Src - temp));
+         sumSS += CONVERT_FLOAT(Src * Src);
+         sumTT += CONVERT_FLOAT(temp * temp);
+      }
+
    value = sum / sqrt(sumSS * sumTT);
 
    write_imagef(image_dest, pos, value);
@@ -102,21 +98,19 @@ kernel void AbsDistance(INPUT source, INPUT template, OUTPUT image_dest, int src
    const int top  = -templateHeight / 2;
 
    for(int h = 0; h < templateHeight; ++h)
-   {
-		for(int w = 0; w < templateWidth; ++w)
-		{   
-			const int2 posTemplate = { w, h };
+      for(int w = 0; w < templateWidth; ++w)
+      {   
+         const int2 posTemplate = { w, h };
 
-			int posSrcX = gx + w + left;
-			int posSrcY = gy + h + top;
-			const int2 posSrc = { posSrcX, posSrcY };
+         int posSrcX = gx + w + left;
+         int posSrcY = gy + h + top;
+         const int2 posSrc = { posSrcX, posSrcY };
 
-			float4 temp = convert_float4(READ_IMAGE(template, posTemplate));
-			float4 Src = convert_float4(READ_IMAGE(source, posSrc));
-			sum += fabs(Src - temp);
-		}
-   }
-		
+         float4 temp = convert_float4(READ_IMAGE(template, posTemplate));
+         float4 Src = convert_float4(READ_IMAGE(source, posSrc));
+         sum += fabs(Src - temp);
+      }
+
    write_imagef(image_dest, pos, sum);
 }
 
@@ -130,21 +124,19 @@ kernel void CrossCorr(INPUT source, INPUT template, OUTPUT image_dest, int src_w
    const int top  = -templateHeight / 2;
 
    for(int h = 0; h < templateHeight; ++h)
-   {
-		for(int w = 0; w < templateWidth; ++w)
-		{   
-			const int2 posTemplate = { w, h };
+      for(int w = 0; w < templateWidth; ++w)
+      {   
+         const int2 posTemplate = { w, h };
 
-			int posSrcX = gx + w + left;
-			int posSrcY = gy + h + top;
-			const int2 posSrc = { posSrcX, posSrcY };
+         int posSrcX = gx + w + left;
+         int posSrcY = gy + h + top;
+         const int2 posSrc = { posSrcX, posSrcY };
 
-			TYPE temp = READ_IMAGE(template, posTemplate);
-			TYPE Src = READ_IMAGE(source, posSrc);
-			sum += convert_float4(Src * temp) ;
-		}
-   }
-		
+         TYPE temp = READ_IMAGE(template, posTemplate);
+         TYPE Src = READ_IMAGE(source, posSrc);
+         sum += convert_float4(Src * temp) ;
+      }
+
    write_imagef(image_dest, pos, sum);
 }
 
@@ -161,23 +153,21 @@ kernel void CrossCorr_Norm(INPUT source, INPUT template, OUTPUT image_dest, int 
    const int top  = -templateHeight / 2;
 
    for(int h = 0; h < templateHeight; ++h)
-   {
-		for(int w = 0; w < templateWidth; ++w)
-		{   
-			const int2 posTemplate = { w, h };
+      for(int w = 0; w < templateWidth; ++w)
+      {   
+         const int2 posTemplate = { w, h };
 
-			int posSrcX = gx + w + left;
-			int posSrcY = gy + h + top;
-			const int2 posSrc = { posSrcX, posSrcY };
+         int posSrcX = gx + w + left;
+         int posSrcY = gy + h + top;
+         const int2 posSrc = { posSrcX, posSrcY };
 
-			TYPE temp = READ_IMAGE(template, posTemplate);
-			TYPE Src = READ_IMAGE(source, posSrc);
-			sum += CONVERT_FLOAT(Src * temp);
-			sumSS += CONVERT_FLOAT(Src*Src);
-			sumTT += CONVERT_FLOAT(temp*temp);
-		}
-   }
-		
+         TYPE temp = READ_IMAGE(template, posTemplate);
+         TYPE Src = READ_IMAGE(source, posSrc);
+         sum += CONVERT_FLOAT(Src * temp);
+         sumSS += CONVERT_FLOAT(Src*Src);
+         sumTT += CONVERT_FLOAT(temp*temp);
+      }
+
    value = sum / sqrt(sumSS * sumTT);
 
    write_imagef(image_dest, pos, value);

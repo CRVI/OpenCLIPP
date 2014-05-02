@@ -34,7 +34,6 @@
 // DIM_ARGS    arguments that describe the image size (step, width & height)
 // DIMS        values that describe the image size (step, width & height)
 
-#ifndef CONVOLUTION_SWITCH
 #define CONVOLUTION_SWITCH\
    switch(mask_size)\
    {\
@@ -70,12 +69,7 @@
    CONVOLUTION_CASE(30) /* 61*/\
    CONVOLUTION_CASE(31) /* 63*/\
    }
-#endif // CONVOLUTION_SWITCH
 
-
-#ifdef CONVOLUTION_CASE
-#undef CONVOLUTION_CASE
-#endif
 #define CONVOLUTION_CASE(size)\
    case size:\
    {\
@@ -85,12 +79,12 @@
    }\
    break;
 
-INTERNAL CONCATENATE(Combine, SUFFIX)(INTERNAL color1, INTERNAL color2)
+INTERNAL Combine(INTERNAL color1, INTERNAL color2)
 {
    return sqrt(color1 * color1 + color2 * color2);
 }
 
-INTERNAL CONCATENATE(Convolution, SUFFIX)(INPUT source DIM_ARGS, CONST_ARG float * matrix, private int matrix_width)
+INTERNAL Convolution(INPUT source DIM_ARGS, CONST_ARG float * matrix, private int matrix_width)
 {
    BEGIN
 
@@ -107,15 +101,15 @@ INTERNAL CONCATENATE(Convolution, SUFFIX)(INPUT source DIM_ARGS, CONST_ARG float
    return sum;
 }
 
-void CONCATENATE(convolution, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS,
+void convolution(INPUT source, OUTPUT dest DIM_ARGS,
                     CONST_ARG float * matrix, private int matrix_width)
 {
-   INTERNAL sum = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrix, matrix_width);
+   INTERNAL sum = Convolution(source DIMS, matrix, matrix_width);
 
    WRITE(dest, sum);
 }
 
-kernel void CONCATENATE(gaussian_blur, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS, constant const float * matrix, private int mask_size)
+kernel void gaussian_blur(INPUT source, OUTPUT dest DIM_ARGS, constant const float * matrix, private int mask_size)
 {
    // Does gaussian blur on first channel of image - receives a pre-calculated mask
 
@@ -132,17 +126,17 @@ kernel void CONCATENATE(gaussian_blur, SUFFIX)(INPUT source, OUTPUT dest DIM_ARG
    WRITE(dest, sum);
 }
 
-kernel void CONCATENATE(gaussian3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void gaussian3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       1.f/16, 2.f/16, 1.f/16,
       2.f/16, 4.f/16, 2.f/16,
       1.f/16, 2.f/16, 1.f/16};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(gaussian5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void gaussian5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[25] = {
        2.f/571,  7.f/571,  12.f/571,  7.f/571,  2.f/571,
@@ -151,30 +145,30 @@ kernel void CONCATENATE(gaussian5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
        7.f/571, 31.f/571,  52.f/571, 31.f/571,  7.f/571,
        2.f/571,  7.f/571,  12.f/571,  7.f/571,  2.f/571};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 5);
+   convolution(source, dest DIMS, matrix, 5);
 }
 
-kernel void CONCATENATE(sobelH3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobelH3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -1, -2, -1,
        0,  0,  0,
        1,  2,  1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(sobelV3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobelV3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       1, 0, -1,
       2, 0, -2,
       1, 0, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(sobelH5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobelH5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[25] = {
       -1, -4,  -6, -4, -1,
@@ -183,10 +177,10 @@ kernel void CONCATENATE(sobelH5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
        2,  8,  12,  8,  2,
        1,  4,   6,  4,  1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 5);
+   convolution(source, dest DIMS, matrix, 5);
 }
 
-kernel void CONCATENATE(sobelV5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobelV5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[25] = {
       1,  2, 0,  -2, -1,
@@ -195,20 +189,20 @@ kernel void CONCATENATE(sobelV5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       4,  8, 0,  -8, -4,
       1,  2, 0,  -2, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 5);
+   convolution(source, dest DIMS, matrix, 5);
 }
 
-kernel void CONCATENATE(sobelCross3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobelCross3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -1, 0,  1,
        0, 0,  0,
        1, 0, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(sobelCross5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobelCross5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[25] = {
       -1, -2, 0,  2,  1,
@@ -217,10 +211,10 @@ kernel void CONCATENATE(sobelCross5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
        2,  4, 0, -4, -2,
        1,  2, 0, -2, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 5);
+   convolution(source, dest DIMS, matrix, 5);
 }
 
-kernel void CONCATENATE(sobel3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobel3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrixH[9] = {
       -1, -2, -1,
@@ -232,15 +226,15 @@ kernel void CONCATENATE(sobel3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       2, 0, -2,
       1, 0, -1};
 
-   INTERNAL sumH = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixH, 3);
-   INTERNAL sumV = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixV, 3);
+   INTERNAL sumH = Convolution(source DIMS, matrixH, 3);
+   INTERNAL sumV = Convolution(source DIMS, matrixV, 3);
 
-   INTERNAL Result = CONCATENATE(Combine, SUFFIX)(sumH, sumV);
+   INTERNAL Result = Combine(sumH, sumV);
 
    WRITE(dest, Result);
 }
 
-kernel void CONCATENATE(sobel5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sobel5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrixH[25] = {
       -1, -4,  -6, -4, -1,
@@ -256,33 +250,33 @@ kernel void CONCATENATE(sobel5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       4,  8, 0,  -8, -4,
       1,  2, 0,  -2, -1};
 
-   INTERNAL sumH = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixH, 5);
-   INTERNAL sumV = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixV, 5);
+   INTERNAL sumH = Convolution(source DIMS, matrixH, 5);
+   INTERNAL sumV = Convolution(source DIMS, matrixV, 5);
 
-   WRITE(dest, CONCATENATE(Combine, SUFFIX)(sumH, sumV));
+   WRITE(dest, Combine(sumH, sumV));
 }
 
-kernel void CONCATENATE(prewittH3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void prewittH3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -1, -1, -1,
        0,  0,  0,
        1,  1,  1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(prewittV3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void prewittV3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       1, 0, -1,
       1, 0, -1,
       1, 0, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(prewitt3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void prewitt3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrixH[9] = {
       -1, -1, -1,
@@ -294,33 +288,33 @@ kernel void CONCATENATE(prewitt3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       1, 0, -1,
       1, 0, -1};
 
-   INTERNAL sumH = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixH, 3);
-   INTERNAL sumV = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixV, 3);
+   INTERNAL sumH = Convolution(source DIMS, matrixH, 3);
+   INTERNAL sumV = Convolution(source DIMS, matrixV, 3);
 
-   WRITE(dest, CONCATENATE(Combine, SUFFIX)(sumH, sumV));
+   WRITE(dest, Combine(sumH, sumV));
 }
 
-kernel void CONCATENATE(scharrH3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void scharrH3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -3, -10, -3,
        0,   0,  0,
        3,  10,  3};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(scharrV3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void scharrV3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
        -3, 0,  3,
       -10, 0, 10,
        -3, 0,  3};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(scharr3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void scharr3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrixH[9] = {
       -3, -10, -3,
@@ -332,23 +326,23 @@ kernel void CONCATENATE(scharr3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       -10, 0, 10,
        -3, 0,  3};
 
-   INTERNAL sumH = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixH, 3);
-   INTERNAL sumV = CONCATENATE(Convolution, SUFFIX)(source DIMS, matrixV, 3);
+   INTERNAL sumH = Convolution(source DIMS, matrixH, 3);
+   INTERNAL sumV = Convolution(source DIMS, matrixV, 3);
 
-   WRITE(dest, CONCATENATE(Combine, SUFFIX)(sumH, sumV));
+   WRITE(dest, Combine(sumH, sumV));
 }
 
-kernel void CONCATENATE(hipass3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void hipass3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -1, -1, -1,
       -1,  8, -1,
       -1, -1, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(hipass5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void hipass5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[25] = {
       -1, -1, -1, -1, -1,
@@ -357,20 +351,20 @@ kernel void CONCATENATE(hipass5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 5);
+   convolution(source, dest DIMS, matrix, 5);
 }
 
-kernel void CONCATENATE(laplace3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void laplace3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -1, -1, -1,
       -1,  8, -1,
       -1, -1, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
-kernel void CONCATENATE(laplace5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void laplace5(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[25] = {
       -1, -3, -4, -3, -1,
@@ -379,17 +373,17 @@ kernel void CONCATENATE(laplace5, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
       -3,  0,  6,  0, -3,
       -1, -3, -4, -3, -1};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 5);
+   convolution(source, dest DIMS, matrix, 5);
 }
 
-kernel void CONCATENATE(sharpen3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
+kernel void sharpen3(INPUT source, OUTPUT dest DIM_ARGS)
 {
    CONST float matrix[9] = {
       -1.f/8, -1.f/8, -1.f/8,
       -1.f/8, 16.f/8, -1.f/8,
       -1.f/8, -1.f/8, -1.f/8};
 
-   CONCATENATE(convolution, SUFFIX)(source, dest DIMS, matrix, 3);
+   convolution(source, dest DIMS, matrix, 3);
 }
 
 // Smooth convolution (box filter - a convolution matrix filled with 1/Nb)
@@ -403,7 +397,7 @@ kernel void CONCATENATE(sharpen3, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS)
    }\
    break;
 
-kernel void CONCATENATE(smooth, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS, int matrix_width)    // Box filter
+kernel void smooth(INPUT source, OUTPUT dest DIM_ARGS, int matrix_width)    // Box filter
 {
    BEGIN
 
@@ -422,7 +416,7 @@ kernel void CONCATENATE(smooth, SUFFIX)(INPUT source, OUTPUT dest DIM_ARGS, int 
 
 // Median
 
-INTERNAL CONCATENATE(calculate_median3, SUFFIX) (INTERNAL * values)
+INTERNAL calculate_median3 (INTERNAL * values)
 {
    INTERNAL Tmp;
 
@@ -435,7 +429,7 @@ INTERNAL CONCATENATE(calculate_median3, SUFFIX) (INTERNAL * values)
    return values[4];
 }
 
-INTERNAL CONCATENATE(calculate_median5, SUFFIX) (INTERNAL * values)
+INTERNAL calculate_median5 (INTERNAL * values)
 {
    INTERNAL Tmp;
 
@@ -459,7 +453,7 @@ INTERNAL CONCATENATE(calculate_median5, SUFFIX) (INTERNAL * values)
 #undef  MW
 #define MW 3   // Matrix width
 __attribute__((reqd_work_group_size(LW, LW, 1)))
-kernel void CONCATENATE(median3_cached, SUFFIX) (INPUT source, OUTPUT dest DIM_ARGS)
+kernel void median3_cached (INPUT source, OUTPUT dest DIM_ARGS)
 {
    BEGIN
 
@@ -517,13 +511,13 @@ kernel void CONCATENATE(median3_cached, SUFFIX) (INPUT source, OUTPUT dest DIM_A
    }
 
    // Calculate median
-   INTERNAL Result = CONCATENATE(calculate_median3, SUFFIX) (values);
+   INTERNAL Result = calculate_median3 (values);
    
    // Save result
    WRITE(dest, Result);
 }
 
-kernel void CONCATENATE(median3, SUFFIX) (INPUT source, OUTPUT dest DIM_ARGS)
+kernel void median3 (INPUT source, OUTPUT dest DIM_ARGS)
 {
    BEGIN
 
@@ -542,7 +536,7 @@ kernel void CONCATENATE(median3, SUFFIX) (INPUT source, OUTPUT dest DIM_ARGS)
          values[Index++] = READ(source, pos + (int2)(x, y));
 
    // Calculate median
-   INTERNAL Result = CONCATENATE(calculate_median3, SUFFIX) (values);
+   INTERNAL Result = calculate_median3 (values);
    
    // Save result
    WRITE(dest, Result);
@@ -552,7 +546,7 @@ kernel void CONCATENATE(median3, SUFFIX) (INPUT source, OUTPUT dest DIM_ARGS)
 #undef MW
 #define MW 5   // Matrix width
 
-kernel void CONCATENATE(median5, SUFFIX) (INPUT source, OUTPUT dest DIM_ARGS)
+kernel void median5 (INPUT source, OUTPUT dest DIM_ARGS)
 {
    BEGIN
 
@@ -571,7 +565,7 @@ kernel void CONCATENATE(median5, SUFFIX) (INPUT source, OUTPUT dest DIM_ARGS)
          values[Index++] = READ(source, pos + (int2)(x, y));
 
    // Calculate median
-   INTERNAL Result = CONCATENATE(calculate_median5, SUFFIX) (values);
+   INTERNAL Result = calculate_median5 (values);
    
    // Save result
    WRITE(dest, Result);

@@ -27,7 +27,7 @@
 
 #define KERNEL_RANGE(...)           GetRange(_FIRST(__VA_ARGS__))
 #define LOCAL_RANGE                 GetLocalRange()
-#define SELECT_NAME(name, src_img)  SelectSVName( #name , src_img)
+#define SELECT_NAME(name, src_img)  SelectName( #name , src_img)
 
 #include "kernel_helpers.h"
 
@@ -40,8 +40,6 @@ using namespace std;
 
 namespace OpenCLIPP
 {
-
-string SelectSVName(const char * name, const ImageBase& Image);
 
 
 // StatisticsVector
@@ -93,16 +91,16 @@ void StatisticsVector::Init(ImageBuffer& Source)
 {
    Source.SendIfNeeded();
 
-   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), SelectSVName("init", Source))
-      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), "init")
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1, 1, 1)), Source, m_ResultBuffer);
 }
 
 void StatisticsVector::InitAbs(ImageBuffer& Source)
 {
    Source.SendIfNeeded();
 
-   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), SelectSVName("init_abs", Source))
-      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+   cl::make_kernel<cl::Buffer, cl::Buffer>(SelectProgram(Source), "init_abs")
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1, 1, 1)), Source, m_ResultBuffer);
 }
 
 
@@ -414,38 +412,6 @@ void StatisticsVector::StdDev(ImageBuffer& Source, double outVal[4], double outM
 
    for (uint i = 0; i < Source.NbChannels(); i++)
       outVal[i] = sqrt(outVal[i]);
-}
-
-
-// Select the proper kernel name
-string SelectSVName(const char * name, const ImageBase& Image)
-{
-   string Name = name;
-
-   switch (Image.NbChannels())
-   {
-   case 1:
-      break;
-   case 2:
-      Name += "_2C";
-      break;
-   case 3:
-      Name += "_3C";
-      break;
-   case 4:
-      Name += "_4C";
-      break;
-   default:
-      throw cl::Error(CL_INVALID_IMAGE_SIZE, "images must have between 1 and 4 channels");
-      break;
-   }
-   
-   bool InitKernel = (string(name).find("init") != string::npos);
-
-   if (!InitKernel && IsFlushImage(Image))
-      Name += "_flush";       // Use faster version
-
-   return Name;
 }
 
 }

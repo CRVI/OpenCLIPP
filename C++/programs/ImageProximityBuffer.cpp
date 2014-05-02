@@ -23,90 +23,95 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Programs/ImageProximityBuffer.h"
-#define SELECT_NAME(name, src_img) SelectName( #name , src_img)
 
 #include "kernel_helpers.h"
 
 namespace OpenCLIPP
 {
-static std::string SelectName(const char * Name, const ImageBase& Img)
+
+void ImageProximityBuffer::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
 {
-   if (Img.NbChannels() < 1 || Img.NbChannels() > 4)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Filters are supported only on images that have between 1 and 4 channels");
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
 
-   std::string KernelName = Name;
-   KernelName += "_" + std::to_string(Img.NbChannels()) + "C";
+   if(!SameType(Source, Template))
+      throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
 
-   return KernelName;
+   CheckSameSize(Source, Dest);
+   CheckSameNbChannels(Source, Dest);
+   CheckFloat(Dest);
+
+   Kernel(SqrDistance, In(Source, Template), Out(Dest),
+      Source.Step(), Template.Step(), Dest.Step(),
+      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
 }
 
-   void ImageProximityBuffer::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
-   {
-      if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
-         throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
+void ImageProximityBuffer::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+{
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
 
-      if(!SameType(Source, Template))
-         throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
+   if(!SameType(Source, Template))
+      throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
 
-      CheckSameSize(Source, Dest);
-      CheckFloat(Dest);
+   CheckSameSize(Source, Dest);
+   CheckSameNbChannels(Source, Dest);
+   CheckFloat(Dest);
 
-      Kernel(SqrDistance, In(Source, Template), Out(Dest), Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
-   }
+   Kernel(SqrDistance_Norm, In(Source, Template), Out(Dest),
+      Source.Step(), Template.Step(), Dest.Step(),
+      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+}
 
-   void ImageProximityBuffer::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
-   {
-      if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
-         throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
+void ImageProximityBuffer::AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+{
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
 
-      if(!SameType(Source, Template))
-         throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
+   if(!SameType(Source, Template))
+      throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
 
-      CheckSameSize(Source, Dest);
-      CheckFloat(Dest);
+   CheckSameSize(Source, Dest);
+   CheckSameNbChannels(Source, Dest);
+   CheckFloat(Dest);
 
-      Kernel(SqrDistance_Norm, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
-   }
+   Kernel(AbsDistance, In(Source, Template), Out(Dest),
+      Source.Step(), Template.Step(), Dest.Step(),
+      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+}
 
-   void ImageProximityBuffer::AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
-   {
-      if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
-         throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
+void ImageProximityBuffer::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+{
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
 
-      if(!SameType(Source, Template))
-         throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
+   if(!SameType(Source, Template))
+      throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
 
-      CheckSameSize(Source, Dest);
-      CheckFloat(Dest);
+   CheckSameSize(Source, Dest);
+   CheckSameNbChannels(Source, Dest);
+   CheckFloat(Dest);
 
-      Kernel(AbsDistance, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
-   }
+   Kernel(CrossCorr, In(Source, Template), Out(Dest),
+      Source.Step(), Template.Step(), Dest.Step(),
+      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+}
 
-   void ImageProximityBuffer::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
-   {
-      if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
-         throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
+void ImageProximityBuffer::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+{
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
 
-      if(!SameType(Source, Template))
-         throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
+   if(!SameType(Source, Template))
+      throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
 
-      CheckSameSize(Source, Dest);
-      CheckFloat(Dest);
+   CheckSameSize(Source, Dest);
+   CheckSameNbChannels(Source, Dest);
+   CheckFloat(Dest);
 
-      Kernel(CrossCorr, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
-   }
+   Kernel(CrossCorr_Norm, In(Source, Template), Out(Dest),
+      Source.Step(), Template.Step(), Dest.Step(),
+      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+}
 
-   void ImageProximityBuffer::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
-   {
-      if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
-         throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
-
-      if(!SameType(Source, Template))
-         throw cl::Error(CL_INVALID_VALUE, "Source and Template must have same type.");
-
-      CheckSameSize(Source, Dest);
-      CheckFloat(Dest);
-
-      Kernel(CrossCorr_Norm, In(Source, Template), Out(Dest),  Source.Step(), Template.Step(), Dest.Step(), Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
-   }
 }

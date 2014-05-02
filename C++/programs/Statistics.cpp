@@ -92,7 +92,7 @@ void Statistics::Init(IImage& Source)
    Source.SendIfNeeded();
 
    cl::make_kernel<cl::Image2D, cl::Buffer>(SelectProgram(Source), "init")
-      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1, 1, 1)), Source, m_ResultBuffer);
 }
 
 void Statistics::InitAbs(IImage& Source)
@@ -100,7 +100,7 @@ void Statistics::InitAbs(IImage& Source)
    Source.SendIfNeeded();
 
    cl::make_kernel<cl::Image2D, cl::Buffer>(SelectProgram(Source), "init_abs")
-      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1, 1, 1)), Source, m_ResultBuffer);
 }
 
 void Statistics::Init4C(IImage& Source)
@@ -108,7 +108,7 @@ void Statistics::Init4C(IImage& Source)
    Source.SendIfNeeded();
 
    cl::make_kernel<cl::Image2D, cl::Buffer>(SelectProgram(Source), "init_4C")
-      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(16, 16, 1)), Source, m_ResultBuffer);
 }
 
 void Statistics::InitAbs4C(IImage& Source)
@@ -116,7 +116,7 @@ void Statistics::InitAbs4C(IImage& Source)
    Source.SendIfNeeded();
 
    cl::make_kernel<cl::Image2D, cl::Buffer>(SelectProgram(Source), "init_abs_4C")
-      (cl::EnqueueArgs(*m_CL, cl::NDRange(1)), Source, m_ResultBuffer);
+      (cl::EnqueueArgs(*m_CL, cl::NDRange(1, 1, 1)), Source, m_ResultBuffer);
 }
 
 

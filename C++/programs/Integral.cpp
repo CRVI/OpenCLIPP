@@ -89,7 +89,7 @@ void Integral::IntegralSum(IImage& Source, IImage& Dest)
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan2")
-         (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height())), Dest, *m_VerticalJunctions);
+         (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height(), 1)), Dest, *m_VerticalJunctions);
    }
 
    Kernel(scan3, In(Dest, *m_VerticalJunctions), Dest);
@@ -97,7 +97,7 @@ void Integral::IntegralSum(IImage& Source, IImage& Dest)
    if (GetNbGroupsH(Source) > 1)
    {
       make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan4")
-         (EnqueueArgs(*m_CL, NDRange(Source.Width(), GetNbGroupsH(Source) - 1)), Dest, *m_HorizontalJunctions);
+         (EnqueueArgs(*m_CL, NDRange(Source.Width(), GetNbGroupsH(Source) - 1, 1)), Dest, *m_HorizontalJunctions);
    }
 
    Kernel(scan5, In(Dest, *m_HorizontalJunctions), Dest);
@@ -121,7 +121,7 @@ void Integral::SqrIntegral(IImage& Source, IImage& Dest)
    if (GetNbGroupsW(Source) > 1)
    {
       make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan2")
-         (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height())), Dest, *m_VerticalJunctions);
+         (EnqueueArgs(*m_CL, NDRange(GetNbGroupsW(Source) - 1, Source.Height(), 1)), Dest, *m_VerticalJunctions);
    }
 
    Kernel(scan3, In(Dest, *m_VerticalJunctions), Dest);
@@ -129,7 +129,7 @@ void Integral::SqrIntegral(IImage& Source, IImage& Dest)
    if (GetNbGroupsH(Source) > 1)
    {
       make_kernel<Image2D, Image2D>(SelectProgram(Dest), "scan4")
-         (EnqueueArgs(*m_CL, NDRange(Source.Width(), GetNbGroupsH(Source) - 1)), Dest, *m_HorizontalJunctions);
+         (EnqueueArgs(*m_CL, NDRange(Source.Width(), GetNbGroupsH(Source) - 1, 1)), Dest, *m_HorizontalJunctions);
    }
 
    Kernel(scan5, In(Dest, *m_HorizontalJunctions), Dest);

@@ -26,6 +26,7 @@
 
 #define INPUT     INPUT_SPACE const TYPE *
 #define OUTPUT    global TYPE *
+#define INTERNAL  REAL
 
 #define BEGIN \
    const int gx = get_global_id(0);\
@@ -69,35 +70,4 @@ bool OutsideImage(int2 pos, int src_step, int dst_step, int width, int height, i
 
 // Actual code for filter operations is in the file Filters.Impl.h
 
-// 1 Channel 
-#define TYPE      SCALAR
-#define SUFFIX    _1C
-#define INTERNAL  float
-#include "Filters.Impl.h"
-
-// 2 Channels
-#undef  TYPE
-#undef  SUFFIX
-#undef  INTERNAL
-#define TYPE      TYPE2
-#define SUFFIX    _2C
-#define INTERNAL  float2
-#include "Filters.Impl.h"
-
-// 3 Channels - will likely be slower on many platforms, use 4 channel images for better performance
-#undef  TYPE
-#undef  SUFFIX
-#undef  INTERNAL
-#define TYPE      TYPE3
-#define SUFFIX    _3C
-#define INTERNAL  float3
-#include "Filters.Impl.h"
-
-// 4 Channels
-#undef  TYPE
-#undef  SUFFIX
-#undef  INTERNAL
-#define TYPE      TYPE4
-#define SUFFIX    _4C
-#define INTERNAL  float4
 #include "Filters.Impl.h"

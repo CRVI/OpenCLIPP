@@ -32,16 +32,18 @@
 #define BEGIN  \
    const int gx = get_global_id(0);\
    const int gy = get_global_id(1);\
-   src_step /= sizeof(SCALAR);\
-   dst_step /= sizeof(SCALAR);
+   src_step /= sizeof(TYPE);\
+   dst_step /= sizeof(TYPE);
 
+#define INPUT  INPUT_SPACE const TYPE *
+#define OUTPUT global TYPE *
 
 #define MORPHOLOGY_IMPL(name, op, mask_width) \
-kernel void CONCATENATE(name, mask_width) (INPUT_SPACE const SCALAR * source, global SCALAR * dest, int src_step, int dst_step, int width, int height)\
+kernel void CONCATENATE(name, mask_width) (INPUT source, OUTPUT dest, int src_step, int dst_step, int width, int height)\
 {\
    BEGIN\
    \
-   SCALAR Value = source[gy * src_step + gx];\
+   TYPE Value = source[gy * src_step + gx];\
    \
    const int mask_size = mask_width / 2;\
    \
@@ -70,15 +72,15 @@ kernel void CONCATENATE(name, mask_width) (INPUT_SPACE const SCALAR * source, gl
 
 #define MORPHOLOGY_CACHED(name, op, mask_width) \
 __attribute__((reqd_work_group_size(LW, LW, 1)))\
-kernel void CONCATENATE(CONCATENATE(name, mask_width), _cached) (INPUT_SPACE const SCALAR * source, global SCALAR * dest, int src_step, int dst_step, int width, int height)\
+kernel void CONCATENATE(CONCATENATE(name, mask_width), _cached) (INPUT source, OUTPUT dest, int src_step, int dst_step, int width, int height)\
 {\
    BEGIN\
    const int lid = get_local_id(1) * get_local_size(0) + get_local_id(0);\
    \
-   SCALAR Value = source[gy * src_step + gx];\
+   TYPE Value = source[gy * src_step + gx];\
    \
    /* Cache pixels */\
-   local SCALAR cache[LW * LW];\
+   local TYPE cache[LW * LW];\
    cache[lid] = Value;\
    barrier(CLK_LOCAL_MEM_FENCE);\
    \
@@ -106,7 +108,7 @@ kernel void CONCATENATE(CONCATENATE(name, mask_width), _cached) (INPUT_SPACE con
       {\
          for (int x = -mask_size; x <= mask_size; x++)\
          {\
-            SCALAR Val = source[py * src_step + gx + x];\
+            TYPE Val = source[py * src_step + gx + x];\
             Value = op(Val, Value);\
          }\
       \
@@ -116,7 +118,7 @@ kernel void CONCATENATE(CONCATENATE(name, mask_width), _cached) (INPUT_SPACE con
          for (int x = -mask_size; x <= mask_size; x++)\
          {\
             int px = gx + x;\
-            SCALAR Val;\
+            TYPE Val;\
             if (px < x_cache_begin || px >= x_cache_end)\
                Val = source[py * src_step + px];\
             else\

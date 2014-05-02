@@ -202,6 +202,10 @@ public:
    Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
    Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
 
+   static uint GetProgramId(SImage::EDataType Type, uint NbChannels);
+
+   const static int MaxNbChannels = 4;
+
 private:
    static const std::vector<std::string> GetOptions();
 };
@@ -304,5 +308,9 @@ void CheckSizeAndType(const ImageBase& Img1, const ImageBase& Img2);
 /// Checks that both images are of the same size and same type (float/signed/unsigned & depth) and have the same number of channels
 /// Useful for cl::Buffer based kernels
 void CheckSimilarity(const ImageBase& Img1, const ImageBase& Img2);
+
+/// Checks nb channels, throws a cl::Error if not.
+/// Checks that both images have the same number of channels
+void CheckSameNbChannels(const ImageBase& Img1, const ImageBase& Img2);
 
 }

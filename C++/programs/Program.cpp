@@ -235,10 +235,18 @@ ImageBufferProgram::ImageBufferProgram(COpenCL& CL, bool fromSource, const char 
 
 const vector<string> ImageBufferProgram::GetOptions()
 {
-   vector<string> Options(SImage::NbDataTypes);
+   vector<string> Options(SImage::NbDataTypes * MaxNbChannels);
 
    for (int i = 0; i < SImage::NbDataTypes; i++)
-      Options[i] = string("-D ") + GetDataTypeList()[i];
+   {
+      SImage::EDataType Type = SImage::EDataType(i);
+
+      string options = string("-D ") + GetDataTypeList()[i];
+
+      Options[GetProgramId(Type, 1)] = options;
+      for (int j = 2; j <= MaxNbChannels; j++)
+         Options[GetProgramId(Type, j)] = options + " -D NBCHAN=" + to_string(j);
+   }
 
    return Options;
 }
@@ -253,25 +261,33 @@ Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1)
    if (Img1.DataType() < 0 || Img1.DataType() >= SImage::NbDataTypes)
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageBufferProgram");
 
-   return GetProgram(Img1.DataType());
+   if (Img1.NbChannels() < 1 || Img1.NbChannels() > MaxNbChannels)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported number of channels");
+
+   return GetProgram(GetProgramId(Img1.DataType(), Img1.NbChannels()));
 }
 
 Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&)
 {
    // Only Img1 is used to select the program
-   return GetProgram(Img1.DataType());
+   return SelectProgram(Img1);
 }
 
 Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&)
 {
    // Only Img1 is used to select the program
-   return GetProgram(Img1.DataType());
+   return SelectProgram(Img1);
 }
 
 Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&, const ImageBase&)
 {
    // Only Img1 is used to select the program
-   return GetProgram(Img1.DataType());
+   return SelectProgram(Img1);
+}
+
+uint ImageBufferProgram::GetProgramId(SImage::EDataType Type, uint NbChannels)
+{
+   return (NbChannels - 1) * SImage::NbDataTypes + Type;
 }
 
 
@@ -517,12 +533,17 @@ void CheckSizeAndType(const ImageBase& Img1, const ImageBase& Img2)
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
 }
 
+void CheckSameNbChannels(const ImageBase& Img1, const ImageBase& Img2)
+{
+   if (Img1.NbChannels() != Img2.NbChannels())
+      throw cl::Error(CL_INVALID_VALUE, "Different number of channels used");
+}
+
 void CheckSimilarity(const ImageBase& Img1, const ImageBase& Img2)
 {
    CheckSizeAndType(Img1, Img2);
 
-   if (Img1.NbChannels() != Img2.NbChannels())
-      throw cl::Error(CL_INVALID_VALUE, "Different number of channels used");
+   CheckSameNbChannels(Img1, Img2);
 }
 
 void CheckFloat(const ImageBase& Img)

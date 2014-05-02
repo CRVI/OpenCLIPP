@@ -41,11 +41,12 @@
 
 #define POSI(i) (int2)(gx + i, gy)
 
+#define INPUT INPUT_SPACE const TYPE *
 
 // This version handles images of any size - it will be a bit slower
 #define REDUCE(name, type, preop, fun1, postop1, fun2, postop2, param) \
 __attribute__((reqd_work_group_size(LW, LW, 1)))\
-kernel void name(INPUT_SPACE const SRC_TYPE * source, global float * result, int src_step, int img_width, int img_height param() )\
+kernel void name(INPUT source, global float * result, int src_step, int img_width, int img_height param() )\
 {\
    local type buffer[BUFFER_LENGTH];\
    local int  nb_pixels[BUFFER_LENGTH];\
@@ -53,7 +54,7 @@ kernel void name(INPUT_SPACE const SRC_TYPE * source, global float * result, int
    const int gx = (gx1 & (WIDTH1 - 1)) + (gx1 >> WIDTH1_BITS) * WIDTH1 * WIDTH1;\
    const int gy = get_global_id(1);\
    const int lid = get_local_id(1) * get_local_size(0) + get_local_id(0);\
-   src_step /= sizeof(SRC_TYPE);\
+   src_step /= sizeof(TYPE);\
    float Weight;\
    \
    if (gx < img_width && gy < img_height)\
@@ -122,14 +123,14 @@ kernel void name(INPUT_SPACE const SRC_TYPE * source, global float * result, int
 // This version is for images that have a Width that is a multiple of LW*WIDTH1 and a height that is a multiple of LW
 #define REDUCE_FLUSH(name, type, preop, fun1, postop1, fun2, postop2, param) \
 __attribute__((reqd_work_group_size(LW, LW, 1)))\
-kernel void name(INPUT_SPACE const SRC_TYPE * source, global float * result, int src_step, int img_width, int img_height param() )\
+kernel void name(INPUT source, global float * result, int src_step, int img_width, int img_height param() )\
 {\
    local type buffer[BUFFER_LENGTH];\
    int gx1 = get_global_id(0);\
    const int gx = (gx1 & (WIDTH1 - 1)) + (gx1 >> WIDTH1_BITS) * WIDTH1 * WIDTH1;\
    const int gy = get_global_id(1);\
    const int lid = get_local_id(1) * get_local_size(0) + get_local_id(0);\
-   src_step /= sizeof(SRC_TYPE);\
+   src_step /= sizeof(TYPE);\
    \
    type Res = CONCATENATE(convert_, type)(source[(gy * src_step) + gx + 0]);\
    Res = preop(Res);\
@@ -199,7 +200,7 @@ REDUCE_FLUSH(CONCATENATE(name, _flush), type, preop, fun1, postop1, fun2, postop
 #define NOOP(a)      a
 #define NOOP2(a, nb) a
 #define SQR(a)       (a * a)
-#define NO_Z(a)      (a != 0 ? 1 : 0)
+#define NO_Z(a)      CONVERT_REAL(a != 0 ? 1 : 0)
 #define SUM(a, b)    (a + b)
 #define MEAN(a, b)   ((a + b) / 2)
 #define DIV(a, b)    (a / b)
@@ -256,53 +257,30 @@ void name(global float * result, TYPE4 value, int nb_pixels)\
    name1C(result + 3, value.w, nb_pixels);\
 }
 
-FLOAT_ATOMIC(atomic_minf, min)
-FLOAT_ATOMIC(atomic_maxf, max)
+FLOAT_ATOMIC(atomic_minf_1, min)
+FLOAT_ATOMIC(atomic_maxf_1, max)
 
-FLOAT_ATOMIC2(atomic_minf_2C, atomic_minf)
-FLOAT_ATOMIC2(atomic_maxf_2C, atomic_maxf)
-FLOAT_ATOMIC3(atomic_minf_3C, atomic_minf)
-FLOAT_ATOMIC3(atomic_maxf_3C, atomic_maxf)
-FLOAT_ATOMIC4(atomic_minf_4C, atomic_minf)
-FLOAT_ATOMIC4(atomic_maxf_4C, atomic_maxf)
+FLOAT_ATOMIC2(atomic_minf_2, atomic_minf_1)
+FLOAT_ATOMIC2(atomic_maxf_2, atomic_maxf_1)
+FLOAT_ATOMIC3(atomic_minf_3, atomic_minf_1)
+FLOAT_ATOMIC3(atomic_maxf_3, atomic_maxf_1)
+FLOAT_ATOMIC4(atomic_minf_4, atomic_minf_1)
+FLOAT_ATOMIC4(atomic_maxf_4, atomic_maxf_1)
 
+#ifdef NBCHAN
+#define atomic_minf CONCATENATE(atomic_minf_, NBCHAN)
+#define atomic_maxf CONCATENATE(atomic_maxf_, NBCHAN)
+#else
+#define atomic_minf atomic_minf_1
+#define atomic_maxf atomic_maxf_1
+#endif
 
 // Store the partially calculated value - the final result will be calculated by the CPU
-void store_value(global float * result_buffer, float value, int nb_pixels)
-{
-   const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
-   const int offset = get_num_groups(0) * get_num_groups(1);
-   result_buffer[gid * 4] = value;
-   result_buffer[offset * 4 + gid] = nb_pixels;
-}
-
-void store_value_2C(global float * buffer, float2 value, int nb_pixels)
+void store_value(global float * buffer, REAL value, int nb_pixels)
 {
    const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
 
-   global float2 * result_buffer = (global float2 *) (buffer + gid * 4);
-   *result_buffer = value;
-
-   const int offset = get_num_groups(0) * get_num_groups(1);
-   buffer[offset * 4 + gid] = nb_pixels;
-}
-
-void store_value_3C(global float * buffer, float3 value, int nb_pixels)
-{
-   const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
-
-   global float3 * result_buffer = (global float3 *) (buffer + gid * 4);
-   *result_buffer = value;
-
-   const int offset = get_num_groups(0) * get_num_groups(1);
-   buffer[offset * 4 + gid] = nb_pixels;
-}
-
-void store_value_4C(global float * buffer, float4 value, int nb_pixels)
-{
-   const int gid = get_group_id(1) * get_num_groups(0) + get_group_id(0);
-
-   global float4 * result_buffer = (global float4 *) (buffer + gid * 4);
+   global REAL * result_buffer = (global REAL *) (buffer + gid * 4);
    *result_buffer = value;
 
    const int offset = get_num_groups(0) * get_num_groups(1);
@@ -310,110 +288,42 @@ void store_value_4C(global float * buffer, float4 value, int nb_pixels)
 }
 
 
-#define SRC_TYPE SCALAR
+#ifndef NBCHAN
 #define SEL_CHAN(code) code.x
+#else
+#if NBCHAN == 2
+#define SEL_CHAN(code) code.xy
+#else
+#if NBCHAN == 3
+#define SEL_CHAN(code) code.xyz
+#else
+#define SEL_CHAN(code) code.xyzw
+#endif
+#endif
+#endif
 
 //            name             type    preop    fun1  post1  fun2  postop2
-REDUCE_KERNEL(reduce_min,      SCALAR, NOOP,    min,  NOOP2, MIN2,  atomic_minf)
-REDUCE_KERNEL(reduce_max,      SCALAR, NOOP,    max,  NOOP2, MAX2,  atomic_maxf)
-REDUCE_KERNEL(reduce_minabs,   SCALAR, ABS,     min,  NOOP2, MIN2,  atomic_minf)
-REDUCE_KERNEL(reduce_maxabs,   SCALAR, ABS,     max,  NOOP2, MAX2,  atomic_maxf)
-REDUCE_KERNEL(reduce_sum,      float,  NOOP,    SUM,  NOOP2, SUM2,  store_value)
-REDUCE_KERNEL(reduce_sum_sqr,  float,  SQR,     SUM,  NOOP2, SUM2,  store_value)
-REDUCE_KERNEL(reduce_count_nz, float,  NO_Z,    SUM,  NOOP2, SUM2,  store_value)
-REDUCE_KERNEL(reduce_mean,     float,  NOOP,    SUM,  DIV,   MEAN2, store_value)
-REDUCE_KERNEL(reduce_mean_sqr, float,  SQR,     SUM,  DIV,   MEAN2, store_value)
-REDUCE_KERNEL_P(reduce_stddev, float,  SQAVGD,  SUM,  DIV,   MEAN2, store_value, AVG_PARAM)
-
-
-#undef  SRC_TYPE
-#undef  SEL_CHAN
-#define SRC_TYPE TYPE2
-#define SEL_CHAN(code) code.xy
-
-//            name                  type     preop    fun1  post1  fun2   postop2
-REDUCE_KERNEL(reduce_min_2C,        TYPE2,   NOOP,    min,  NOOP2, MIN2,  atomic_minf_2C)
-REDUCE_KERNEL(reduce_max_2C,        TYPE2,   NOOP,    max,  NOOP2, MAX2,  atomic_maxf_2C)
-REDUCE_KERNEL(reduce_minabs_2C,     TYPE2,   ABS,     min,  NOOP2, MIN2,  atomic_minf_2C)
-REDUCE_KERNEL(reduce_maxabs_2C,     TYPE2,   ABS,     max,  NOOP2, MAX2,  atomic_maxf_2C)
-REDUCE_KERNEL(reduce_sum_2C,        float2,  NOOP,    SUM,  NOOP2, SUM2,  store_value_2C)
-REDUCE_KERNEL(reduce_sum_sqr_2C,    float2,  SQR,     SUM,  NOOP2, SUM2,  store_value_2C)
-REDUCE_KERNEL(reduce_mean_2C,       float2,  NOOP,    SUM,  DIV,   MEAN2, store_value_2C)
-REDUCE_KERNEL(reduce_mean_sqr_2C,   float2,  SQR,     SUM,  DIV,   MEAN2, store_value_2C)
-REDUCE_KERNEL_P(reduce_stddev_2C,   float2,  SQAVGD,  SUM,  DIV,   MEAN2, store_value_2C, AVG_PARAM)
-
-#undef  SRC_TYPE
-#undef  SEL_CHAN
-#define SRC_TYPE TYPE3
-#define SEL_CHAN(code) code.xyz
-
-//            name                  type     preop    fun1  post1  fun2   postop2
-REDUCE_KERNEL(reduce_min_3C,        TYPE3,   NOOP,    min,  NOOP2, MIN2,  atomic_minf_3C)
-REDUCE_KERNEL(reduce_max_3C,        TYPE3,   NOOP,    max,  NOOP2, MAX2,  atomic_maxf_3C)
-REDUCE_KERNEL(reduce_minabs_3C,     TYPE3,   ABS,     min,  NOOP2, MIN2,  atomic_minf_3C)
-REDUCE_KERNEL(reduce_maxabs_3C,     TYPE3,   ABS,     max,  NOOP2, MAX2,  atomic_maxf_3C)
-REDUCE_KERNEL(reduce_sum_3C,        float3,  NOOP,    SUM,  NOOP2, SUM2,  store_value_3C)
-REDUCE_KERNEL(reduce_sum_sqr_3C,    float3,  SQR,     SUM,  NOOP2, SUM2,  store_value_3C)
-REDUCE_KERNEL(reduce_mean_3C,       float3,  NOOP,    SUM,  DIV,   MEAN2, store_value_3C)
-REDUCE_KERNEL(reduce_mean_sqr_3C,   float3,  SQR,     SUM,  DIV,   MEAN2, store_value_3C)
-REDUCE_KERNEL_P(reduce_stddev_3C,   float3,  SQAVGD,  SUM,  DIV,   MEAN2, store_value_3C, AVG_PARAM)
-
-#undef  SRC_TYPE
-#undef  SEL_CHAN
-#define SRC_TYPE TYPE4
-#define SEL_CHAN(code) code
-
-//            name                  type     preop    fun1  post1  fun2   postop2
-REDUCE_KERNEL(reduce_min_4C,        TYPE4,   NOOP,    min,  NOOP2, MIN2,  atomic_minf_4C)
-REDUCE_KERNEL(reduce_max_4C,        TYPE4,   NOOP,    max,  NOOP2, MAX2,  atomic_maxf_4C)
-REDUCE_KERNEL(reduce_minabs_4C,     TYPE4,   ABS,     min,  NOOP2, MIN2,  atomic_minf_4C)
-REDUCE_KERNEL(reduce_maxabs_4C,     TYPE4,   ABS,     max,  NOOP2, MAX2,  atomic_maxf_4C)
-REDUCE_KERNEL(reduce_sum_4C,        float4,  NOOP,    SUM,  NOOP2, SUM2,  store_value_4C)
-REDUCE_KERNEL(reduce_sum_sqr_4C,    float4,  SQR,     SUM,  NOOP2, SUM2,  store_value_4C)
-REDUCE_KERNEL(reduce_mean_4C,       float4,  NOOP,    SUM,  DIV,   MEAN2, store_value_4C)
-REDUCE_KERNEL(reduce_mean_sqr_4C,   float4,  SQR,     SUM,  DIV,   MEAN2, store_value_4C)
-REDUCE_KERNEL_P(reduce_stddev_4C,   float4,  SQAVGD,  SUM,  DIV,   MEAN2, store_value_4C, AVG_PARAM)
+REDUCE_KERNEL(reduce_min,      TYPE,   NOOP,    min,  NOOP2, MIN2,  atomic_minf)
+REDUCE_KERNEL(reduce_max,      TYPE,   NOOP,    max,  NOOP2, MAX2,  atomic_maxf)
+REDUCE_KERNEL(reduce_minabs,   TYPE,   ABS,     min,  NOOP2, MIN2,  atomic_minf)
+REDUCE_KERNEL(reduce_maxabs,   TYPE,   ABS,     max,  NOOP2, MAX2,  atomic_maxf)
+REDUCE_KERNEL(reduce_sum,      REAL,   NOOP,    SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_sum_sqr,  REAL,   SQR,     SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_count_nz, REAL,   NO_Z,    SUM,  NOOP2, SUM2,  store_value)
+REDUCE_KERNEL(reduce_mean,     REAL,   NOOP,    SUM,  DIV,   MEAN2, store_value)
+REDUCE_KERNEL(reduce_mean_sqr, REAL,   SQR,     SUM,  DIV,   MEAN2, store_value)
+REDUCE_KERNEL_P(reduce_stddev, REAL,   SQAVGD,  SUM,  DIV,   MEAN2, store_value, AVG_PARAM)
 
 
 // Initialize result to a valid value
-kernel void init(INPUT_SPACE const SCALAR * source, global float * result)
+kernel void init(INPUT source, global REAL * result)
 {
-   *result = (float) *source;
+   *result = CONVERT_REAL(*source);
 }
 
-kernel void init_abs(INPUT_SPACE const SCALAR * source, global float * result)
+kernel void init_abs(INPUT source, global REAL * result)
 {
-   *result = (float) ABS(*source);
-}
-
-kernel void init_2C(INPUT_SPACE const TYPE2 * source, global float2 * result)
-{
-   *result = convert_float2(*source);
-}
-
-kernel void init_abs_2C(INPUT_SPACE const TYPE2 * source, global float2 * result)
-{
-   *result = convert_float2(ABS(*source));
-}
-
-kernel void init_3C(INPUT_SPACE const TYPE3 * source, global float3 * result)
-{
-   *result = convert_float3(*source);
-}
-
-kernel void init_abs_3C(INPUT_SPACE const TYPE3 * source, global float3 * result)
-{
-   *result = convert_float3(ABS(*source));
-}
-
-kernel void init_4C(INPUT_SPACE const TYPE4 * source, global float4 * result)
-{
-   *result = convert_float4(*source);
-}
-
-kernel void init_abs_4C(INPUT_SPACE const TYPE4 * source, global float4 * result)
-{
-   *result = convert_float4(ABS(*source));
+   *result = CONVERT_REAL(ABS(*source));
 }
 
 
@@ -430,6 +340,7 @@ kernel void init_abs_4C(INPUT_SPACE const TYPE4 * source, global float4 * result
    }
 
 // This version finds the X and Y coordinates of the min or max value
+// Only for 1 channel images
 #define REDUCE_POS_STD(name, type, preop, comp) \
 __attribute__((reqd_work_group_size(LW, LW, 1)))\
 kernel void name(INPUT_SPACE const SCALAR * source, global float * result, global int2 * result_coord, int src_step, int img_width, int img_height)\

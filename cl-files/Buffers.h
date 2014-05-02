@@ -58,6 +58,9 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 #define SCALAR double
 #define FLOAT
+#define REAL_SCALAR double
+#else
+#define REAL_SCALAR float
 #endif
 
 #ifndef SCALAR
@@ -67,6 +70,21 @@
 #define INPUT_SPACE global    // If input images are read only, they can be set to be in "constant" memory space, with possible speed improvements
 
 
+// NBCHAN is the number of channels the images will have
+// If NBCHAN is not defined, we expect 1 channel images
+// If NBCHAN is defined, it should be 2, 3 or 4
+#ifdef NBCHAN
+#define TYPE   CONCATENATE(SCALAR, NBCHAN)
+#define REAL   CONCATENATE(REAL_SCALAR, NBCHAN)
+#define DOUBLE CONCATENATE(double, NBCHAN)
+#else
+#define TYPE   SCALAR
+#define REAL   REAL_SCALAR
+#define DOUBLE double
+#endif
+
+#define CONVERT_REAL(val)     CONCATENATE(convert_, REAL) (val)
+#define CONVERT_DOUBLE(val)   CONCATENATE(convert_, DOUBLE) (val)
 
 #ifdef FLOAT
 #define CONVERT_SCALAR(val) val

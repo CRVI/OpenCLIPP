@@ -25,8 +25,6 @@
 #include "Programs/TransformBuffer.h"
 
 
-#define SELECT_NAME(name, src_img) SelectName( #name , src_img)
-
 #include "kernel_helpers.h"
 
 // Transpose uses a local array and a local size of 32*8
@@ -44,18 +42,6 @@ static const double Pi = atan(1) * 4;
 
 namespace OpenCLIPP
 {
-
-static std::string SelectName(const char * Name, const ImageBase& Img)
-{
-   if (Img.NbChannels() < 1 || Img.NbChannels() > 4)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Images must have between 1 and 4 channels");
-
-   std::string KernelName = Name;
-   KernelName += "_" + std::to_string(Img.NbChannels()) + "C";
-
-   return KernelName;
-}
-
 
 void TransformBuffer::MirrorX(ImageBuffer& Source, ImageBuffer& Dest)
 {

@@ -170,7 +170,6 @@
     <ClInclude Include="..\cl-files\Base.h" />
     <ClInclude Include="..\cl-files\Buffers.h" />
     <ClInclude Include="..\cl-files\Filters.Impl.h" />
-    <ClInclude Include="..\cl-files\ImageProximity.Impl.h" />
     <ClInclude Include="..\cl-files\Images.h" />
     <ClInclude Include="..\cl-files\Median.h" />
     <ClInclude Include="..\cl-files\Vector.h" />

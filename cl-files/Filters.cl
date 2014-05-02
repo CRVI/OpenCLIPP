@@ -24,6 +24,8 @@
 
 #include "Images.h"
 
+#define INTERNAL  float4
+
 #define CONVERT_INTERNAL(val) CONCATENATE(convert_, INTERNAL) (val)              // Example : convert_float4(val)
 
 #define DIM_ARGS
@@ -49,21 +51,4 @@ bool OutsideImage(int2 pos, int mask_size)
 
 // Actual code for filter operations is in the file Filters.Impl.h
 
-// 1 Channel 
-#define SUFFIX    _1C
-#define INTERNAL  float
-#define READ(img, pos)   CONVERT_INTERNAL(READ_IMAGE(img, pos).x)
-#include "Filters.Impl.h"
-
-// 2 Channel images are currently not supported - they will be processed using the _4C kernels
-
-// 3 Channel images do not exist in OpenCL
-
-// 4 Channels
-#undef  SUFFIX
-#undef  INTERNAL
-#undef  READ
-#define SUFFIX    _4C
-#define INTERNAL  float4
-#define READ(img, pos)   CONVERT_INTERNAL(READ_IMAGE(img, pos))
 #include "Filters.Impl.h"

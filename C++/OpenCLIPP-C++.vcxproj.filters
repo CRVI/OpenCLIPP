@@ -154,9 +154,6 @@
     <ClInclude Include="..\include\c++\Programs\ImageProximityBuffer.h">
       <Filter>Programs</Filter>
     </ClInclude>
-    <ClInclude Include="..\cl-files\ImageProximity.Impl.h">
-      <Filter>OpenCL Files\Headers</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
