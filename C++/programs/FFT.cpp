@@ -81,6 +81,23 @@ void FFT::ReleasePlans()
 
 }
 
+bool FFT::IsSupportedLength(uint Length)
+{
+   while( Length > 1 )
+	{
+		if( Length % 2 == 0 )
+			Length /= 2;
+		else if( Length % 3 == 0 )
+			Length /= 3;
+		else if( Length % 5 == 0 )
+			Length /= 5;
+		else
+			return false;
+	}
+
+	return true;
+}
+
 bool FFT::IsPlanCompatible(clfftPlanHandle ForwardPlan, const ImageBase& Real, const ImageBase& Complex)
 {
    if (ForwardPlan == 0)
@@ -125,6 +142,12 @@ void FFT::PrepareFor(const ImageBase& Real, const ImageBase& Complex)
 
    if (Real.NbChannels() != 1)
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "FFT works only with images with 1 channel for Real images");
+
+   if (!IsSupportedLength(Real.Width()))
+      throw cl::Error(CL_INVALID_IMAGE_SIZE, "FFT works only with images that have a width that is a power of 2, 3 or 5");
+
+   if (!IsSupportedLength(Real.Height()))
+      throw cl::Error(CL_INVALID_IMAGE_SIZE, "FFT works only with images that have a height that is a power of 2, 3 or 5");
 
 
    // Check if plans are ready and compatible with the images

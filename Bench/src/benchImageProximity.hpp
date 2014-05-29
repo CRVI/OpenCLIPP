@@ -58,8 +58,8 @@ public:
  
 protected:
 
-   ocipImage m_CLTmp;
-   ocipBuffer m_CLBufferTmp;
+   ocipImage m_CLTemplate;
+   ocipBuffer m_CLBufTemplate;
 
    std::unique_ptr<CImageROI> m_ImgTemp;
 
@@ -78,8 +78,8 @@ inline void CLASS_NAME<DataType>::Create(uint Width, uint Height)
    m_ImgTemp = std::unique_ptr<CImageROI>(new CImageROI(m_ImgSrc, 10, 10,
       min(16, int(m_ImgSrc.Width) - 10), min(16, int(m_ImgSrc.Height) - 10)));
 
-   ocipCreateImage(&m_CLTmp, m_ImgTemp->ToSImage(), m_ImgTemp->Data(), CL_MEM_READ_WRITE);
-   ocipCreateImageBuffer(&m_CLBufferTmp, m_ImgTemp->ToSImage(), m_ImgTemp->Data(), CL_MEM_READ_WRITE);
+   ocipCreateImage(&m_CLTemplate, m_ImgTemp->ToSImage(), m_ImgTemp->Data(), CL_MEM_READ_WRITE);
+   ocipCreateImageBuffer(&m_CLBufTemplate, m_ImgTemp->ToSImage(), m_ImgTemp->Data(), CL_MEM_READ_WRITE);
 
    // IPP
    IPP_CODE(
@@ -95,8 +95,8 @@ inline void CLASS_NAME<DataType>::Free()
 {
 
    IBench1in1out::Free();
-   ocipReleaseImage(m_CLTmp);
-   ocipReleaseImageBuffer(m_CLBufferTmp);
+   ocipReleaseImage(m_CLTemplate);
+   ocipReleaseImageBuffer(m_CLBufTemplate);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -135,9 +135,9 @@ template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {  
    if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufferTmp, this->m_CLBufferDst);
+      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufTemplate, m_CLBufferDst);
    else
-      CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLTmp, m_CLDst);
+      CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLTemplate, m_CLDst);
 }
 
 #undef CLASS_NAME

@@ -351,6 +351,16 @@ int main()
 
    printf("Bench using: %s for OpenCL\n", CLDeviceName);
 
+   {
+      printf("Preparing random input images ... ");
+
+      SImage SImg = {10, 10, 10, 1, SImage::U8};
+      CSimpleImage Img(SImg);
+      FillRandomImg(Img);
+
+      printf("Done\n");
+   }
+
    RunBench();
 
    printf("Testing complete\n");

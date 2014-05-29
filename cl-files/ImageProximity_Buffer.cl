@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: Vector_ImageProximity.cl
+//! @file	: ImageProximity_Buffer.cl
 //! @date   : Feb 2014
 //!
 //! @brief  : Pattern Matching on image buffers
@@ -36,7 +36,6 @@
 
 #define READ(img, step, x, y)  CONVERT_REAL(img[y * step + x])
 #define WRITE(img, val) img[gy * dst_step + gx] = val
-
 
 kernel void SqrDistance(INPUT source, INPUT templ, OUTPUT dest,
                         int src_step, int temp_step, int dst_step,

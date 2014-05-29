@@ -56,6 +56,8 @@ public:
    /// \param RealDest : Output image, must be 1 channel F32. Only real data, no imaginary component.
    void Inverse(ImageBuffer& ComplexSource, ImageBuffer& RealDest);
 
+   static bool IsSupportedLength(uint Length);
+
 protected:
 
    void ReleasePlans();

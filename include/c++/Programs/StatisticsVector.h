@@ -44,7 +44,7 @@ public:
    double MinAbs( ImageBuffer& Source);                  ///< Finds the minimum of the absolute of the values in the image
    double MaxAbs( ImageBuffer& Source);                  ///< Finds the maxumum of the absolute of the values in the image
    double Sum(    ImageBuffer& Source);                  ///< Calculates the sum of all pixel values
-   double SumSqr( ImageBuffer& Source);      ///< Calculates the sum of the square of all pixel values
+   double SumSqr( ImageBuffer& Source);                  ///< Calculates the sum of the square of all pixel values
    double Mean(   ImageBuffer& Source);                  ///< Calculates the mean value of all pixel values
    double MeanSqr(ImageBuffer& Source);                  ///< Calculates the mean of the square of all pixel values
    double StdDev( ImageBuffer& Source);                  ///< Calculates the standard deviation of all pixel values
