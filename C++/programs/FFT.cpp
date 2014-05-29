@@ -159,6 +159,11 @@ void FFT::PrepareFor(const ImageBase& Real, const ImageBase& Complex)
          "FFT needs the complex image to be slightly larger than the real image to store all the data :"
          "Complex.ElementStep() / 2 must >= Real.Width() / 2 + 1");
 
+   if (Real.DataType() == SImage::F32 && Real.Width() * Real.Height() > (1 << 24))
+      throw cl::Error(CL_INVALID_IMAGE_SIZE, "Image is too big for FFT operation (clFFT library limitation)");
+
+   if (Real.DataType() == SImage::F64 && Real.Width() * Real.Height() > (1 << 22))
+      throw cl::Error(CL_INVALID_IMAGE_SIZE, "Image is too big for FFT operation (clFFT library limitation)");
 
    // Generate clFFT plans
    if (m_ForwardPlan == 0)

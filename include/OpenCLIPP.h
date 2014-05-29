@@ -947,6 +947,9 @@ ocipError ocip_API ocipSqrIntegral_B( ocipProgram Program, ocipBuffer Source, oc
 
 // Image buffer Proximity ---------------------------------------------------------------------------------------
 // All ImageProximity operations are Syncrhonous, meaning they block until the ImageProximity is calculated and set to the result
+// Use only small template images (<=16x16 pixels)
+// Will be very slow if big template images are used
+// For faster image proximity operations with big template image, use ImageProximityFFT
 ocipError ocip_API ocipPrepareImageBufferProximity(ocipBuffer Image);   ///< See ocipPrepareExample
 
 /// Computes normalized Euclidean distance between an image and a template.
@@ -964,6 +967,24 @@ ocipError ocip_API ocipCrossCorr_B(ocipBuffer Source, ocipBuffer Template, ocipB
 //Computes normalized the cross-correlation between an image and a tamplate
 ocipError ocip_API ocipCrossCorr_Norm_B(ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
 
+
+
+// ImageProximityFFT ---------------------------------------------------------------------------------------
+// If Template is small (<16x16 pixels), ImageBufferProximity may be faster
+// FFT operations do not work on images bigger than 16.7Mpixels
+ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipBuffer Image, ocipBuffer Template);
+
+/// Square different template matching - Images must be F32 - 1 channel
+ocipError ocip_API ocipSqrDistanceFFT(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+/// Normalized square different template matching - Images must be F32 - 1 channel
+ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+/// Cross correlation template matching - Images must be F32 - 1 channel
+ocipError ocip_API ocipCrossCorrFFT(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
+
+/// Cross correlation template matching - Images must be F32 - 1 channel
+ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest);
 
 
 #ifdef __cplusplus

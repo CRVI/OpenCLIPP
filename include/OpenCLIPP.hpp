@@ -43,6 +43,7 @@
 #include "c++/Programs/MorphologyBuffer.h"
 #include "c++/Programs/ImageProximity.h"
 #include "c++/Programs/ImageProximityBuffer.h"
+#include "c++/Programs/ImageProximityFFT.h"
 #include "c++/Programs/Statistics.h"
 #include "c++/Programs/StatisticsVector.h"
 #include "c++/Programs/Transform.h"

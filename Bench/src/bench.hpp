@@ -39,6 +39,7 @@
 #include "benchLinearLut.hpp"
 #include "benchTransfer.hpp"
 #include "benchImageProximityBase.hpp"
+#include "benchImageProximityFFTBase.hpp"
 #include "benchImageTransfer.hpp"
 #include "benchIntegral.hpp"
 #include "benchSqrIntegral.hpp"
@@ -216,6 +217,9 @@ void RunBench()
 
    if (ocipIsFFTAvailable())
    {
+      B(SqrDistanceFFT_Norm);
+      B(CrossCorrFFT_Norm);
+
       Bench(FFTForwardBench);
       Bench(FFTBackwardBench);
    }

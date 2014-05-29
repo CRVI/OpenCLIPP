@@ -223,6 +223,8 @@
     <ClInclude Include="src\benchGradient.hpp" />
     <ClInclude Include="src\benchImageProximity.hpp" />
     <ClInclude Include="src\benchImageProximityBase.hpp" />
+    <ClInclude Include="src\benchImageProximityFFT.hpp" />
+    <ClInclude Include="src\benchImageProximityFFTBase.hpp" />
     <ClInclude Include="src\benchImageTransfer.hpp" />
     <ClInclude Include="src\benchIntegral.hpp" />
     <ClInclude Include="src\benchRotate.hpp" />

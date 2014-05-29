@@ -667,12 +667,12 @@ ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
 #define PROGRAM_ARG 
 
 PREPARE(ocipPrepareImageBufferArithmetic, arithmeticVector)
-PREPARE(ocipPrepareImageBufferProximity, imageProximityBuffer)
 PREPARE(ocipPrepareImageBufferLogic, logicVector)
 PREPARE(ocipPrepareImageBufferLUT, lutVector)
 PREPARE(ocipPrepareImageBufferMorphology, morphologyBuffer)
 PREPARE(ocipPrepareImageBufferFilters, morphologyBuffer)
 PREPARE(ocipPrepareImageBufferThresholding, thresholdingVector)
+PREPARE(ocipPrepareImageBufferProximity, imageProximityBuffer)
 
 PREPARE2(ocipPrepareImageBufferStatistics, StatisticsVector)
 PREPARE2(ocipPrepareImageBufferIntegral, IntegralBuffer)
@@ -724,6 +724,7 @@ BINARY_OP(ocipSqrDistance_B, SqrDistance)
 BINARY_OP(ocipAbsDistance_B, AbsDistance)
 BINARY_OP(ocipCrossCorr_B, CrossCorr)
 BINARY_OP(ocipCrossCorr_Norm_B, CrossCorr_Norm)
+
 
 #undef CLASS
 #define CLASS GetList().logicVector
@@ -935,6 +936,43 @@ ocipBool  ocip_API ocipIsFFTAvailable()
    return 1;
 }
 
+
+#undef CLASS
+#define CLASS (*(ImageProximityFFT*)Program)
+
+ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipBuffer Image, ocipBuffer Template)
+{
+   H(
+      if (g_CurrentContext == nullptr)
+         return CL_INVALID_CONTEXT;
+      ImageProximityFFT * Ptr = new ImageProximityFFT(*g_CurrentContext);
+      *ProgramPtr = (ocipProgram) Ptr;
+      if (Image != nullptr)
+         Ptr->PrepareFor(CONV(Image), CONV(Template));
+   )
+}
+
+ocipError ocip_API ocipSqrDistanceFFT(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+{
+   H( CLASS.SqrDistance(Buf(Source), Buf(Template), Buf(Dest)) )
+}
+
+ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+{
+   H( CLASS.SqrDistance_Norm(Buf(Source), Buf(Template), Buf(Dest)) )
+}
+
+ocipError ocip_API ocipCrossCorrFFT(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+{
+   H( CLASS.CrossCorr(Buf(Source), Buf(Template), Buf(Dest)) )
+}
+
+ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+{
+   H( CLASS.CrossCorr_Norm(Buf(Source), Buf(Template), Buf(Dest)) )
+}
+
+
 #else // USE_CLFFT
 
 #ifndef _MSC_VER  // Visual Studio does not support #warning
@@ -955,6 +993,30 @@ ocipError ocip_API ocipFFTForward(ocipProgram, ocipBuffer, ocipBuffer)
    return CL_INVALID_OPERATION;
 }
 ocipError ocip_API ocipFFTInverse(ocipProgram, ocipBuffer, ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+
+
+ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram *, ocipBuffer, ocipBuffer )
+{
+   return CL_INVALID_OPERATION;
+}
+
+ocipError ocip_API ocipSqrDistanceFFT(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+
+ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+ocipError ocip_API ocipCrossCorrFFT(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+{
+   return CL_INVALID_OPERATION;
+}
+ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
 {
    return CL_INVALID_OPERATION;
 }

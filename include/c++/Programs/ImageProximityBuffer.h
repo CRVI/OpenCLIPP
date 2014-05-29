@@ -37,11 +37,13 @@ public:
    :  ImageBufferProgram(CL, "ImageProximity_Buffer.cl")
    { }
 
+   // Use only small template images (<=16x16 pixels)
+   // Will be very slow if big template images are used
+   // For faster image proximity operations with big template image, use ImageProximityFFT
+
    //Computes the Euclidean distance between an image and a tamplate
    void SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
-   // Use only small template images (<=16x16 pixels)
-   // Will be very slow if big template images are used
    //Computes the normalized Euclidean distance between an image and a tamplate
    void SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
@@ -52,8 +54,7 @@ public:
    void CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
 
    //Computes normalized the cross-correlation between an image and a tamplate
-   void CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
-   
+   void CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);  
 };
 
 }

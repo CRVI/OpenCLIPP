@@ -154,6 +154,9 @@
     <ClInclude Include="..\include\c++\Programs\ImageProximityBuffer.h">
       <Filter>Programs</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\ImageProximityFFT.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -249,6 +252,9 @@
     <ClCompile Include="programs\ImageProximityBuffer.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
+    <ClCompile Include="programs\ImageProximityFFT.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\cl-files\Arithmetic.cl">
@@ -321,6 +327,9 @@
       <Filter>OpenCL Files</Filter>
     </None>
     <None Include="..\cl-files\ImageProximity_Buffer.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\ImageProximityFFT.cl">
       <Filter>OpenCL Files</Filter>
     </None>
   </ItemGroup>

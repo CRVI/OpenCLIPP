@@ -163,5 +163,11 @@
     <ClInclude Include="src\benchRotate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\benchImageProximityFFT.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\benchImageProximityFFTBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
