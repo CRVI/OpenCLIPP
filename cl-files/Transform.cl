@@ -66,7 +66,7 @@ kernel void transpose(read_only image2d_t source, write_only image2d_t dest)
    WRITE_IMAGE(dest, dest_pos, READ_IMAGE(source, pos));
 }
 
-kernel void resize(read_only image2d_t source, write_only image2d_t dest, float ratioX, float ratioY)
+kernel void resize_nn(read_only image2d_t source, write_only image2d_t dest, float ratioX, float ratioY)
 {
    BEGIN
 
@@ -105,7 +105,7 @@ kernel void resize_linear(read_only image2d_t source, write_only image2d_t dest,
 #undef SAMPLER
 #define SAMPLER rotate_sampler
 
-kernel void rotate_img(read_only image2d_t source, write_only image2d_t dest, float sina, float cosa, float xshift, float yshift)
+kernel void rotate_nn(read_only image2d_t source, write_only image2d_t dest, float sina, float cosa, float xshift, float yshift)
 {
    BEGIN
 

@@ -70,7 +70,7 @@ void Transform::Transpose(IImage& Source, IImage& Dest)
 }
 
 void Transform::Rotate(IImage& Source, IImage& Dest,
-      double Angle, double XShift, double YShift, bool LinearInterpolation)
+      double Angle, double XShift, double YShift, EInterpolationType Interpolation)
 {
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
@@ -83,30 +83,33 @@ void Transform::Rotate(IImage& Source, IImage& Dest,
    float xshift = (float) XShift;
    float yshift = (float) YShift;
 
-   if (LinearInterpolation)
+   switch (Interpolation)
    {
+   case NearestNeighbour:
+      Kernel_(*m_CL, SelectProgram(Source), rotate_nn, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, sina, cosa, xshift, yshift);
+      break;
+   case BestQuality:
+   case Linear:
       Kernel_(*m_CL, SelectProgram(Source), rotate_linear, Dest.FullRange(), LOCAL_RANGE,
          Source, Dest, sina, cosa, xshift, yshift);
-   }
-   else
-   {
-      Kernel_(*m_CL, SelectProgram(Source), rotate_img, Dest.FullRange(), LOCAL_RANGE,
-         Source, Dest, sina, cosa, xshift, yshift);
+      break;
+   case Cubic:
+   case SuperSampling:
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
+      break;
    }
 
 }
 
-void Transform::Resize(IImage& Source, IImage& Dest, bool LinearInterpolation, bool KeepRatio)
+void Transform::Resize(IImage& Source, IImage& Dest, EInterpolationType Interpolation, bool KeepRatio)
 {
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
 
    // This kernel works differently - we use the range of the destination
    // So we can't use the Kernel() macro
-
-   const char * name = "resize";
-   if (LinearInterpolation)
-      name = "resize_linear";
 
    float RatioX = Source.Width() * 1.f / Dest.Width();
    float RatioY = Source.Height() * 1.f / Dest.Height();
@@ -122,8 +125,22 @@ void Transform::Resize(IImage& Source, IImage& Dest, bool LinearInterpolation, b
       Range = cl::NDRange(size_t(Source.Width() / RatioX), size_t(Source.Height() / RatioY), 1);
    }
 
-   auto kernel = cl::make_kernel<cl::Image2D, cl::Image2D, float, float>(SelectProgram(Source), name);
-   kernel(cl::EnqueueArgs(*m_CL, Range), Source, Dest, RatioX, RatioY);
+   switch (Interpolation)
+   {
+   case NearestNeighbour:
+      Kernel_(*m_CL, SelectProgram(Source), resize_nn, Range, LOCAL_RANGE, Source, Dest, RatioX, RatioY);
+      break;
+   case BestQuality:
+   case Linear:
+      Kernel_(*m_CL, SelectProgram(Source), resize_linear, Range, LOCAL_RANGE, Source, Dest, RatioX, RatioY);
+      break;
+   case Cubic:
+   case SuperSampling:
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Resize");
+      break;
+   }
+   
 }
 
 void Transform::SetAll(IImage& Dest, float Value)

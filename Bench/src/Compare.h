@@ -176,6 +176,9 @@ static inline bool CompareImages(const CSimpleImage& Img1,
       /*else
          assert(false);*/
 
+      if (Value == 0)
+         Value = 0.0001f;
+
       Success = abs(Max / Value) < Tolerance;
    }
 

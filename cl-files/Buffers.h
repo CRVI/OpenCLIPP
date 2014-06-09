@@ -87,9 +87,11 @@
 #define CONVERT_DOUBLE(val)   CONCATENATE(convert_, DOUBLE) (val)
 
 #ifdef FLOAT
-#define CONVERT_SCALAR(val) val
+#define CONVERT(v) CONCATENATE(convert_, TYPE)(v)
+#define CONVERT_SCALAR(val) (val)
 #define ABS fabs
 #else
+#define CONVERT(v) CONCATENATE(CONCATENATE(convert_, TYPE), _sat) (v)
 #define CONVERT_SCALAR(val) CONCATENATE(CONCATENATE(convert_, SCALAR), _sat) (val)  // Example : convert_uchar_sat(val)
 #define ABS abs
 #endif

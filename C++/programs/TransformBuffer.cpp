@@ -84,7 +84,7 @@ void TransformBuffer::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
 }
 
 void TransformBuffer::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
-      double Angle, double XShift, double YShift, bool LinearInterpolation)
+      double Angle, double XShift, double YShift, EInterpolationType Interpolation)
 {
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
@@ -100,22 +100,32 @@ void TransformBuffer::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
    const SImage& SrcImg = Source;
    const SImage& DstImg = Dest;
 
-   if (LinearInterpolation)
+   switch (Interpolation)
    {
+   case NearestNeighbour:
+      Kernel_(*m_CL, SelectProgram(Source), rotate_nn, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, SrcImg, DstImg,
+         sina, cosa, xshift, yshift);
+      break;
+   case Linear:
       Kernel_(*m_CL, SelectProgram(Source), rotate_linear, Dest.FullRange(), LOCAL_RANGE,
          Source, Dest, SrcImg, DstImg,
          sina, cosa, xshift, yshift);
-   }
-   else
-   {
-      Kernel_(*m_CL, SelectProgram(Source), rotate_img, Dest.FullRange(), LOCAL_RANGE,
+      break;
+   case BestQuality:
+   case Cubic:
+      Kernel_(*m_CL, SelectProgram(Source), rotate_bicubic, Dest.FullRange(), LOCAL_RANGE,
          Source, Dest, SrcImg, DstImg,
          sina, cosa, xshift, yshift);
+      break;
+   case SuperSampling:
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
    }
 
 }
 
-void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, bool LinearInterpolation, bool KeepRatio)
+void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationType Interpolation, bool KeepRatio)
 {
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
@@ -137,17 +147,35 @@ void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, bool Linear
    const SImage& SrcImg = Source;
    const SImage& DstImg = Dest;
 
-   if (LinearInterpolation)
+   switch (Interpolation)
    {
-      // Linear interpolation resize
-      Kernel_(*m_CL, SelectProgram(Source), resize_linear, Dest.FullRange(), LOCAL_RANGE,
-         In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);      
-   }
-   else
-   {
-      // Nearest neighbour resize
-      Kernel_(*m_CL, SelectProgram(Source), resize, Dest.FullRange(), LOCAL_RANGE,
+   case NearestNeighbour:
+      Kernel_(*m_CL, SelectProgram(Source), resize_nn, Dest.FullRange(), LOCAL_RANGE,
          In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
+      break;
+   case Linear:
+      Kernel_(*m_CL, SelectProgram(Source), resize_linear, Dest.FullRange(), LOCAL_RANGE,
+         In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
+      break;
+   case Cubic:
+      Kernel_(*m_CL, SelectProgram(Source), resize_bicubic, Dest.FullRange(), LOCAL_RANGE,
+         In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
+      break;
+   case BestQuality:
+      if (RatioX < 1 || RatioY < 1)
+      {
+         // Enlarging image, SuperSampling is best
+         //Resize(Source, Dest, SuperSampling, KeepRatio);
+         Resize(Source, Dest, Cubic, KeepRatio);    // Use bicubic until SuperSampling is done
+         break;
+      }
+
+      // Shrinking image, Linear is best
+      Resize(Source, Dest, Linear, KeepRatio);
+      break;
+   case SuperSampling:
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
    }
 
 }

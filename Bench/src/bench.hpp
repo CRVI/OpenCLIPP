@@ -134,16 +134,19 @@ void RunBench()
    B(Transpose);  // OpenCV OCL does not accept U16 for transpose
 #endif
 
-   //B(Rotate);      // Rotation works well but but a few pixels end up with a value different from IPP
-   B(RotateLinear);  // We should use a different compare that counts the number of pixels that have a too high difference
+   //B(Rotate);        // Neirest Neighbour Rotation works well but but a few pixels sometimes end up with a value different from IPP
+   B(RotateLinear);
+   //B(RotateCubic);   // Rotate Cubic works well except that border is handled differently than in IPP
 
    // Reduce size
-   B(Resize);  // Resize half
-   B(ResizeLinear);  // Resize half with linear interpolation
+   B(Resize);
+   B(ResizeLinear);
+   B(ResizeCubic);
 
    // Increase size
    B(ResizeBigger);
    B(ResizeBiggerLinear);
+   //B(ResizeBiggerCubic);   // Cubic resizing works well but there are sometimes differences in the top and left lines when comparing with IPP
 
    // Filters
    Bench(Sobel3_1Bench);

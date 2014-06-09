@@ -1,20 +1,14 @@
 
 template<typename DataType> class RotateBench;
 template<typename DataType> class RotateLinearBench;
+template<typename DataType> class RotateCubicBench;
 
-typedef RotateBench<unsigned char>   RotateBenchU8;
-typedef RotateBench<unsigned short>  RotateBenchU16;
-typedef RotateBench<float>           RotateBenchF32;
-
-typedef RotateLinearBench<unsigned char>   RotateLinearBenchU8;
-typedef RotateLinearBench<unsigned short>  RotateLinearBenchU16;
-typedef RotateLinearBench<float>           RotateLinearBenchF32;
 
 template<typename DataType>
 class RotateBench : public BenchUnaryBase<DataType, USE_BUFFER>
 {
 public:
-   RotateBench(bool Interpolation = false)
+   RotateBench(ocipInterpolationType Interpolation = ocipNearestNeighbour)
    :  m_Interpolation(Interpolation)
    { }
 
@@ -53,29 +47,47 @@ public:
       m_YShift = Height / 2;
    }
 
-   bool m_Interpolation;
+   ocipInterpolationType m_Interpolation;
    double m_Angle;
    double m_XShift;
    double m_YShift;
 
    IPP_CODE(IppiRect m_IPPRotROI;)
 
-   IPP_CODE(int IppInterpol()
+   IPP_CODE(int GetIPPMode() const
       {
-         int interpol_mode = IPPI_INTER_NN;
-         if (m_Interpolation)
-            interpol_mode = IPPI_INTER_LINEAR;
-         return interpol_mode;
+         switch (m_Interpolation)
+         {
+         case ocipNearestNeighbour:
+            return ippNearest;
+         case ocipLinear:
+            return ippLinear;
+         case ocipCubic:
+            return IPPI_INTER_CUBIC;
+         case ocipSuperSampling:
+            return IPPI_INTER_SUPER;
+         default:
+            return ippNearest;
+         }
       } )
 
    NPP_CODE(NppiRect m_NPPRotROI;)
 
-   NPP_CODE(int NppInterpol()
+   NPP_CODE(NppiInterpolationMode GetNPPMode() const
       {
-         int interpol_mode = NPPI_INTER_NN;
-         if (m_Interpolation)
-            interpol_mode = NPPI_INTER_LINEAR;
-         return interpol_mode;
+         switch (m_Interpolation)
+         {
+         case ocipNearestNeighbour:
+            return NPPI_INTER_NN;
+         case ocipLinear:
+            return NPPI_INTER_LINEAR;
+         case ocipCubic:
+            return NPPI_INTER_CUBIC;
+         case ocipSuperSampling:
+            return NPPI_INTER_SUPER;
+         default:
+            return NPPI_INTER_NN;
+         }
       } )
 
    bool HasCVTest() const { return false; }
@@ -86,9 +98,19 @@ class RotateLinearBench : public RotateBench<DataType>
 {
 public:
    RotateLinearBench()
-   :  RotateBench<DataType>(true)
+   :  RotateBench<DataType>(ocipLinear)
    { }
 };
+
+template<typename DataType>
+class RotateCubicBench : public RotateBench<DataType>
+{
+public:
+   RotateCubicBench()
+   :  RotateBench<DataType>(ocipCubic)
+   { }
+};
+
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -105,7 +127,7 @@ void RotateBench<unsigned char>::RunIPP()
 { 
    IPP_CODE(
       ippiRotate_8u_C1R(this->m_ImgSrc.Data(), m_IPPRoi, this->m_ImgSrc.Step, this->m_IPPRotROI,
-         this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, IppInterpol());
+         this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, GetIPPMode());
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -114,7 +136,7 @@ void RotateBench<unsigned short>::RunIPP()
 {
    IPP_CODE(
       ippiRotate_16u_C1R((Ipp16u*) this->m_ImgSrc.Data(), this->m_IPPRoi, this->m_ImgSrc.Step, this->m_IPPRotROI,
-         (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, IppInterpol());
+         (Ipp16u*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, GetIPPMode());
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -123,7 +145,7 @@ void RotateBench<unsigned char>::RunNPP()
 {
    NPP_CODE(
       nppiRotate_8u_C1R((Npp8u*) this->m_NPPSrc, this->m_NPPRoi, this->m_NPPSrcStep, this->m_NPPRotROI,
-         (Npp8u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, NppInterpol());
+         (Npp8u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, GetNPPMode());
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -132,7 +154,7 @@ void RotateBench<unsigned short>::RunNPP()
 {
    NPP_CODE(
       nppiRotate_16u_C1R((Npp16u*) this->m_NPPSrc, this->m_NPPRoi, this->m_NPPSrcStep, this->m_NPPRotROI,
-         (Npp16u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, NppInterpol());
+         (Npp16u*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, GetNPPMode());
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -141,7 +163,7 @@ void RotateBench<float>::RunNPP()
 {
    NPP_CODE(
       nppiRotate_32f_C1R((Npp32f*) this->m_NPPSrc, this->m_NPPRoi, this->m_NPPSrcStep, this->m_NPPRotROI,
-         (Npp32f*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, NppInterpol());
+         (Npp32f*) this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRotROI, this->m_Angle, this->m_XShift, this->m_YShift, GetNPPMode());
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -150,7 +172,7 @@ void RotateBench<float>::RunIPP()
 {
    IPP_CODE(
       ippiRotate_32f_C1R((Ipp32f*) this->m_ImgSrc.Data(), m_IPPRoi, this->m_ImgSrc.Step, this->m_IPPRotROI,
-         (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRotROI, this->m_Angle,this-> m_XShift, this->m_YShift, IppInterpol());
+         (Ipp32f*) this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRotROI, this->m_Angle,this-> m_XShift, this->m_YShift, GetIPPMode());
    )
 }
 //-----------------------------------------------------------------------------------------------------------------------------

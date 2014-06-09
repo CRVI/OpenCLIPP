@@ -131,14 +131,26 @@ struct SImage
 
 
 
-TYPE sample_nn(INPUT source, int src_step, float2 pos, int width, int height)
+TYPE sample_nn(INPUT source, int src_step, float2 pos, int2 SrcSize)
 {
    int2 ipos = convert_int2(pos);
+   if (ipos.x < 0 || ipos.x >= SrcSize.x || ipos.y < 0 || ipos.y >= SrcSize.y)
+      return 0;
+
    return source[ipos.y * src_step + ipos.x];
 }
 
-TYPE sample_linear(INPUT source, int src_step, float2 pos, int width, int height)
+TYPE sample_linear(INPUT source, int src_step, float2 pos, int2 SrcSize)
 {
+   if ((int)(pos.x + .5f) == SrcSize.x)
+      pos.x = SrcSize.x - 0.5001f;
+
+   if ((int)(pos.y + .5f) == SrcSize.y)
+      pos.y = SrcSize.y - 0.5001f;
+
+   if (pos.x <= -1 || pos.x >= SrcSize.x - .5f || pos.y <= -1 || pos.y >= SrcSize.y - .5f)
+      return 0;
+
    pos -= (float2)(0.5f, 0.5f);
    int x1 = (int)(pos.x);
    float factorx1 = 1 - (pos.x - x1);
@@ -156,7 +168,106 @@ TYPE sample_linear(INPUT source, int src_step, float2 pos, int width, int height
    REAL v2 = CONVERT_REAL(source[y1 * src_step + x2]);
    REAL v3 = CONVERT_REAL(source[y2 * src_step + x1]);
    REAL v4 = CONVERT_REAL(source[y2 * src_step + x2]);
-   return CONCATENATE(convert_, TYPE)(v1 * f1 + v2 * f2 + v3 * f3 + v4 * f4);
+   return CONVERT(v1 * f1 + v2 * f2 + v3 * f3 + v4 * f4);
+}
+
+
+TYPE sample_bicubic_border(INPUT source, int src_step, float2 pos, int2 SrcSize)
+{
+   int2 isrcpos = convert_int2(pos);
+   float dx = pos.x - isrcpos.x;
+   float dy = pos.y - isrcpos.y;
+
+   REAL C[4] = {0};
+
+   for (int i = 0; i < 4; i++)
+   {
+      int y = isrcpos.y - 1 + i;
+      if (y < 0)
+         y = 0;
+
+      if (y >= SrcSize.y)
+         y = SrcSize.y - 1;
+
+      int Middle = clamp(isrcpos.x, 0, SrcSize.x - 1);
+
+      REAL center = CONVERT_REAL(source[y * src_step + Middle]);
+
+      REAL left = 0, right1 = 0, right2 = 0;
+      if (isrcpos.x - 1 >= 0)
+         left = CONVERT_REAL(source[y * src_step + isrcpos.x - 1]);
+      else
+         left = center;
+
+      if (isrcpos.x + 1 < SrcSize.x)
+         right1 = CONVERT_REAL(source[y * src_step + isrcpos.x + 1]);
+      else
+         right1 = center;
+
+      if (isrcpos.x + 2 < SrcSize.x)
+         right2 = CONVERT_REAL(source[y * src_step + isrcpos.x + 2]);
+      else
+         right2 = right1;
+
+      REAL a0 = center;
+      REAL d0 = left - a0;
+      REAL d2 = right1 - a0;
+      REAL d3 = right2 - a0;
+
+      REAL a1 = -1.0f / 3 * d0 + d2 - 1.0f / 6 * d3;
+      REAL a2 =  1.0f / 2 * d0 + 1.0f / 2 * d2;
+      REAL a3 = -1.0f / 6 * d0 - 1.0f / 2 * d2 + 1.0f / 6 * d3;
+      C[i] = a0 + a1 * dx + a2 * dx * dx + a3 * dx * dx * dx;
+   }
+
+   REAL d0 = C[0] - C[1];
+   REAL d2 = C[2] - C[1];
+   REAL d3 = C[3] - C[1];
+   REAL a0 = C[1];
+   REAL a1 = -1.0 / 3 * d0 + d2 -1.0 / 6 * d3;
+   REAL a2 = 1.0 / 2 * d0 + 1.0 / 2 * d2;
+   REAL a3 = -1.0 / 6 * d0 - 1.0 / 2 * d2 + 1.0 / 6 * d3;
+   return CONVERT(a0 + a1 * dy + a2 * dy * dy + a3 * dy * dy * dy);
+}
+
+TYPE sample_bicubic(INPUT source, int src_step, float2 pos, int2 SrcSize)
+{
+   pos -= (float2)(0.5f, 0.5f);
+
+   int2 isrcpos = convert_int2(pos);
+   float dx = pos.x - isrcpos.x;
+   float dy = pos.y - isrcpos.y;
+
+   if (isrcpos.x <= 0 || isrcpos.x >= SrcSize.x - 2)
+      return sample_bicubic_border(source, src_step, pos, SrcSize);
+
+   if (isrcpos.y <= 0 || isrcpos.y >= SrcSize.y - 2)
+      return sample_bicubic_border(source, src_step, pos, SrcSize);
+
+   REAL C[4] = {0};
+
+   for (int i = 0; i < 4; i++)
+   {
+      const int y = isrcpos.y - 1 + i;
+      REAL a0 = CONVERT_REAL(source[y * src_step + isrcpos.x]);
+      REAL d0 = CONVERT_REAL(source[y * src_step + isrcpos.x - 1]) - a0;
+      REAL d2 = CONVERT_REAL(source[y * src_step + isrcpos.x + 1]) - a0;
+      REAL d3 = CONVERT_REAL(source[y * src_step + isrcpos.x + 2]) - a0;
+
+      REAL a1 = -1.0f / 3 * d0 + d2 - 1.0f / 6 * d3;
+      REAL a2 =  1.0f / 2 * d0 + 1.0f / 2 * d2;
+      REAL a3 = -1.0f / 6 * d0 - 1.0f / 2 * d2 + 1.0f / 6 * d3;
+      C[i] = a0 + a1 * dx + a2 * dx * dx + a3 * dx * dx * dx;
+   }
+
+   REAL d0 = C[0] - C[1];
+   REAL d2 = C[2] - C[1];
+   REAL d3 = C[3] - C[1];
+   REAL a0 = C[1];
+   REAL a1 = -1.0 / 3 * d0 + d2 -1.0 / 6 * d3;
+   REAL a2 = 1.0 / 2 * d0 + 1.0 / 2 * d2;
+   REAL a3 = -1.0 / 6 * d0 - 1.0 / 2 * d2 + 1.0 / 6 * d3;
+   return CONVERT(a0 + a1 * dy + a2 * dy * dy + a3 * dy * dy * dy);
 }
 
 
@@ -173,9 +284,10 @@ TYPE sample_linear(INPUT source, int src_step, float2 pos, int width, int height
       float srcx = gx - xshift;\
       float srcy = gy - yshift;\
       float2 srcpos = (float2)(cosa * srcx - sina * srcy + .5f, sina * srcx + cosa * srcy + .5f);\
+      int2 SrcSize = (int2)(src_img.Width, src_img.Height);\
       TYPE value = 0;\
       if (srcpos.x >= 0.5f && srcpos.x + 0.5f < src_img.Width && srcpos.y >= 0.5f && srcpos.y + 0.5f < src_img.Height)\
-         value = sampling (source, src_step, srcpos, src_img.Width, src_img.Height);\
+         value = sampling (source, src_step, srcpos, SrcSize);\
       dest[pos.y * dst_step + pos.x] = value;\
    }
 
@@ -190,21 +302,16 @@ TYPE sample_linear(INPUT source, int src_step, float2 pos, int width, int height
       if (pos.x >= dst_img.Width || pos.y >= dst_img.Height)\
          return;\
       float2 srcpos = {(pos.x + 0.4995f) * ratioX, (pos.y + 0.4995f) * ratioY};\
-      TYPE value = 0;\
-      if ((int)(srcpos.x + .5f) == src_img.Width)\
-         srcpos.x = src_img.Width - 0.5001f;\
-      if ((int)(srcpos.y + .5f) == src_img.Height)\
-         srcpos.y = src_img.Height - 0.5001f;\
-      if (srcpos.x >= -1 && srcpos.x < src_img.Width - .5f && srcpos.y >= -1 && srcpos.y < src_img.Height - .5f)\
-         value = sampling (source, src_step, srcpos, src_img.Width, src_img.Height);\
+      int2 SrcSize = (int2)(src_img.Width, src_img.Height);\
+      TYPE value = sampling (source, src_step, srcpos, SrcSize);\
       dest[pos.y * dst_step + pos.x] = value;\
    }
 
 
-ROTATE(rotate_img, sample_nn)
-
+ROTATE(rotate_nn, sample_nn)
 ROTATE(rotate_linear, sample_linear)
+ROTATE(rotate_bicubic, sample_bicubic)
 
-RESIZE(resize, sample_nn)
-
+RESIZE(resize_nn, sample_nn)
 RESIZE(resize_linear, sample_linear)
+RESIZE(resize_bicubic, sample_bicubic)

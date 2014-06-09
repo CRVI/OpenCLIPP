@@ -36,12 +36,6 @@
 
 #define CONVERT_INTERNAL(val) CONCATENATE(convert_, INTERNAL) (val)              // Example : convert_float4(val)
 
-#ifndef FLOAT
-#define CONVERT(v) CONCATENATE(CONCATENATE(convert_, TYPE), _sat) (v)
-#else    // FLOAT
-#define CONVERT(v) (v)
-#endif   // FLOAT
-
 
 #define READ(img, pos)  CONVERT_INTERNAL(img[(pos).y * src_step + (pos).x])
 #define WRITE(img, val) img[get_global_id(1) * dst_step / sizeof(TYPE) + get_global_id(0)] = CONVERT(val)

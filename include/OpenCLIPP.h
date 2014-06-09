@@ -61,6 +61,18 @@ typedef struct _cl_buffer  * ocipBuffer;  ///< A handle to an image buffer
 typedef struct _cl_program * ocipProgram; ///< A handle to a program
 
 
+/// Lists the possible interpolation types useable in some primitives
+enum ocipInterpolationType
+{
+   ocipNearestNeighbour,   ///< Chooses the value of the closest pixel - Fastest
+   ocipLinear,             ///< Does a bilinear interpolation of the 4 closest pixels
+   ocipCubic,              ///< Does a bicubic interpolation of the 16 closest pixels
+   ocipSuperSampling,      ///< Averages the values of the pixels in the area - good when reducing the size of an image
+   ocipBestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
+};
+
+
+
 /// Initialization.
 /// Initializes OpenCL, creates an execution context, sets the new context as the current context
 /// and returns the context handle.
@@ -395,18 +407,26 @@ ocipError ocip_API ocipFlip(     ocipImage Source, ocipImage Dest);
 ocipError ocip_API ocipTranspose(ocipImage Source, ocipImage Dest);
 
 /// Rotates the source image aroud the origin (0,0) and then shifts it.
-ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation);
+/// \param Source : Source image
+/// \param Dest : Destination image
+/// \param Angle : Angle to use for the rotation, in degrees.
+/// \param XShift : Shift along horizonltal axis to do after the rotation.
+/// \param YShift : Shift along vertical axis to do after the rotation.
+/// \param Interpolation : Type of interpolation to use.
+///      Available choices are : NearestNeighbour, Linear or BestQuality
+///      BestQuality will use Linear.
+ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation);
 
 /// Resizes the image.
 /// \param Source : Source image
 /// \param Dest : Destination image
-/// \param LinearInterpolation : If true, linear interpolation will be used when stretching images.
-///      If false, the nearest pixel value will be used.
-///      Linear Interpolation can be used only with F32 images.
+/// \param Interpolation : Type of interpolation to use.
+///      Available choices are : NearestNeighbour, Linear or BestQuality
+///      BestQuality will use Linear.
 /// \param KeepRatio : If false, Dest will be filled with the image from source, potentially changing
 ///      the aspect ratio of the image. \n If true, the aspect ratio of the image will be kept, potentially
 ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
-ocipError ocip_API ocipResize(   ocipImage Source, ocipImage Dest, ocipBool LinearInterpolation, ocipBool KeepRatio);
+ocipError ocip_API ocipResize(   ocipImage Source, ocipImage Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio);
 
 /// Sets all values of Dest to value
 ocipError ocip_API ocipSet(      ocipImage Dest, float Value);
@@ -769,18 +789,26 @@ ocipError ocip_API ocipFlip_V(      ocipBuffer Source, ocipBuffer Dest);
 ocipError ocip_API ocipTranspose_V( ocipBuffer Source, ocipBuffer Dest);
 
 /// Rotates the source image aroud the origin (0,0) and then shifts it.
-ocipError ocip_API ocipRotate_V(    ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation);
+/// \param Source : Source image
+/// \param Dest : Destination image
+/// \param Angle : Angle to use for the rotation, in degrees.
+/// \param XShift : Shift along horizonltal axis to do after the rotation.
+/// \param YShift : Shift along vertical axis to do after the rotation.
+/// \param Interpolation : Type of interpolation to use.
+///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+///      BestQuality will use Cubic.
+ocipError ocip_API ocipRotate_V(    ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation);
 
 /// Resizes the image.
 /// \param Source : Source image
 /// \param Dest : Destination image
-/// \param LinearInterpolation : If true, linear interpolation will be used when stretching images.
-///      If false, the nearest pixel value will be used.
-///      Linear Interpolation can be used only with F32 images.
+/// \param Interpolation : Type of interpolation to use.
+///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+///      BestQuality will use linear when shrinking and Cubic when enlarging.
 /// \param KeepRatio : If false, Dest will be filled with the image from source, potentially changing
 ///      the aspect ratio of the image. \n If true, the aspect ratio of the image will be kept, potentially
 ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
-ocipError ocip_API ocipResize_V(    ocipBuffer Source, ocipBuffer Dest, ocipBool LinearInterpolation, ocipBool KeepRatio);
+ocipError ocip_API ocipResize_V(    ocipBuffer Source, ocipBuffer Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio);
 
 /// Sets all values of Dest to value
 ocipError ocip_API ocipSet_V(       ocipBuffer Dest, float Value);

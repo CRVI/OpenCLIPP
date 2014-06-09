@@ -22,20 +22,29 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-template<typename DataType, int FactorX = 7, int FactorY = 3, bool LinearInterpolation = false>
+template<typename DataType, int FactorX = 7, int FactorY = 3, int Interpolation = ocipNearestNeighbour>
 class ResizeBench;
 
-template<typename DataType, bool LinearInterpolation = false>
-class ResizeBiggerBench : public ResizeBench<DataType, 13, 17, LinearInterpolation>
+template<typename DataType, int Interpolation = ocipNearestNeighbour>
+class ResizeBiggerBench : public ResizeBench<DataType, 13, 17, Interpolation>
 { };
 
 template<typename DataType>
-class ResizeLinearBench : public ResizeBench<DataType, 7, 3, true>
+class ResizeLinearBench : public ResizeBench<DataType, 7, 3, ocipLinear>
 { };
 
 template<typename DataType>
-class ResizeBiggerLinearBench : public ResizeBench<DataType, 13, 17, true>
+class ResizeBiggerLinearBench : public ResizeBench<DataType, 13, 17, ocipLinear>
 { };
+
+template<typename DataType>
+class ResizeCubicBench : public ResizeBench<DataType, 7, 3, ocipCubic>
+{ };
+
+template<typename DataType>
+class ResizeBiggerCubicBench : public ResizeBench<DataType, 13, 17, ocipCubic>
+{ };
+
 
 // FactorX and FactorX are in 1/10th, so 10 will mean same size
 template<typename DataType>
@@ -53,45 +62,75 @@ public:
    void RunCL();
    void RunCV();
 
-   float CompareTolerance() const { return .05f; }    // High tolerance to allow for minor interpolation differences
-   bool CompareTolRelative() const { return true; }
-
 protected:
 
-   void Init();
-
-   void SetDstSize(uint Width, uint Height, bool LinearInterpolation)
+   void SetDstSize(uint Width, uint Height, ocipInterpolationType Interpolation)
    {
       m_DstSize.Width = Width;
       m_DstSize.Height = Height;
-      m_LinearInterpolation = LinearInterpolation;
+      m_Interpolation = Interpolation;
    }
 
-   bool m_LinearInterpolation;
+   ocipInterpolationType m_Interpolation;
 
    IPP_CODE(
       unsigned char * m_IPPBuffer;
       IppiSize m_IPPDstSize;
-      IppiResizeSpec_32f * m_ResizeSpec;
 
-      IppiInterpolationType GetIPPMode()
+      int GetIPPMode() const
       {
-         if (m_LinearInterpolation)
+         switch (m_Interpolation)
+         {
+         case ocipNearestNeighbour:
+            return ippNearest;
+         case ocipLinear:
             return ippLinear;
-
-         return ippNearest;
+         case ocipCubic:
+            return IPPI_INTER_CUBIC;
+         case ocipSuperSampling:
+            return IPPI_INTER_SUPER;
+         default:
+            return ippNearest;
+         }
       } )
 
    NPP_CODE(
       NppiRect m_NPPSrcROI;
       NppiSize m_NPPDstROI;
 
-      NppiInterpolationMode GetNPPMode()
+      NppiInterpolationMode GetNPPMode() const
       {
-         if (m_LinearInterpolation)
+         switch (m_Interpolation)
+         {
+         case ocipNearestNeighbour:
+            return NPPI_INTER_NN;
+         case ocipLinear:
             return NPPI_INTER_LINEAR;
+         case ocipCubic:
+            return NPPI_INTER_CUBIC;
+         case ocipSuperSampling:
+            return NPPI_INTER_SUPER;
+         default:
+            return NPPI_INTER_NN;
+         }
+      } )
 
-         return NPPI_INTER_NN;
+   CV_CODE(
+      int GetCVMode() const
+      {
+         switch (m_Interpolation)
+         {
+         case ocipNearestNeighbour:
+            return INTER_NEAREST;
+         case ocipLinear:
+            return INTER_LINEAR;
+         case ocipCubic:
+            return INTER_CUBIC;
+         case ocipSuperSampling:
+            return INTER_AREA;
+         default:
+            return NPPI_INTER_NN;
+         }
       } )
 
    SSize m_DstSize;
@@ -102,13 +141,15 @@ void ResizeBenchBase<DataType>::Create(uint Width, uint Height)
 {
    IBench1in1out::Create<DataType, DataType>(Width, Height, m_DstSize.Width, m_DstSize.Height);
 
-   IPP_CODE(
+   IPP_CODE(__ID(
       m_IPPDstSize.width = m_DstSize.Width;
       m_IPPDstSize.height = m_DstSize.Height;
-      m_ResizeSpec = nullptr;
-   )
-
-   Init();
+      IppiRect ippSrcROI = {0, 0, Width, Height};
+      IppiRect DstROI = {0, 0, m_DstSize.Width, m_DstSize.Height};
+      int BufSize = 0;
+      ippiResizeGetBufSize(ippSrcROI, DstROI, 1, GetIPPMode(), &BufSize);
+      m_IPPBuffer = new unsigned char[BufSize];
+   ))
 
    NPP_CODE(__ID(
       NppiRect SrcROI = {0, 0, Width, Height};
@@ -118,69 +159,6 @@ void ResizeBenchBase<DataType>::Create(uint Width, uint Height)
    ))
 }
 
-template<>
-void ResizeBenchBase<unsigned char>::Init()
-{
-   IPP_CODE(
-      int SpecSize = 0;
-      int InitSize = 0;
-      ippiResizeGetSize_8u(m_IPPRoi, m_IPPDstSize, GetIPPMode(), 0, &SpecSize, &InitSize);
-      m_ResizeSpec = (IppiResizeSpec_32f*) new unsigned char[SpecSize];
-
-      if (m_LinearInterpolation)
-         ippiResizeLinearInit_8u(m_IPPRoi, m_IPPDstSize, m_ResizeSpec);
-      else
-         ippiResizeNearestInit_8u(m_IPPRoi, m_IPPDstSize, m_ResizeSpec);
-
-      int BufSize = 0;
-      ippiResizeGetBufferSize_8u(m_ResizeSpec, m_IPPDstSize, 1, &BufSize);
-
-      m_IPPBuffer = new unsigned char[BufSize];
-   )
-}
-
-template<>
-void ResizeBenchBase<unsigned short>::Init()
-{
-   IPP_CODE(
-      int SpecSize = 0;
-      int InitSize = 0;
-      ippiResizeGetSize_16u(m_IPPRoi, m_IPPDstSize, GetIPPMode(), 0, &SpecSize, &InitSize);
-      m_ResizeSpec = (IppiResizeSpec_32f*) new unsigned char[SpecSize];
-
-      if (m_LinearInterpolation)
-         ippiResizeLinearInit_16u(m_IPPRoi, m_IPPDstSize, m_ResizeSpec);
-      else
-         ippiResizeNearestInit_16u(m_IPPRoi, m_IPPDstSize, m_ResizeSpec);
-
-      int BufSize = 0;
-      ippiResizeGetBufferSize_16u(m_ResizeSpec, m_IPPDstSize, 1, &BufSize);
-
-      m_IPPBuffer = new unsigned char[BufSize];
-   )
-}
-
-template<>
-void ResizeBenchBase<float>::Init()
-{
-   IPP_CODE(
-      int SpecSize = 0;
-      int InitSize = 0;
-      ippiResizeGetSize_32f(m_IPPRoi, m_IPPDstSize, GetIPPMode(), 0, &SpecSize, &InitSize);
-      m_ResizeSpec = (IppiResizeSpec_32f*) new unsigned char[SpecSize];
-
-      if (m_LinearInterpolation)
-         ippiResizeLinearInit_32f(m_IPPRoi, m_IPPDstSize, m_ResizeSpec);
-      else
-         ippiResizeNearestInit_32f(m_IPPRoi, m_IPPDstSize, m_ResizeSpec);
-
-      int BufSize = 0;
-      ippiResizeGetBufferSize_32f(m_ResizeSpec, m_IPPDstSize, 1, &BufSize);
-
-      m_IPPBuffer = new unsigned char[BufSize];
-   )
-}
-
 template<typename DataType>
 void ResizeBenchBase<DataType>::Free()
 {
@@ -188,7 +166,6 @@ void ResizeBenchBase<DataType>::Free()
 
    IPP_CODE(
       delete [] m_IPPBuffer;
-      delete [] (unsigned char*) m_ResizeSpec;
    )
 }
 
@@ -196,32 +173,30 @@ template<typename DataType>
 void ResizeBenchBase<DataType>::RunCL()
 {
    if (m_UsesBuffer)
-      ocipResize_V(m_CLBufferSrc, m_CLBufferDst, m_LinearInterpolation, false);
+      ocipResize_V(m_CLBufferSrc, m_CLBufferDst, m_Interpolation, false);
    else
-      ocipResize(m_CLSrc, m_CLDst, m_LinearInterpolation, false);
+      ocipResize(m_CLSrc, m_CLDst, m_Interpolation, false);
 }
 
 template<typename DataType>
 void ResizeBenchBase<DataType>::RunCV()
 {
-   CV_CODE( resize(m_CVSrc, m_CVDst, m_CVDst.size(), 0, 0, (m_LinearInterpolation ? INTER_LINEAR : INTER_NEAREST)); )
+   CV_CODE( resize(m_CVSrc, m_CVDst, m_CVDst.size(), 0, 0, GetCVMode()); )
 }
 
 template<>
 void ResizeBenchBase<unsigned char>::RunIPP()
 {
    IPP_CODE(__ID(
-      IppiPoint Offset = {0, 0};
-      if (m_LinearInterpolation)
-         ippiResizeLinear_8u_C1R(
-            m_ImgSrc.Data(), m_ImgSrc.Step,
-            m_ImgDstIPP.Data(), m_ImgDstIPP.Step, Offset, m_IPPDstSize,
-            ippBorderRepl, nullptr,
-            m_ResizeSpec, m_IPPBuffer);
-      else
-         ippiResizeNearest_8u_C1R(
-            m_ImgSrc.Data(), m_ImgSrc.Step,
-            m_ImgDstIPP.Data(), m_ImgDstIPP.Step, Offset, m_IPPDstSize, m_ResizeSpec, m_IPPBuffer);
+      IppiSize SrcSize = {m_ImgSrc.Width, m_ImgSrc.Height};
+      IppiRect SrcROI = {0, 0, m_ImgSrc.Width, m_ImgSrc.Height};
+      IppiRect DstROI = {0, 0, m_ImgDstIPP.Width, m_ImgDstIPP.Height};
+      double XFactor = DstROI.width * 1. / SrcROI.width;
+      double YFactor = DstROI.height * 1. / SrcROI.height;
+      ippiResizeSqrPixel_8u_C1R(
+         m_ImgSrc.Data(), SrcSize, m_ImgSrc.Step, SrcROI, 
+         m_ImgDstIPP.Data(), m_ImgDstIPP.Step, DstROI, 
+         XFactor, YFactor, 0, 0, GetIPPMode(), m_IPPBuffer);
    ))
 }
 
@@ -229,17 +204,15 @@ template<>
 void ResizeBenchBase<unsigned short>::RunIPP()
 {
    IPP_CODE(__ID(
-      IppiPoint Offset = {0, 0};
-      if (m_LinearInterpolation)
-         ippiResizeLinear_16u_C1R(
-            (Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step,
-            (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, Offset, m_IPPDstSize,
-            ippBorderRepl, nullptr,
-            m_ResizeSpec, m_IPPBuffer);
-      else
-         ippiResizeNearest_16u_C1R(
-            (Ipp16u*) m_ImgSrc.Data(), m_ImgSrc.Step,
-            (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, Offset, m_IPPDstSize, m_ResizeSpec, m_IPPBuffer);
+      IppiSize SrcSize = {m_ImgSrc.Width, m_ImgSrc.Height};
+      IppiRect SrcROI = {0, 0, m_ImgSrc.Width, m_ImgSrc.Height};
+      IppiRect DstROI = {0, 0, m_ImgDstIPP.Width, m_ImgDstIPP.Height};
+      double XFactor = DstROI.width * 1. / SrcROI.width;
+      double YFactor = DstROI.height * 1. / SrcROI.height;
+      ippiResizeSqrPixel_16u_C1R(
+         (Ipp16u*) m_ImgSrc.Data(), SrcSize, m_ImgSrc.Step, SrcROI, 
+         (Ipp16u*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, DstROI, 
+         XFactor, YFactor, 0, 0, GetIPPMode(), m_IPPBuffer);
    ))
 }
 
@@ -248,17 +221,15 @@ template<>
 void ResizeBenchBase<float>::RunIPP()
 {
    IPP_CODE(__ID(
-      IppiPoint Offset = {0, 0};
-      if (m_LinearInterpolation)
-         ippiResizeLinear_32f_C1R(
-            (Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step,
-            (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, Offset, m_IPPDstSize,
-            ippBorderRepl, nullptr,
-            m_ResizeSpec, m_IPPBuffer);
-      else
-         ippiResizeNearest_32f_C1R(
-            (Ipp32f*) m_ImgSrc.Data(), m_ImgSrc.Step,
-            (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, Offset, m_IPPDstSize, m_ResizeSpec, m_IPPBuffer);          
+      IppiSize SrcSize = {m_ImgSrc.Width, m_ImgSrc.Height};
+      IppiRect SrcROI = {0, 0, m_ImgSrc.Width, m_ImgSrc.Height};
+      IppiRect DstROI = {0, 0, m_ImgDstIPP.Width, m_ImgDstIPP.Height};
+      double XFactor = DstROI.width * 1. / SrcROI.width;
+      double YFactor = DstROI.height * 1. / SrcROI.height;
+      ippiResizeSqrPixel_32f_C1R(
+         (Ipp32f*) m_ImgSrc.Data(), SrcSize, m_ImgSrc.Step, SrcROI, 
+         (Ipp32f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, DstROI, 
+         XFactor, YFactor, 0, 0, GetIPPMode(), m_IPPBuffer);       
    ))
 }
 
@@ -299,13 +270,29 @@ void ResizeBenchBase<float>::RunNPP()
    )
 }
 
-template<typename DataType, int FactorX, int FactorY, bool LinearInterpolation>
+template<typename DataType, int FactorX, int FactorY, int Interpolation>
 class ResizeBench : public ResizeBenchBase<DataType>
 {
 public:
    void Create(uint Width, uint Height)
    {
-      this->SetDstSize(Width * FactorX / 10, Height * FactorY / 10, LinearInterpolation);
+      this->SetDstSize(Width * FactorX / 10, Height * FactorY / 10, ocipInterpolationType(Interpolation));
       ResizeBenchBase<DataType>::Create(Width, Height);
+   }
+
+   float CompareTolerance() const
+   {
+      if (Interpolation == ocipCubic && is_same<DataType, unsigned char>::value)
+         return 2;   // There are minor differences in the bicubic results
+
+      return .05f;   // High tolerance to allow for minor interpolation differences
+   }
+
+   bool CompareTolRelative() const
+   {
+      if (Interpolation == ocipCubic && is_same<DataType, unsigned char>::value)
+         return false;
+
+      return true;
    }
 };

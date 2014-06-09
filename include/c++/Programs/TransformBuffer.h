@@ -37,6 +37,16 @@ public:
    :  ImageBufferProgram(CL, "Transform_Buffer.cl")
    { }
 
+   /// Lists the possible interpolation types useable in some primitives
+   enum EInterpolationType
+   {
+      NearestNeighbour,   ///< Chooses the value of the closest pixel - Fastest
+      Linear,             ///< Does a bilinear interpolation of the 4 closest pixels
+      Cubic,              ///< Unavailable
+      SuperSampling,      ///< Unavailable
+      BestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
+   };
+
    /// Mirrors the image along X.
    /// D(x,y) = D(width - x - 1, y)
    void MirrorX(ImageBuffer& Source, ImageBuffer& Dest);
@@ -55,19 +65,26 @@ public:
    void Transpose(ImageBuffer& Source, ImageBuffer& Dest);
 
    /// Rotates the source image aroud the origin (0,0) and then shifts it.
+   /// \param Source : Source image
+   /// \param Dest : Destination image
+   /// \param Angle : Angle to use for the rotation, in degrees.
+   /// \param XShift : Shift along horizonltal axis to do after the rotation.
+   /// \param YShift : Shift along vertical axis to do after the rotation.
+   /// \param Interpolation : Type of interpolation to use.
+   ///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+   ///      BestQuality will use Cubic.
    void Rotate(ImageBuffer& Source, ImageBuffer& Dest,
-      double Angle, double XShift, double YShift, bool LinearInterpolation = true);
+      double Angle, double XShift, double YShift, EInterpolationType Interpolation = BestQuality);
 
    /// Resizes the image.
    /// \param Source : Source image
    /// \param Dest : Destination image
-   /// \param LinearInterpolation : If true, linear interpolation will be used when stretching images.
-   ///      If false, the nearest pixel value will be used.
-   ///      Linear interpolation can be used only with F32 images.
+   /// \param Interpolation : Type of interpolation to use.
+   ///         Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
    /// \param KeepRatio : If false, Dest will be filled with the image from source, potentially changing
    ///      the aspect ratio of the image. If true, the aspect ratio of the image will be kept, potentially
    ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
-   void Resize(ImageBuffer& Source, ImageBuffer& Dest, bool LinearInterpolation = true, bool KeepRatio = false);
+   void Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationType Interpolation = BestQuality, bool KeepRatio = false);
 
    /// Sets all values of Dest to value
    void SetAll(ImageBuffer& Dest, float Value);

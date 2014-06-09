@@ -496,14 +496,14 @@ UNARY_OP(ocipMirrorY, MirrorY)
 UNARY_OP(ocipFlip, Flip)
 UNARY_OP(ocipTranspose, Transpose)
 
-ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation)
+ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation)
 {
-   H( CLASS.Rotate(Img(Source), Img(Dest), Angle, XShift, YShift, LinearInterpolation != 0) )
+   H( CLASS.Rotate(Img(Source), Img(Dest), Angle, XShift, YShift, Transform::EInterpolationType(Interpolation)) )
 }
 
-ocipError ocip_API ocipResize(ocipImage Source, ocipImage Dest, ocipBool LinearInterpolation, ocipBool KeepRatio)
+ocipError ocip_API ocipResize(ocipImage Source, ocipImage Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio)
 {
-   H( CLASS.Resize(Img(Source), Img(Dest), LinearInterpolation != 0, KeepRatio != 0) )
+   H( CLASS.Resize(Img(Source), Img(Dest), Transform::EInterpolationType(Interpolation), KeepRatio != 0) )
 }
 
 ocipError ocip_API ocipSet(ocipImage Dest, float Value)
@@ -806,14 +806,14 @@ UNARY_OP(ocipMirrorY_V, MirrorY)
 UNARY_OP(ocipFlip_V, Flip)
 UNARY_OP(ocipTranspose_V, Transpose)
 
-ocipError ocip_API ocipRotate_V(ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, ocipBool LinearInterpolation)
+ocipError ocip_API ocipRotate_V(ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation)
 {
-   H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, LinearInterpolation != 0) )
+   H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, TransformBuffer::EInterpolationType(Interpolation) ) )
 }
 
-ocipError ocip_API ocipResize_V(ocipBuffer Source, ocipBuffer Dest, ocipBool LinearInterpolation, ocipBool KeepRatio)
+ocipError ocip_API ocipResize_V(ocipBuffer Source, ocipBuffer Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio)
 {
-   H( CLASS.Resize(Buf(Source), Buf(Dest), LinearInterpolation != 0, KeepRatio != 0) )
+   H( CLASS.Resize(Buf(Source), Buf(Dest), TransformBuffer::EInterpolationType(Interpolation), KeepRatio != 0) )
 }
 
 ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
