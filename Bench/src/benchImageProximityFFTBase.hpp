@@ -24,20 +24,24 @@
 
 #include <memory>
 
+#define IMG_PROX_FFT
+
 #define BENCH_NAME SqrDistanceFFT_Norm
 #define IPP_NAME SqrDistanceSame_Norm
-#include "benchImageProximityFFT.hpp"
+#include "benchImageProximity.hpp"
 
 /* // These are not supported in IPP
 #define BENCH_NAME SqrDistanceFFT    
-#include "benchImageProximityFFT.hpp"
+#include "benchImageProximity.hpp"
 
 #define BENCH_NAME AbsDistanceFFT
-#include "benchImageProximityFFT.hpp"
+#include "benchImageProximity.hpp"
 
 #define BENCH_NAME CrossCorrFFT
-#include "benchImageProximityFFT.hpp"*/
+#include "benchImageProximity.hpp"*/
 
 #define BENCH_NAME CrossCorrFFT_Norm
 #define IPP_NAME CrossCorrSame_Norm
-#include "benchImageProximityFFT.hpp"
+#include "benchImageProximity.hpp"
+
+#undef IMG_PROX_FFT
