@@ -85,14 +85,6 @@ protected:
    //Buffer of bigger source used for FFT
    std::shared_ptr<TempImageBuffer> m_bigger_source;
 
-   //Buffer of bigger dest used for FFT
-   std::shared_ptr<TempImageBuffer> m_bigger_dest;
-
-   //Buffer of source in float
-   std::shared_ptr<TempImageBuffer> m_float_source;
-
-   //Buffer of template in float
-   std::shared_ptr<TempImageBuffer> m_float_template;
 
    IntegralBuffer   m_integral;
    StatisticsVector m_statistics;
@@ -116,4 +108,5 @@ protected:
 
    ImageProximityFFT& operator = (ImageProximityFFT&);   // Not a copyable object
 };
+
 }

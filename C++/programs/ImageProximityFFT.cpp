@@ -57,14 +57,12 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    while (!m_fft.IsSupportedLength(size.Height))
       size.Height++;
 
-   if (m_bigger_source == nullptr || m_bigger_source->Width() < size.Width || m_bigger_source->Height() < size.Height)
+   if (m_bigger_source == nullptr || m_bigger_source->Width() != size.Width || m_bigger_source->Height() != size.Height)
       m_bigger_source = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 1);
-      
+
    if (m_bigger_template == nullptr || m_bigger_template->Width() < size.Width || m_bigger_template->Height() < size.Height)
       m_bigger_template = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 1);
 
-   if (m_bigger_dest == nullptr || m_bigger_dest->Width() < size.Width || m_bigger_dest->Height() < size.Height)
-      m_bigger_dest = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 1);
 
 
    // Size of the spectral images
@@ -73,7 +71,7 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    if (m_templ_spect == nullptr || m_templ_spect->Width() < size.Width || m_templ_spect->Height() < size.Height)
       m_templ_spect = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 2);
 
-   if (m_source_spect == nullptr || m_source_spect->Width() < size.Width || m_source_spect->Height() < size.Height)
+   if (m_source_spect == nullptr || m_source_spect->Width() != size.Width || m_source_spect->Height() != size.Height)
       m_source_spect = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 2);
 
    if (m_result_spect == nullptr || m_result_spect->Width() < size.Width || m_result_spect->Height() < size.Height)
@@ -83,7 +81,6 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    m_statistics.PrepareFor(Template);
    m_transform.PrepareFor(Source);
    m_fft.PrepareFor(*m_bigger_source, *m_source_spect);
-   
 }
 
 void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest)
@@ -181,7 +178,7 @@ void ImageProximityFFT::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Templ
 
    m_integral.SqrIntegral(Source, *m_image_sqsums);
 
-   float templ_sqsum =  static_cast<float>(m_statistics.SumSqr(Template));
+   float templ_sqsum = static_cast<float>(m_statistics.SumSqr(Template));
 
    CrossCorr(Source, Template, Dest);
    MatchTemplatePrepared_SQDIFF_NORM(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
@@ -209,25 +206,37 @@ void ImageProximityFFT::Convolve(ImageBuffer& Source, ImageBuffer& Template, Ima
 
    PrepareFor(Source, Template);
 
+   // Fill these images with black
    m_transform.SetAll(*m_bigger_template, 0);
    m_transform.SetAll(*m_bigger_source, 0);
 
+   // Copy the data from Source and Template in images that are F32 and are big enough
    Kernel(copy_offset, In(Source), Out(*m_bigger_source), Source.Step(), m_bigger_source->Step(),
       int(Template.Width()) / 2, int(Template.Height()) / 2, m_bigger_source->Width(), m_bigger_source->Height());
 
    Kernel(copy_offset, In(Template), Out(*m_bigger_template), Template.Step(), m_bigger_template->Step(),
       0, 0, m_bigger_template->Width(), m_bigger_template->Height());
 
+
+   // Forward FFT of Source and Template
    m_fft.Forward(*m_bigger_source, *m_source_spect);
    m_fft.Forward(*m_bigger_template, *m_templ_spect);
 
+
+   // We need to divide the values by the FFT area to get the proper 
    float Area = float(m_bigger_source->Width() * m_bigger_source->Height());
 
-   MulAndScaleSpectrums(*m_source_spect, *m_templ_spect, *m_result_spect, 1 / Area );
+   // Do the convolution using pointwise product of the spectrums
+   // See information here : http://en.wikipedia.org/wiki/Convolution_theorem
+   MulAndScaleSpectrums(*m_source_spect, *m_templ_spect, *m_result_spect, 1 / Area);
 
-   m_fft.Inverse(*m_result_spect, *m_bigger_dest);
 
-   Kernel(copy_roi, In((*m_bigger_dest)), Out(Dest), m_bigger_dest->Step(), Dest.Step(), Dest.Width(), Dest.Height());
+   // Inverse FFT to get the result of the convolution
+   m_fft.Inverse(*m_result_spect, *m_bigger_source);  // Reuse m_bigger_source image for the convolution result
+
+
+   // Copy the result to Dest
+   Kernel(copy_roi, In((*m_bigger_source)), Out(Dest), m_bigger_source->Step(), Dest.Step(), Dest.Width(), Dest.Height());
 }
 
 #else   // USE_CLFFT
