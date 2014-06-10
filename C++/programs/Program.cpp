@@ -72,7 +72,8 @@ bool Program::Build()
 
    string optionStr = m_Options;
       
-   if (m_Path != "" && m_CL->IsOnIntelCPU() && IsDebuggerPresent())
+   if (m_Path != "" && IsDebuggerPresent() &&
+      m_CL->GetPlatformType() == COpenCL::IntelPlatform && m_CL->GetDeviceType() == CL_DEVICE_TYPE_CPU)
    {
       // Add debug information for Intel OpenCL SDK Debugger
       optionStr += " -g -s \"" + Path + "\"";

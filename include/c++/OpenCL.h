@@ -68,6 +68,22 @@ public:
    /// Returns the name of the OpenCL device
    std::string GetDeviceName() const;
 
+   /// Returns the type of the OpenCL device
+   /// Can be CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_GPU or other types
+   cl_device_type GetDeviceType() const;
+
+   /// Lists the common OpenCL platforms
+   enum EPlatformType
+   {
+      NvidiaPlatform,
+      AmdPlatform,
+      IntelPlatform,
+      OtherPlatform,
+   };
+
+   /// Returns the type of the OpenCL platform
+   EPlatformType GetPlatformType() const;
+
    /// Returns the name of the OpenCL error
    /// \param status : An OpenCL error code
    /// \return the name of the given error code
@@ -98,26 +114,11 @@ public:
    operator cl_command_queue ();    ///< Converts to a cl_command_queue
    operator cl_device_id ();        ///< Converts to a cl_device_id
 
-   /// True when running on Intel platform on CPU device (for internal use)
-   bool IsOnIntelCPU() const;
 
    /// No-copy support on the OpenCL device.
    /// True when the device uses the same memory for the host and the device.
    /// When true, image transfers to the device are instantaneous.
    bool SupportsNoCopy() const;
-
-   /* Running custom kernels :
-
-   COpenCL CL;
-
-   cl::Program MyProgram(CL, MyKernel_Source, true);  // Compile a program from kernel
-
-   auto MyKernel = cl::make_kernel<arg1_type, arg2_type, ...>(MyProgram, "my_kernel_name");  // Prepare a kernel object
-
-   MyKernel(cl::EnqueueArgs(CL.GetQueue(), MyGlobalRange), arg1, arg2, ...);     // Enqueue the kernel execution
-
-   // See OpenCL C++ API doc for more detail : http://www.khronos.org/registry/cl/specs/opencl-cplusplus-1.2.pdf
-   */
 
 protected:
    cl::Platform m_Platform;      ///< The OpenCL platform (like nVidia)

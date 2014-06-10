@@ -43,6 +43,7 @@ string COpenCL::m_ClFilesPath;
 string LoadClFile(const string& Path);
 cl::Program LoadClProgram(const cl::Context& context,  const string& Path, bool build);
 cl::Platform findPlatform(const char * inPreferred);
+string& string_tolower(string& str);
 
 COpenCL::COpenCL(const char * PreferredPlatform, cl_device_type deviceType)
 {
@@ -125,26 +126,39 @@ COpenCL::operator cl_device_id ()
    return m_Device();
 }
 
-bool COpenCL::IsOnIntelCPU() const
-{
-   string name = m_Platform.getInfo<CL_PLATFORM_NAME>();
-   if (name.find("Intel") == string::npos)
-      return false;
-
-   return (m_Device.getInfo<CL_DEVICE_TYPE>() == CL_DEVICE_TYPE_CPU);
-}
-
 bool COpenCL::SupportsNoCopy() const
 {
    // TODO : Test all common devices to see if they support using the same
    // memory region for the host and the device.
    // Main candidates are : Intel GPU, AMD CPU, AMD Integrated GPU
-   return IsOnIntelCPU();
+   return false;
 }
 
 std::string COpenCL::GetDeviceName() const
 {
    return m_Device.getInfo<CL_DEVICE_NAME>();
+}
+
+cl_device_type COpenCL::GetDeviceType() const
+{
+   return m_Device.getInfo<CL_DEVICE_TYPE>();
+}
+
+COpenCL::EPlatformType COpenCL::GetPlatformType() const
+{
+   string name = m_Platform.getInfo<CL_PLATFORM_NAME>();
+   string_tolower(name);
+
+   if (name.find("intel") != string::npos)
+      return IntelPlatform;
+
+   if (name.find("nvidia") != string::npos)
+      return NvidiaPlatform;
+
+   if (name.find("amd") != string::npos)
+      return AmdPlatform;
+
+   return OtherPlatform;
 }
 
 const char * COpenCL::ErrorName(cl_int status)
