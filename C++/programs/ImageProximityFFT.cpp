@@ -51,10 +51,10 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    size.Height = Source.Height() + Template.Height() / 2;
 
    // Search for a size supported by clFFT
-   while (!FFT::IsSupportedLength(size.Width))
+   while (!m_fft.IsSupportedLength(size.Width))
       size.Width++;
 
-   while (!FFT::IsSupportedLength(size.Height))
+   while (!m_fft.IsSupportedLength(size.Height))
       size.Height++;
 
    if (m_bigger_source == nullptr || m_bigger_source->Width() < size.Width || m_bigger_source->Height() < size.Height)

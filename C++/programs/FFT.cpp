@@ -54,7 +54,8 @@ FFT::FFT(COpenCL& CL)
 :  m_CL(&CL),
    m_Queue(CL),
    m_ForwardPlan(0),
-   m_BackwardPlan(0)
+   m_BackwardPlan(0),
+   m_OnNvidia(CL.GetPlatformType() == CL.NvidiaPlatform)
 { }
 
 FFT::~FFT()
@@ -81,21 +82,24 @@ void FFT::ReleasePlans()
 
 }
 
-bool FFT::IsSupportedLength(uint Length)
+bool FFT::IsSupportedLength(uint Length) const
 {
-   while( Length > 1 )
-	{
-		if( Length % 2 == 0 )
-			Length /= 2;
-		else if( Length % 3 == 0 )
-			Length /= 3;
-		else if( Length % 5 == 0 )
-			Length /= 5;
-		else
-			return false;
-	}
+   // Big lengths than contain multiples of 5 do not work with clFFT on NVIDIA hardware
+   bool AcceptMutipleOf5 = (!m_OnNvidia || Length < 1000);
 
-	return true;
+   while( Length > 1 )
+   {
+      if( Length % 2 == 0 )
+         Length /= 2;
+      else if( Length % 3 == 0 )
+         Length /= 3;
+      else if( Length % 5 == 0 && AcceptMutipleOf5)
+         Length /= 5;
+      else
+         return false;
+   }
+
+   return true;
 }
 
 bool FFT::IsPlanCompatible(clfftPlanHandle ForwardPlan, const ImageBase& Real, const ImageBase& Complex)

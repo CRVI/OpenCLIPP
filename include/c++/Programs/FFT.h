@@ -56,7 +56,7 @@ public:
    /// \param RealDest : Output image, must be 1 channel F32. Only real data, no imaginary component.
    void Inverse(ImageBuffer& ComplexSource, ImageBuffer& RealDest);
 
-   static bool IsSupportedLength(uint Length);
+   bool IsSupportedLength(uint Length) const;
 
 protected:
 
@@ -72,6 +72,8 @@ protected:
 
    std::shared_ptr<TempBuffer> m_ForwardTempBuffer;
    std::shared_ptr<TempBuffer> m_BackwardTempBuffer;
+
+   bool m_OnNvidia;
 };
 
 }
