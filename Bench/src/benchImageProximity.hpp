@@ -85,7 +85,7 @@ void CLASS_NAME<DataType>::Create(uint Width, uint Height)
 
    // CL
    m_ImgTemplate = std::unique_ptr<CImageROI>(new CImageROI(m_ImgSrc, 10, 10,
-      min(TemplateSize, m_ImgSrc.Width - 10), min(TemplateSize, m_ImgSrc.Height - 10)));
+      min(TemplateSize, int(m_ImgSrc.Width) - 10), min(TemplateSize, int(m_ImgSrc.Height) - 10)));
 
    ocipCreateImage(&m_CLTemplate, m_ImgTemplate->ToSImage(), m_ImgTemplate->Data(), CL_MEM_READ_WRITE);
    ocipCreateImageBuffer(&m_CLBufTemplate, m_ImgTemplate->ToSImage(), m_ImgTemplate->Data(), CL_MEM_READ_WRITE);

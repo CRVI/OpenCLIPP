@@ -42,8 +42,6 @@ public:
 
    bool Compare(double * V1, DstT * V2);
 
-   virtual float CompareTolerance() const { return SUCCESS_EPSILON; }
-
 protected:
 
    ocipProgram m_Program;

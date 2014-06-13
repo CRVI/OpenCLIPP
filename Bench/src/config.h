@@ -27,6 +27,15 @@
 //Config
 //#define FULL_BENCH    // All image sizes - comment to run only a single image size for faster run time
 //#define FULL_TESTS      // All tests - uncomment to run unit tests instead of benchmark
-#define WAITFORKEY_AT_END
 
-#define SUCCESS_EPSILON 0.0001f
+#define OPENCL_PLATFORM    ""                   // Preferred OpenCL platform
+#define OPENCL_DEVICE_TYPE CL_DEVICE_TYPE_ALL   // bitfield specifying the desired OpenCL device type
+
+// Full path to the .cl files for OpenCLIPP
+// Must not contain spaces if using the NVIDIA platform
+#define CL_FILES_PATH      "D:/OpenCLIPP/cl-files/"
+
+//#define HAS_IPP   // Intel IPP library
+//#define HAS_NPP   // nVidia NPP library
+//#define HAS_CV    // OpenCV OCL library
+// OpenCLIPP is assumed to be always available

@@ -34,9 +34,6 @@
 #include "CImage.h"
 #include "Timer.h"
 
-//#define HAS_IPP   // Intel IPP library
-//#define HAS_NPP   // nVidia NPP library
-//#define HAS_CV    // OpenCV OCL library
 
 #if defined(FULL_TESTS) && !defined(HAS_IPP)
 #error Need IPP to do the full tests - IPP is used as reference
@@ -332,10 +329,13 @@ int main()
 {
    ocipContext CLContext;
 
-   ocipInitialize(&CLContext, "", CL_DEVICE_TYPE_ALL);
-   //ocipInitialize(&CLContext, "Intel", CL_DEVICE_TYPE_CPU);   // Use this to use the Intel OpenCL debugger
+   ocipInitialize(&CLContext, OPENCL_PLATFORM, OPENCL_DEVICE_TYPE);
 
-   ocipSetCLFilesPath("D:/OpenCLIPP/cl-files/");
+#ifdef HAS_CV
+   SelectOpenCVOCLDevice(OPENCL_DEVICE_TYPE);
+#endif
+
+   ocipSetCLFilesPath(CL_FILES_PATH);
 
 #ifdef FULL_TESTS
    printf("Running unit tests using randomly generated images\n");
@@ -365,9 +365,7 @@ int main()
 
    printf("Testing complete\n");
 
-   #ifdef WAITFORKEY_AT_END
-      getchar();
-   #endif
+   getchar();
 
    ocipUninitialize(CLContext);
 

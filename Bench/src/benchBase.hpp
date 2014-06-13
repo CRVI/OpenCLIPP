@@ -53,7 +53,7 @@ class IBench : public ICLBench, public INPPBench, public ICVBench
 public:
    SSize CompareSize() const { return SSize(1, 1); }
    SPoint CompareAnchor() const { return SPoint(0, 0); }
-   float CompareTolerance() const { return SUCCESS_EPSILON; }
+   float CompareTolerance() const { return 0.0001f; }
    bool CompareTolRelative() const { return false; }
 };
 
@@ -250,6 +250,12 @@ CV_CODE(
    int GetCVType<float>(int NbChannels)
    {
       return CV_MAKETYPE(CV_32F, NbChannels);
+   }
+
+   template<>
+   int GetCVType<double>(int NbChannels)
+   {
+      return CV_MAKETYPE(CV_64F, NbChannels);
    }
 
    int ToCVType(SImage::EDataType Type, int NbChannels = 1)

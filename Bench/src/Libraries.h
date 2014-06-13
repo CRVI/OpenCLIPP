@@ -67,6 +67,14 @@
 #endif _MSC_VER
 using namespace cv;
 using namespace ocl;
+void SelectOpenCVOCLDevice(cl_device_type deviceType)
+{
+   // There is no way to specify the platform name in OpenCV OCL
+
+   // A lest set the proper device type
+   std::vector<Info> oclinfo;
+   getDevice(oclinfo, (int) deviceType);
+}
 #define CV_CODE(code) code
 #define CV_AVAILABLE true
 #else

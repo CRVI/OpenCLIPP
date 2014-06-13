@@ -46,6 +46,8 @@ public:
    void RunCV();
    void RunNPP();
 
+   bool HasCVTest() const { return false; }  // OpenCV OCL fails when trying to convert images
+
    float CompareTolerance() const { return 1; }   // Increased tolerance to accept minor rounding errors
 
 };
