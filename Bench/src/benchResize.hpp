@@ -22,7 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-template<typename DataType, int FactorX = 7, int FactorY = 3, int Interpolation = ocipNearestNeighbour>
+template<typename DataType, int FactorX = 8, int FactorY = 3, int Interpolation = ocipNearestNeighbour>
 class ResizeBench;
 
 template<typename DataType, int Interpolation = ocipNearestNeighbour>
@@ -30,7 +30,7 @@ class ResizeBiggerBench : public ResizeBench<DataType, 13, 17, Interpolation>
 { };
 
 template<typename DataType>
-class ResizeLinearBench : public ResizeBench<DataType, 7, 3, ocipLinear>
+class ResizeLinearBench : public ResizeBench<DataType, 8, 3, ocipLinear>
 { };
 
 template<typename DataType>
@@ -38,7 +38,7 @@ class ResizeBiggerLinearBench : public ResizeBench<DataType, 13, 17, ocipLinear>
 { };
 
 template<typename DataType>
-class ResizeCubicBench : public ResizeBench<DataType, 7, 3, ocipCubic>
+class ResizeCubicBench : public ResizeBench<DataType, 8, 3, ocipCubic>
 { };
 
 template<typename DataType>
@@ -46,7 +46,7 @@ class ResizeBiggerCubicBench : public ResizeBench<DataType, 13, 17, ocipCubic>
 { };
 
 template<typename DataType>
-class ResizeLanczosBench : public ResizeBench<DataType, 7, 3, ocipLanczos3>
+class ResizeLanczosBench : public ResizeBench<DataType, 8, 3, ocipLanczos3>
 { };
 
 template<typename DataType>
