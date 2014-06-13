@@ -45,6 +45,14 @@ template<typename DataType>
 class ResizeBiggerCubicBench : public ResizeBench<DataType, 13, 17, ocipCubic>
 { };
 
+template<typename DataType>
+class ResizeLanczosBench : public ResizeBench<DataType, 7, 3, ocipLanczos3>
+{ };
+
+template<typename DataType>
+class ResizeBiggerLanczosBench : public ResizeBench<DataType, 13, 17, ocipLanczos3>
+{ };
+
 
 // FactorX and FactorX are in 1/10th, so 10 will mean same size
 template<typename DataType>
@@ -87,6 +95,8 @@ protected:
             return ippLinear;
          case ocipCubic:
             return IPPI_INTER_CUBIC;
+         case ocipLanczos3:
+            return IPPI_INTER_LANCZOS;
          case ocipSuperSampling:
             return IPPI_INTER_SUPER;
          default:
@@ -108,6 +118,8 @@ protected:
             return NPPI_INTER_LINEAR;
          case ocipCubic:
             return NPPI_INTER_CUBIC;
+         case ocipLanczos3:
+            return NPPI_INTER_LANCZOS;
          case ocipSuperSampling:
             return NPPI_INTER_SUPER;
          default:
@@ -126,10 +138,12 @@ protected:
             return INTER_LINEAR;
          case ocipCubic:
             return INTER_CUBIC;
+         case ocipLanczos3:
+            return INTER_LANCZOS4;
          case ocipSuperSampling:
             return INTER_AREA;
          default:
-            return NPPI_INTER_NN;
+            return INTER_NEAREST;
          }
       } )
 
@@ -284,6 +298,9 @@ public:
    {
       if (Interpolation == ocipCubic && is_same<DataType, unsigned char>::value)
          return 2;   // There are minor differences in the bicubic results
+
+      if (Interpolation == ocipLanczos2 || Interpolation == ocipLanczos3)
+         return 0.15f;   // Allow higher tolerance for Lanczos
 
       return .05f;   // High tolerance to allow for minor interpolation differences
    }

@@ -67,6 +67,8 @@ enum ocipInterpolationType
    ocipNearestNeighbour,   ///< Chooses the value of the closest pixel - Fastest
    ocipLinear,             ///< Does a bilinear interpolation of the 4 closest pixels
    ocipCubic,              ///< Does a bicubic interpolation of the 16 closest pixels
+   ocipLanczos2,           ///< Does 2-lobed Lanczos interpolation using 16 pixels
+   ocipLanczos3,           ///< Does 3-lobed Lanczos interpolation using 36 pixels
    ocipSuperSampling,      ///< Averages the values of the pixels in the area - good when reducing the size of an image
    ocipBestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
 };

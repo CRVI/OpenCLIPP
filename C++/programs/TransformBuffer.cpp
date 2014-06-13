@@ -118,9 +118,55 @@ void TransformBuffer::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
          Source, Dest, SrcImg, DstImg,
          sina, cosa, xshift, yshift);
       break;
+   case Lanczos2:
+   case Lanczos3:
    case SuperSampling:
    default:
       throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
+   }
+
+}
+
+
+int find_lanczos_buffer_size(int length)
+{
+   int size = 512;
+   while (size < length)
+      size *= 2;
+
+   return size;
+}
+
+void TransformBuffer::ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl::NDRange Range)
+{
+   float RatioX = Source.Width() * 1.f / Dest.Width();
+   float RatioY = Source.Height() * 1.f / Dest.Height();
+
+   const SImage& SrcImg = Source;
+   const SImage& DstImg = Dest;
+
+   uint length = max(DstImg.Width, DstImg.Height);
+   int size = find_lanczos_buffer_size(length);
+
+   TempBuffer factors(*m_CL, size * 2 * a * 2 * sizeof(float));   // 2 lists of factors containing 2*a*size items
+
+   cl::make_kernel<cl::Buffer, float, float, int>
+      ((cl::Program) SelectProgram(Source), "prepare_resize_lanczos" + std::to_string(a))
+         (cl::EnqueueArgs(*m_CL, cl::NDRange(length, a * 2, 2)),
+            factors, RatioX, RatioY, size);
+
+   switch (a)
+   {
+   case 2:
+      Kernel_(*m_CL, SelectProgram(Source), resize_lanczos2, Range, LOCAL_RANGE,
+         In(Source, factors), Out(Dest), SrcImg, DstImg, RatioX, RatioY, size);
+      break;
+   case 3:
+      Kernel_(*m_CL, SelectProgram(Source), resize_lanczos3, Range, LOCAL_RANGE,
+         In(Source, factors), Out(Dest), SrcImg, DstImg, RatioX, RatioY, size);
+      break;
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "unsupported lanczos size");
    }
 
 }
@@ -150,16 +196,22 @@ void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolat
    switch (Interpolation)
    {
    case NearestNeighbour:
-      Kernel_(*m_CL, SelectProgram(Source), resize_nn, Dest.FullRange(), LOCAL_RANGE,
+      Kernel_(*m_CL, SelectProgram(Source), resize_nn, Range, LOCAL_RANGE,
          In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
       break;
    case Linear:
-      Kernel_(*m_CL, SelectProgram(Source), resize_linear, Dest.FullRange(), LOCAL_RANGE,
+      Kernel_(*m_CL, SelectProgram(Source), resize_linear, Range, LOCAL_RANGE,
          In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
       break;
    case Cubic:
-      Kernel_(*m_CL, SelectProgram(Source), resize_bicubic, Dest.FullRange(), LOCAL_RANGE,
+      Kernel_(*m_CL, SelectProgram(Source), resize_bicubic, Range, LOCAL_RANGE,
          In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
+      break;
+   case Lanczos2:
+      ResizeLanczos(Source, Dest, 2, Range);
+      break;
+   case Lanczos3:
+      ResizeLanczos(Source, Dest, 3, Range);
       break;
    case BestQuality:
       if (RatioX < 1 || RatioY < 1)

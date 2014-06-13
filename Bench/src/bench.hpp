@@ -142,11 +142,13 @@ void RunBench()
    B(Resize);
    B(ResizeLinear);
    B(ResizeCubic);
+   B(ResizeLanczos);
 
    // Increase size
    B(ResizeBigger);
    B(ResizeBiggerLinear);
    //B(ResizeBiggerCubic);   // Cubic resizing works well but there are sometimes differences in the top and left lines when comparing with IPP
+   B(ResizeBiggerLanczos);
 
    // Filters
    Bench(Sobel3_1Bench);

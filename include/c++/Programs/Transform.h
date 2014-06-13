@@ -44,6 +44,8 @@ public:
       NearestNeighbour,   ///< Chooses the value of the closest pixel - Fastest
       Linear,             ///< Does a bilinear interpolation of the 4 closest pixels
       Cubic,              ///< Unavailable
+      Lanczos2,           ///< Unavailable
+      Lanczos3,           ///< Unavailable
       SuperSampling,      ///< Unavailable
       BestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
    };

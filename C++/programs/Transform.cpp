@@ -95,6 +95,8 @@ void Transform::Rotate(IImage& Source, IImage& Dest,
          Source, Dest, sina, cosa, xshift, yshift);
       break;
    case Cubic:
+   case Lanczos2:
+   case Lanczos3:
    case SuperSampling:
    default:
       throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
@@ -135,6 +137,8 @@ void Transform::Resize(IImage& Source, IImage& Dest, EInterpolationType Interpol
       Kernel_(*m_CL, SelectProgram(Source), resize_linear, Range, LOCAL_RANGE, Source, Dest, RatioX, RatioY);
       break;
    case Cubic:
+   case Lanczos2:
+   case Lanczos3:
    case SuperSampling:
    default:
       throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Resize");

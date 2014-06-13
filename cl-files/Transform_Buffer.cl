@@ -315,3 +315,142 @@ ROTATE(rotate_bicubic, sample_bicubic)
 RESIZE(resize_nn, sample_nn)
 RESIZE(resize_linear, sample_linear)
 RESIZE(resize_bicubic, sample_bicubic)
+
+
+
+TYPE lanczos(INPUT source, global const float * factors, int src_step, float2 pos, int2 SrcSize, int a, int size)
+{
+   const int gx = get_global_id(0);
+   const int gy = get_global_id(1);
+
+   pos -= (float2)(0.5f, 0.5f);
+
+   int2 isrcpos = convert_int2(pos);
+
+   REAL sum = 0;
+   float weighty = 0;
+
+   float xterms[6] = {0};
+
+   for (int ix = 0; ix < a * 2; ix++)
+      xterms[ix] = factors[gx + ix * size];
+
+   global const float * factors_y = factors + size * 2 * a;
+
+   // Add up terms across the filter.
+   for (int iy = 0; iy < a * 2; iy++)
+   {
+      int y = isrcpos.y + iy - a + 1;
+      y = clamp(y, 0, SrcSize.y - 1);
+
+      REAL sumx = 0;
+      float weightx = 0;
+
+      // Filter along X
+      for (int ix = 0; ix < a * 2; ix++)
+      {
+         int x = isrcpos.x + ix - a + 1;
+         x = clamp(x, 0, SrcSize.x - 1);
+
+         float lanc_term = xterms[ix];
+         sumx += CONVERT_REAL(source[y * src_step + x]) * lanc_term;
+         weightx += lanc_term;
+      }
+
+      // Normalize the result
+      sumx /= weightx;
+
+      // Sum the results along Y
+      float lanc_termy = factors_y[gy + iy * size];
+      sum += sumx * lanc_termy;
+      weighty += lanc_termy;
+   }
+
+   // Normalize the result
+   sum /= weighty;
+
+   return CONVERT(sum);
+}
+
+
+
+#define PI 3.14159265359f
+
+float sinc(float x)
+{
+   x = (x * PI);
+   return sin(x) / x;
+}
+
+float Lanczos(float x, int a)
+{      
+   if (x >= a || x <= -a)
+      return 0;
+
+   if (x == 0)
+      return 1;
+   
+   return sinc(x) * sinc(x / a);
+}
+
+
+// These functions pre-calculate the lanczos factors for the rows and column of the image to be resized
+
+void calculate_lanczos_factors(global float * factors, float ratio, int a, int size)
+{
+   int pos = get_global_id(0);      // Row or column number, 0 to max(Width, Height))
+   int index = get_global_id(1);    // pixel index, 0 to 2*a
+
+   float src_pos = (pos + 0.4995f) * ratio - 0.5f;
+   int isrc_pos = (int) src_pos;
+   int sample = isrc_pos - a + 1 + index;
+   factors[pos + index * size] = Lanczos(sample - src_pos, a);
+}
+
+void prepare_resize_lanczos(global float * factors, float ratioX, float ratioY, int a, int size)
+{
+   int dir_x = get_global_id(2);    // x or y, 0 or 1
+
+   if (dir_x)
+      calculate_lanczos_factors(factors, ratioX, a, size);
+   else
+      calculate_lanczos_factors(factors + size * 2 * a, ratioY, a, size);
+}
+
+kernel void prepare_resize_lanczos2(global float * factors, float ratioX, float ratioY, int size)
+{
+   prepare_resize_lanczos(factors, ratioX, ratioY, 2, size);
+}
+
+kernel void prepare_resize_lanczos3(global float * factors, float ratioX, float ratioY, int size)
+{
+   prepare_resize_lanczos(factors, ratioX, ratioY, 3, size);
+}
+
+
+void resize_lanczos(INPUT source, global const float * factors, OUTPUT dest,
+   struct SImage src_img, struct SImage dst_img, float ratioX, float ratioY, int a, int size)
+{
+   BEGIN
+   int src_step = src_img.Step / sizeof(TYPE);
+   int dst_step = dst_img.Step / sizeof(TYPE);
+   if (pos.x >= dst_img.Width || pos.y >= dst_img.Height)
+      return;
+
+   float2 srcpos = {(pos.x + 0.4995f) * ratioX, (pos.y + 0.4995f) * ratioY};
+   int2 SrcSize = (int2)(src_img.Width, src_img.Height);
+   TYPE value = lanczos(source, factors, src_step, srcpos, SrcSize, a, size);
+   dest[pos.y * dst_step + pos.x] = value;
+}
+
+kernel void resize_lanczos2(INPUT source, global const float * factors, OUTPUT dest,
+   struct SImage src_img, struct SImage dst_img, float ratioX, float ratioY, int size)
+{
+   resize_lanczos(source, factors, dest, src_img, dst_img, ratioX, ratioY, 2, size);
+}
+
+kernel void resize_lanczos3(INPUT source, global const float * factors, OUTPUT dest,
+   struct SImage src_img, struct SImage dst_img, float ratioX, float ratioY, int size)
+{
+   resize_lanczos(source, factors, dest, src_img, dst_img, ratioX, ratioY, 3, size);
+}

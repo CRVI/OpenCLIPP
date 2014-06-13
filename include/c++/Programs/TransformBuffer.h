@@ -42,7 +42,9 @@ public:
    {
       NearestNeighbour,   ///< Chooses the value of the closest pixel - Fastest
       Linear,             ///< Does a bilinear interpolation of the 4 closest pixels
-      Cubic,              ///< Unavailable
+      Cubic,              ///< Does a bicubic interpolation of the 16 closest pixels
+      Lanczos2,           ///< Does 2-lobed Lanczos interpolation using 16 pixels
+      Lanczos3,           ///< Does 3-lobed Lanczos interpolation using 36 pixels
       SuperSampling,      ///< Unavailable
       BestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
    };
@@ -88,6 +90,9 @@ public:
 
    /// Sets all values of Dest to value
    void SetAll(ImageBuffer& Dest, float Value);
+
+protected:
+   void ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl::NDRange Range);
 };
 
 }
