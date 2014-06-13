@@ -143,6 +143,7 @@ void RunBench()
    B(ResizeLinear);
    B(ResizeCubic);
    B(ResizeLanczos);
+   B(ResizeSupersample);
 
    // Increase size
    B(ResizeBigger);

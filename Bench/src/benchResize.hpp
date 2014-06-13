@@ -53,6 +53,10 @@ template<typename DataType>
 class ResizeBiggerLanczosBench : public ResizeBench<DataType, 13, 17, ocipLanczos3>
 { };
 
+template<typename DataType>
+class ResizeSupersampleBench : public ResizeBench<DataType, 8, 3, ocipSuperSampling>
+{ };
+
 
 // FactorX and FactorX are in 1/10th, so 10 will mean same size
 template<typename DataType>
@@ -62,6 +66,7 @@ public:
    ResizeBenchBase()
    :  IBench1in1out(USE_BUFFER)
    { }
+
    void Create(uint Width, uint Height);
    void Free();
 
@@ -70,13 +75,23 @@ public:
    void RunCL();
    void RunCV();
 
+   bool HasCVTest() const
+   {
+      if (is_same<DataType, unsigned short>::value)
+         return false;  // OpenCV OCL does not support unsigned short for resize
+
+      if (m_Interpolation > ocipLinear)
+         return false;  // OpenCV OCL only supports NN and Linear for resize
+
+      return true;
+   }
+
 protected:
 
-   void SetDstSize(uint Width, uint Height, ocipInterpolationType Interpolation)
+   void SetDstSize(uint Width, uint Height)
    {
       m_DstSize.Width = Width;
       m_DstSize.Height = Height;
-      m_Interpolation = Interpolation;
    }
 
    ocipInterpolationType m_Interpolation;
@@ -288,9 +303,14 @@ template<typename DataType, int FactorX, int FactorY, int Interpolation>
 class ResizeBench : public ResizeBenchBase<DataType>
 {
 public:
+   ResizeBench()
+   {
+      m_Interpolation = ocipInterpolationType(Interpolation);
+   }
+
    void Create(uint Width, uint Height)
    {
-      this->SetDstSize(Width * FactorX / 10, Height * FactorY / 10, ocipInterpolationType(Interpolation));
+      this->SetDstSize(Width * FactorX / 10, Height * FactorY / 10);
       ResizeBenchBase<DataType>::Create(Width, Height);
    }
 

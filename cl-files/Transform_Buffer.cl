@@ -454,3 +454,121 @@ kernel void resize_lanczos3(INPUT source, global const float * factors, OUTPUT d
 {
    resize_lanczos(source, factors, dest, src_img, dst_img, ratioX, ratioY, 3, size);
 }
+
+
+TYPE supersample_border(INPUT source, int src_step, float2 pos, int2 SrcSize, float2 ratio)
+{
+   REAL sum = 0;
+   float factor_sum = 0;
+
+   float2 start = pos - ratio / 2;
+   float2 end = start + ratio;
+   int2 istart = convert_int2(start);
+   int2 length = convert_int2(end - convert_float2(istart)) + 1;
+
+   float2 factors = 1.f / ratio;
+
+   for (int iy = 0; iy < length.y; iy++)
+   {
+      int y = istart.y + iy;
+
+      if (y < 0 || y >= SrcSize.y)
+         continue;
+
+      float factor_y = factors.y;
+      if (y < start.y)
+         factor_y = factors.y * (y + 1 - start.y);
+
+      if (y + 1 > end.y)
+         factor_y = factors.y * (end.y - y);
+
+      for (int ix = 0; ix < length.x; ix++)
+      {
+         int x = istart.x + ix;
+
+         if (x < 0 || x >= SrcSize.x)
+            continue;
+
+         float factor_x = factors.x;
+         if (x < start.x)
+            factor_x = factors.x * (x + 1 - start.x);
+
+         if (x + 1 > end.x)
+            factor_x = factors.x * (end.x - x);
+
+         float factor = factor_x * factor_y;
+
+         sum += CONVERT_REAL(source[y * src_step + x]) * factor;
+
+         factor_sum += factor;
+      }
+
+   }
+
+   sum /= factor_sum;
+   
+   return CONVERT(sum);
+}
+
+TYPE supersample(INPUT source, int src_step, float2 pos, int2 SrcSize, float ratioX, float ratioY)
+{
+   float2 ratio = (float2)(ratioX, ratioY);
+
+   REAL sum = 0;
+
+   float2 start = pos - ratio / 2;
+   float2 end = start + ratio;
+   int2 istart = convert_int2(start);
+   int2 length = convert_int2(end - convert_float2(istart)) + 1;
+
+   float2 factors = 1.f / ratio;
+
+   if (start.x < 0 || start.y < 0 || end.x > SrcSize.x || end.y > SrcSize.y)
+      return supersample_border(source, src_step, pos, SrcSize, ratio);
+
+   for (int iy = 0; iy < length.y; iy++)
+   {
+      int y = istart.y + iy;
+
+      float factor_y = factors.y;
+      if (y < start.y)
+         factor_y = factors.y * (y + 1 - start.y);
+
+      if (y + 1 > end.y)
+         factor_y = factors.y * (end.y - y);
+
+      for (int ix = 0; ix < length.x; ix++)
+      {
+         int x = istart.x + ix;
+
+         float factor_x = factors.x;
+         if (x < start.x)
+            factor_x = factors.x * (x + 1 - start.x);
+
+         if (x + 1 > end.x)
+            factor_x = factors.x * (end.x - x);
+
+         float factor = factor_x * factor_y;
+
+         sum += CONVERT_REAL(source[y * src_step + x]) * factor;
+      }
+
+   }
+   
+   return CONVERT(sum);
+}
+
+kernel void resize_supersample(INPUT source, OUTPUT dest,
+   struct SImage src_img, struct SImage dst_img, float ratioX, float ratioY)
+{
+   BEGIN
+   int src_step = src_img.Step / sizeof(TYPE);
+   int dst_step = dst_img.Step / sizeof(TYPE);
+   if (pos.x >= dst_img.Width || pos.y >= dst_img.Height)
+      return;
+
+   float2 srcpos = {(pos.x + 0.4995f) * ratioX, (pos.y + 0.4995f) * ratioY};
+   int2 SrcSize = (int2)(src_img.Width, src_img.Height);
+   TYPE value = supersample(source, src_step, srcpos, SrcSize, ratioX, ratioY);
+   dest[pos.y * dst_step + pos.x] = value;
+}

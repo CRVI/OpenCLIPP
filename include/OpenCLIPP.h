@@ -69,7 +69,7 @@ enum ocipInterpolationType
    ocipCubic,              ///< Does a bicubic interpolation of the 16 closest pixels
    ocipLanczos2,           ///< Does 2-lobed Lanczos interpolation using 16 pixels
    ocipLanczos3,           ///< Does 3-lobed Lanczos interpolation using 36 pixels
-   ocipSuperSampling,      ///< Averages the values of the pixels in the area - good when reducing the size of an image
+   ocipSuperSampling,      ///< Samples each pixel of the source for best resize result - for downsizing images only
    ocipBestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
 };
 

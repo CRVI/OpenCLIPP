@@ -45,7 +45,7 @@ public:
       Cubic,              ///< Does a bicubic interpolation of the 16 closest pixels
       Lanczos2,           ///< Does 2-lobed Lanczos interpolation using 16 pixels
       Lanczos3,           ///< Does 3-lobed Lanczos interpolation using 36 pixels
-      SuperSampling,      ///< Unavailable
+      SuperSampling,      ///< Samples each pixel of the source for best resize result - for downsizing images only
       BestQuality,        ///< Automatically selects the choice that will give the best image quality for the operation
    };
 

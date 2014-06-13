@@ -207,6 +207,13 @@ void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolat
       Kernel_(*m_CL, SelectProgram(Source), resize_bicubic, Range, LOCAL_RANGE,
          In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
       break;
+   case SuperSampling:
+      if (RatioX < 1 || RatioY < 1)
+         throw cl::Error(CL_INVALID_ARG_VALUE, "Supersampling can only be used to downsize an image");
+
+      Kernel_(*m_CL, SelectProgram(Source), resize_supersample, Range, LOCAL_RANGE,
+         In(Source), Out(Dest), SrcImg, DstImg, RatioX, RatioY);
+      break;
    case Lanczos2:
       ResizeLanczos(Source, Dest, 2, Range);
       break;
@@ -216,18 +223,16 @@ void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolat
    case BestQuality:
       if (RatioX < 1 || RatioY < 1)
       {
-         // Enlarging image, SuperSampling is best
-         //Resize(Source, Dest, SuperSampling, KeepRatio);
-         Resize(Source, Dest, Cubic, KeepRatio);    // Use bicubic until SuperSampling is done
+         // Enlarging image, bicubic is best
+         Resize(Source, Dest, Cubic, KeepRatio);
          break;
       }
 
-      // Shrinking image, Linear is best
-      Resize(Source, Dest, Linear, KeepRatio);
+      // Shrinking image, SuperSampling is best
+      Resize(Source, Dest, SuperSampling, KeepRatio);
       break;
-   case SuperSampling:
    default:
-      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Resize");
    }
 
 }
