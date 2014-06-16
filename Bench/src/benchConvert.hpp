@@ -38,6 +38,7 @@ class ConvertBench : public IBench1in1out
 {
 public:
    ConvertBench()
+   :  IBench1in1out(USE_BUFFER)
    { }
 
    void Create(uint Width, uint Height);
@@ -61,7 +62,10 @@ void ConvertBench<SrcType, DstType>::Create(uint Width, uint Height)
 template<typename SrcType, typename DstType>
 void ConvertBench<SrcType, DstType>::RunCL()
 {
-   ocipConvert(m_CLSrc, m_CLDst);
+   if (m_UsesBuffer)
+      ocipConvert_V(m_CLBufferSrc, m_CLBufferDst);
+   else
+      ocipConvert(m_CLSrc, m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename SrcType, typename DstType>

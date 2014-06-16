@@ -182,6 +182,7 @@
     <ClInclude Include="..\include\c++\Programs\Blob.h" />
     <ClInclude Include="..\include\c++\Programs\Color.h" />
     <ClInclude Include="..\include\c++\Programs\Conversions.h" />
+    <ClInclude Include="..\include\c++\Programs\ConversionsBuffer.h" />
     <ClInclude Include="..\include\c++\Programs\FFT.h" />
     <ClInclude Include="..\include\c++\Programs\Filters.h" />
     <ClInclude Include="..\include\c++\Programs\FiltersVector.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="programs\Blob.cpp" />
     <ClCompile Include="programs\Color.cpp" />
     <ClCompile Include="programs\Conversions.cpp" />
+    <ClCompile Include="programs\ConversionsBuffer.cpp" />
     <ClCompile Include="programs\FFT.cpp" />
     <ClCompile Include="programs\Filters.cpp" />
     <ClCompile Include="programs\FiltersVector.cpp" />
@@ -264,6 +266,7 @@
     <None Include="..\cl-files\Blob.cl" />
     <None Include="..\cl-files\Color.cl" />
     <None Include="..\cl-files\Convert.cl" />
+    <None Include="..\cl-files\Convert_Buffer.cl" />
     <None Include="..\cl-files\Filters.cl" />
     <None Include="..\cl-files\Histogram.cl" />
     <None Include="..\cl-files\ImageProximityFFT.cl" />

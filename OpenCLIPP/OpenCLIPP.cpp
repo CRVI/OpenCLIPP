@@ -48,6 +48,7 @@ struct SProgramList
    :  arithmetic(CL),
       arithmeticVector(CL),
       conversions(CL),
+      conversionsBuffer(CL),
       filters(CL),
       filtersVector(CL),
       histogram(CL),
@@ -68,6 +69,7 @@ struct SProgramList
    Arithmetic arithmetic;
    ArithmeticVector arithmeticVector;
    Conversions conversions;
+   ConversionsBuffer conversionsBuffer;
    Filters filters;
    FiltersVector filtersVector;
    Histogram histogram;
@@ -666,6 +668,7 @@ ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
 #undef PROGRAM_ARG
 #define PROGRAM_ARG 
 
+PREPARE(ocipPrepareImageBufferConversion, conversionsBuffer)
 PREPARE(ocipPrepareImageBufferArithmetic, arithmeticVector)
 PREPARE(ocipPrepareImageBufferLogic, logicVector)
 PREPARE(ocipPrepareImageBufferLUT, lutVector)
@@ -677,10 +680,25 @@ PREPARE(ocipPrepareImageBufferProximity, imageProximityBuffer)
 PREPARE2(ocipPrepareImageBufferStatistics, StatisticsVector)
 PREPARE2(ocipPrepareImageBufferIntegral, IntegralBuffer)
 
-#undef CLASS
-#define CLASS GetList().conversions
 
+#undef CLASS
+#define CLASS GetList().conversionsBuffer
+
+UNARY_OP(ocipConvert_V, Convert)
+UNARY_OP(ocipScale_V, Scale)
 UNARY_OP(ocipCopy_V, Copy)
+UNARY_OP(ocipToGray_V, ToGray)
+UNARY_OP(ocipToColor_V, ToColor)
+
+ocipError ocip_API ocipScale2_V(ocipImage Source, ocipImage Dest, int Offset, float Ratio)
+{
+   H( CLASS.Scale(Buf(Source), Buf(Dest), Offset, Ratio) )
+}
+
+ocipError ocip_API ocipSelectChannel_V(ocipBuffer Source, ocipBuffer Dest, int ChannelNo)
+{
+   H( CLASS.SelectChannel(Buf(Source), Buf(Dest), ChannelNo) )
+}
 
 
 #undef CLASS
@@ -715,6 +733,7 @@ UNARY_OP(ocipSqr_V, Sqr)
 UNARY_OP(ocipSqrt_V, Sqrt)
 UNARY_OP(ocipSin_V, Sin)
 UNARY_OP(ocipCos_V, Cos)
+
 
 #undef CLASS
 #define CLASS GetList().imageProximityBuffer
@@ -758,7 +777,7 @@ ocipError ocip_API ocipBasicLut_V(ocipBuffer Source, ocipBuffer Dest, unsigned c
    H( CLASS.BasicLut(Buf(Source), Buf(Dest), values) )
 }
 
-ocipError ocip_API ocipScale_V(ocipBuffer Source, ocipBuffer Dest, float SrcMin, float SrcMax, float DstMin, float DstMax)
+ocipError ocip_API ocipLutScale_V(ocipBuffer Source, ocipBuffer Dest, float SrcMin, float SrcMax, float DstMin, float DstMax)
 {
    H( CLASS.Scale(Buf(Source), Buf(Dest), SrcMin, SrcMax, DstMin, DstMax) )
 }

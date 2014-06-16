@@ -668,7 +668,43 @@ ocipError ocip_API ocipCrossCorr_Norm(ocipImage Source, ocipImage Template, ocip
 
 // Image buffer operations -------------------------------------------------------------------------
 
-ocipError ocip_API ocipCopy_V(ocipBuffer Source, ocipBuffer Dest);
+
+// Conversions -----------------------------------------------------------------------------------------
+ocipError ocip_API ocipPrepareImageBufferConversion(ocipBuffer Image);  ///< See ocipPrepareExample
+
+/// From any image type to any image type - no value scaling
+ocipError ocip_API ocipConvert_V(   ocipBuffer Source, ocipBuffer Dest);
+
+/// From any image type to any image type - automatic value scaling.
+/// Scales the input values by the ration of : output range/input range
+/// The range is 0,255 for 8u, -128,127 for 8s, ...
+/// The range is 0,1 for float
+ocipError ocip_API ocipScale_V(     ocipBuffer Source, ocipBuffer Dest);
+
+/// From any image type to any image type with given scaling.
+/// Does the conversion Dest = (Source * Ratio) + Offset
+ocipError ocip_API ocipScale2_V(    ocipBuffer Source, ocipBuffer Dest, int Offset, float Ratio);
+
+/// Copies an image buffer.
+/// Both images must be of the same type.
+ocipError ocip_API ocipCopy_V(      ocipBuffer Source, ocipBuffer Dest);
+
+/// Copies an image buffer to an image.
+/// Both images must be of similar types
+ocipError ocip_API ocipToImage_V(   ocipBuffer Source, ocipBuffer Dest);
+
+/// Copies an image to an image buffer.
+/// Both images must be of similar types
+ocipError ocip_API ocipToBuffer_V(  ocipBuffer Source, ocipBuffer Dest);
+
+/// Converts a color (4 channel) image to a 1 channel image by averaging the first 3 channels
+ocipError ocip_API ocipToGray_V(    ocipBuffer Source, ocipBuffer Dest);
+
+/// Selects 1 channel from a 4 channel image to a 1 channel image - ChannelNo can be from 1 to 4
+ocipError ocip_API ocipSelectChannel_V(ocipBuffer Source, ocipBuffer Dest, int ChannelNo);
+
+/// Converts a 1 channel image to a 4 channel image - first 3 channels of Dest will be set to the value of the first channel of Source
+ocipError ocip_API ocipToColor_V(   ocipBuffer Source, ocipBuffer Dest);
 
 
 // Arithmetic on image buffers ---------------------------------------------------------------------
@@ -750,7 +786,7 @@ ocipError ocip_API ocipLutLinear_V( ocipBuffer Source, ocipBuffer Dest, float * 
 ocipError ocip_API ocipBasicLut_V(  ocipBuffer Source, ocipBuffer Dest, unsigned char * values);
 
 /// Scales values of Source image according to the given input and output ranges
-ocipError ocip_API ocipScale_V(     ocipBuffer Source, ocipBuffer Dest, float SrcMin, float SrcMax, float DstMin, float DstMax);
+ocipError ocip_API ocipLutScale_V(     ocipBuffer Source, ocipBuffer Dest, float SrcMin, float SrcMax, float DstMin, float DstMax);
 
 
 

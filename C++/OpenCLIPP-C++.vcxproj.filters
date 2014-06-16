@@ -157,6 +157,9 @@
     <ClInclude Include="..\include\c++\Programs\ImageProximityFFT.h">
       <Filter>Programs</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\ConversionsBuffer.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -255,6 +258,9 @@
     <ClCompile Include="programs\ImageProximityFFT.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
+    <ClCompile Include="programs\ConversionsBuffer.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\cl-files\Arithmetic.cl">
@@ -330,6 +336,9 @@
       <Filter>OpenCL Files</Filter>
     </None>
     <None Include="..\cl-files\ImageProximityFFT.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Convert_Buffer.cl">
       <Filter>OpenCL Files</Filter>
     </None>
   </ItemGroup>

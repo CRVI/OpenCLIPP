@@ -30,6 +30,7 @@
 #include "c++/Programs/ArithmeticVector.h"
 #include "c++/Programs/Blob.h"
 #include "c++/Programs/Conversions.h"
+#include "c++/Programs/ConversionsBuffer.h"
 #include "c++/Programs/Filters.h"
 #include "c++/Programs/FiltersVector.h"
 #include "c++/Programs/Histogram.h"
