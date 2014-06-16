@@ -69,15 +69,15 @@ int main(int /*argc*/, char ** /*argv*/)
    // Initialize OpenCL
    COpenCL CL;
    CL.SetClFilesPath("D:/OpenCLIPP/cl-files/");
-   Filters Filters(CL);
+   FiltersVector Filters(CL);
 
    // Display device name
    string Name = CL.GetDeviceName();
    printf("Using device : %s\n", Name.c_str());
 
    // Create images in OpenCL device
-   ColorImage SourceImage(CL, ImageInfo, SourceData.data());
-   ColorImage ResultImage(CL, ImageInfo, ResultData.data());
+   ImageBuffer SourceImage(CL, ImageInfo, SourceData.data());
+   ImageBuffer ResultImage(CL, ImageInfo, ResultData.data());
 
    SourceImage.Send();   // Optional : Sends image to device memory - would be done automatically
 

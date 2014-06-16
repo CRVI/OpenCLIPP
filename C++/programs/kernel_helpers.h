@@ -83,10 +83,6 @@ struct SelectClType
    template<> struct SelectClType<const type&>\
    {   typedef cl_type Type; };
 
-SET_CL_TYPE(IImage,      cl::Image2D)
-SET_CL_TYPE(TempImage,   cl::Image2D)
-SET_CL_TYPE(Image,       cl::Image2D)
-SET_CL_TYPE(ColorImage,  cl::Image2D)
 SET_CL_TYPE(IBuffer,     cl::Buffer)
 SET_CL_TYPE(Buffer,      cl::Buffer)
 SET_CL_TYPE(ReadBuffer,  cl::Buffer)

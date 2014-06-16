@@ -103,9 +103,6 @@ public:
    /// Returns the OpenCL CommandQueue (for internal use)
    cl::CommandQueue& GetQueue();
 
-   /// Returns the color image converter program (for internal use)
-   Color& GetColorConverter();
-
    operator cl::Context& ();        ///< Converts to a cl::Context
    operator cl::CommandQueue& ();   ///< Converts to a cl::CommandQueue
    operator cl::Device& ();         ///< Converts to a cl::Device
@@ -125,8 +122,6 @@ protected:
    cl::Device m_Device;          ///< The OpenCL device (like GTX 680)
    cl::Context m_Context;        ///< The OpenCL context for the device
    cl::CommandQueue m_Queue;     ///< The OpenCL command queue for the context
-
-   std::shared_ptr<Color> m_ColorConverter;  ///< Instance of the color converter program used to automatically convert 3 channel images to 4 channel images
 
    static std::string m_ClFilesPath;   ///< Path to the .cl files
 };

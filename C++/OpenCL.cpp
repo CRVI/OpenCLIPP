@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "OpenCL.h"
-#include "Programs/Color.h"
 
 #include <string>
 
@@ -64,8 +63,6 @@ COpenCL::COpenCL(const char * PreferredPlatform, cl_device_type deviceType)
    m_Context = cl::Context(m_Device);
 
    m_Queue = cl::CommandQueue(m_Context, devices[0]);
-
-   m_ColorConverter = std::make_shared<Color>(*this);
 }
 
 
@@ -89,11 +86,6 @@ const string& COpenCL::GetClFilePath()
 cl::CommandQueue& COpenCL::GetQueue()
 {
    return m_Queue;
-}
-
-Color& COpenCL::GetColorConverter()
-{
-   return *m_ColorConverter;
 }
 
 COpenCL::operator cl::Context& ()
