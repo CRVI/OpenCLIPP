@@ -23,29 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
+#include "Buffers.h"
 
+#define INPUT INPUT_SPACE const TYPE *
 
-#ifdef I
-
-   // For signed integer images
-   #define READ_IMAGE(img, pos) convert_uint4(read_imagei(img, sampler, pos))
-
-#else // I
-
-   #ifdef UI
-
-      // For unsigned integer images
-      #define READ_IMAGE(img, pos) read_imageui(img, sampler, pos)
-
-   #else // UI
-
-      // For float
-      #define READ_IMAGE(img, pos) convert_uint4(read_imagef(img, sampler, pos))
-
-   #endif // UI
-
-#endif // I
+#ifdef NBCHAN
+#define READ_IMAGE(img, step, pos) convert_int_sat(img[pos.y * step + pos.x].x)
+#else
+#define READ_IMAGE(img, step, pos) convert_int_sat(img[pos.y * step + pos.x])
+#endif
 
 
 struct SBlobInfo
@@ -135,9 +121,9 @@ uint GetNeighboursMin(global const uint * labelImg, int gx, int gy, int img_widt
    return NeighboursMin;
 }
 
-kernel void init_label(read_only image2d_t source,
+kernel void init_label(INPUT source,
    global uint * labelImg, global uint * equivTable, 
-   uint label_step, uint table_step,
+   uint src_step, uint label_step, uint table_step,
    global struct SBlobInfo * info)
 {
    const int gx = get_global_id(0);
@@ -147,15 +133,16 @@ kernel void init_label(read_only image2d_t source,
 
    const int2 pos = {gx, gy};
 
+   src_step   /= sizeof(TYPE);   // step is in bytes but we want it in pixel
    label_step /= sizeof(uint);	// step is in bytes but we want it in pixel
    table_step /= sizeof(uint);	// step is in bytes but we want it in pixel
 
    const uint label_index = gy * label_step + gx;
    const uint table_index = gy * table_step + gx;
 
-   uint4 color = READ_IMAGE(source, pos);
+   int pixel = READ_IMAGE(source, src_step, pos);
 
-   bool ValidPixel = color.x > 0;
+   bool ValidPixel = pixel != 0;
 
    // Initialize label image
    if (ValidPixel)

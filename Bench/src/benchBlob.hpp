@@ -26,7 +26,7 @@ class BlobBench : public IBench1in0out
 {
 public:
    BlobBench()
-   :  IBench1in0out(false),
+   :  IBench1in0out(true),
       m_CLBufferDst(nullptr),
       m_Program(nullptr)
    { }
@@ -94,7 +94,7 @@ void BlobBench::Create(uint Width, uint Height)
             *m_ImgSrc.Data(x, y) = 255;
 
    // Send the images to the GPU again
-   ocipSendImage(m_CLSrc);
+   ocipSendImageBuffer(m_CLBufferSrc);
 
    NPP_CODE(
       cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
@@ -136,7 +136,7 @@ void BlobBench::Create(uint Width, uint Height)
       m_IPPBuffer.resize(BufSize);
       )
 
-   ocipPrepareBlob(&m_Program, m_CLSrc);
+   ocipPrepareBlob(&m_Program, m_CLBufferSrc);
 }
 
 void BlobBench::Free()
@@ -178,7 +178,7 @@ void BlobBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void BlobBench::RunCL()
 {
-   ocipComputeLabels(m_Program, m_CLSrc, m_CLBufferDst, 4);
+   ocipComputeLabels(m_Program, m_CLBufferSrc, m_CLBufferDst, 4);
    ocipRenameLabels(m_Program, m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------

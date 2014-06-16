@@ -31,7 +31,7 @@ namespace OpenCLIPP
 {
 
 Blob::Blob(COpenCL& CL)
-:  ImageProgram(CL, "Blob.cl"),
+:  ImageBufferProgram(CL, "Blob.cl"),
    m_InfoBuffer(CL, &m_BlobInfo, 1)
 { }
 
@@ -48,7 +48,7 @@ void Blob::PrepareFor(ImageBase& Source)
       m_TempBuffer = std::make_shared<TempImageBuffer>(*m_CL, Source.Size(), SImage::S32);
 }
 
-void Blob::ComputeLabels(IImage& Source, ImageBuffer& Labels, int ConnectType)
+void Blob::ComputeLabels(ImageBuffer& Source, ImageBuffer& Labels, int ConnectType)
 {
    if (ConnectType != 4 && ConnectType != 8)
       throw cl::Error(CL_INVALID_VALUE, "Wrong connect type in Blob::ComputeLabels");
@@ -66,7 +66,7 @@ void Blob::ComputeLabels(IImage& Source, ImageBuffer& Labels, int ConnectType)
    m_InfoBuffer.Send();
 
    // Initialize the label image
-   Kernel(init_label, Source, Out(Labels, *m_TempBuffer), Labels.Step(), m_TempBuffer->Step(), m_InfoBuffer);
+   Kernel(init_label, Source, Out(Labels, *m_TempBuffer), Source.Step(), Labels.Step(), m_TempBuffer->Step(), m_InfoBuffer);
 
    // These two labeling steps need to be executed at least twice each
    int i = 0;

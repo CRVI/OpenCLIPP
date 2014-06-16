@@ -378,7 +378,6 @@ PREPARE(ocipPrepareHistogram, histogram)
 PREPARE(ocipPrepareImageProximity, imageProximity)
 
 PREPARE2(ocipPrepareStatistics, Statistics)
-PREPARE2(ocipPrepareBlob, Blob)
 PREPARE2(ocipPrepareIntegral, Integral)
 
 
@@ -644,19 +643,6 @@ UNARY_OP(ocipIntegral, IntegralSum)
 UNARY_OP(ocipSqrIntegral, SqrIntegral)
 
 
-#undef CLASS
-#define CLASS (*(Blob*)Program)
-
-ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipImage Source, ocipBuffer Labels, int ConnectType)
-{
-   H( CLASS.ComputeLabels(Img(Source), Buf(Labels), ConnectType) )
-}
-
-ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
-{
-   H( CLASS.RenameLabels(Buf(Labels)) )
-}
-
 
 // Image buffer operations
 #undef CONV
@@ -679,6 +665,7 @@ PREPARE(ocipPrepareImageBufferProximity, imageProximityBuffer)
 
 PREPARE2(ocipPrepareImageBufferStatistics, StatisticsVector)
 PREPARE2(ocipPrepareImageBufferIntegral, IntegralBuffer)
+PREPARE2(ocipPrepareBlob, Blob)
 
 
 #undef CLASS
@@ -927,6 +914,20 @@ ocipError ocip_API ocipCompare_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuf
 ocipError ocip_API ocipCompareC_V(ocipBuffer Source, ocipBuffer Dest, float Value, ECompareOperation Op)
 {
    H( CLASS.Compare(Buf(Source), Buf(Dest), Value, (ThresholdingVector::ECompareOperation) Op) )
+}
+
+
+#undef CLASS
+#define CLASS (*(Blob*)Program)
+
+ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipBuffer Source, ocipBuffer Labels, int ConnectType)
+{
+   H( CLASS.ComputeLabels(Buf(Source), Buf(Labels), ConnectType) )
+}
+
+ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
+{
+   H( CLASS.RenameLabels(Buf(Labels)) )
 }
 
 

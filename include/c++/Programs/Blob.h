@@ -30,7 +30,7 @@ namespace OpenCLIPP
 {
 
 /// A program that does Blob labeling on an image
-class CL_API Blob : public ImageProgram
+class CL_API Blob : public ImageBufferProgram
 {
 public:
    Blob(COpenCL& CL);
@@ -54,7 +54,7 @@ public:
    /// \param Source : The image to analyze
    /// \param Labels : must be a 32b integer image buffer
    /// \param ConnectType : Type of pixel connectivity, can be 4 or 8
-   void ComputeLabels(IImage& Source, ImageBuffer& Labels, int ConnectType = 4);
+   void ComputeLabels(ImageBuffer& Source, ImageBuffer& Labels, int ConnectType = 4);
 
    /// Renames the labels to be from 0 to NbLabels-1.
    /// \param Labels : must be an image resulting from a previous call to ComputeLabels()

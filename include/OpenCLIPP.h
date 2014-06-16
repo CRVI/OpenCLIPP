@@ -624,27 +624,6 @@ ocipError ocip_API ocipSqrIntegral(ocipProgram Program, ocipImage Source, ocipIm
 
 
 
-// Blobs -------------------------------------------------------------------------------------------
-// All Blob operations are Syncrhonous, meaning they block until the computation is complete but
-// no read operation is issued. ocipReadImageBuffer() must be called to transfer the result into host memory.
-ocipError ocip_API ocipPrepareBlob(ocipProgram * ProgramPtr, ocipImage Image);    ///< See ocipPrepareExample2
-
-/// Compute the blob labels for the given image.
-/// PrepareFor() must be called with the same Source image before calling ComputeLabels()
-/// All non-zero pixels will be grouped with their neighbours and given a label number
-/// After calling, Labels image buffer will contain the label values for each pixel,
-/// and -1 (or 0xffffffff) for pixels that were 0
-/// \param Source : The image to analyze
-/// \param Labels : must be a 32b integer image buffer
-/// \param ConnectType : Type of pixel connectivity, can be 4 or 8
-ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipImage Source, ocipBuffer Labels, int ConnectType);
-
-/// Renames the labels to be from 0 to NbLabels-1.
-/// \param Labels : must be an image resulting from a previous call to ComputeLabels()
-ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels);
-
-
-
 // Image Proximity ---------------------------------------------------------------------------------------
 // All ImageProximity operations are Syncrhonous, meaning they block until the ImageProximity is calculated and set to the result
 ocipError ocip_API ocipPrepareImageProximity(ocipImage Image);   ///< See ocipPrepareExample
@@ -971,6 +950,27 @@ ocipError ocip_API ocipCompare_V(      ocipBuffer Source1, ocipBuffer Source2, o
 /// D = (S1 Op V) - D will be 0 or 255
 /// Dest must be U8 and 1 channel
 ocipError ocip_API ocipCompareC_V(      ocipBuffer Source,  ocipBuffer Dest, float Value, enum ECompareOperation Op);
+
+
+
+// Blobs -------------------------------------------------------------------------------------------
+// All Blob operations are Syncrhonous, meaning they block until the computation is complete but
+// no read operation is issued. ocipReadImageBuffer() must be called to transfer the result into host memory.
+ocipError ocip_API ocipPrepareBlob(ocipProgram * ProgramPtr, ocipBuffer Image);    ///< See ocipPrepareExample2
+
+/// Compute the blob labels for the given image.
+/// PrepareFor() must be called with the same Source image before calling ComputeLabels()
+/// All non-zero pixels will be grouped with their neighbours and given a label number
+/// After calling, Labels image buffer will contain the label values for each pixel,
+/// and -1 (or 0xffffffff) for pixels that were 0
+/// \param Source : The image to analyze
+/// \param Labels : must be a 32b integer image buffer
+/// \param ConnectType : Type of pixel connectivity, can be 4 or 8
+ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipBuffer Source, ocipBuffer Labels, int ConnectType);
+
+/// Renames the labels to be from 0 to NbLabels-1.
+/// \param Labels : must be an image resulting from a previous call to ComputeLabels()
+ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels);
 
 
 
