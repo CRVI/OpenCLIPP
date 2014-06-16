@@ -900,6 +900,23 @@ ocipError ocip_API ocipLaplace_V(      ocipBuffer Source, ocipBuffer Dest, int W
 
 
 
+// Histogram  on Image Buffers ---------------------------------------------------------------------
+// All Histogram operations are Syncrhonous, meaning they block until the histogram is calculated and set to Histogram
+ocipError ocip_API ocipPrepareImageBufferHistogram(ocipBuffer Image);   ///< See ocipPrepareExample
+
+/// Calculates the Histogram of the first channel of the image
+/// \param Histogram : Array of 256 elements that will receive the histogram values
+ocipError ocip_API ocipHistogram_1C_B(ocipBuffer Source, uint * Histogram);
+
+/// Calculates the Histogram of all channels of the image
+/// \param Histogram : Array of 1024 elements that will receive the histogram values
+ocipError ocip_API ocipHistogram_4C_B(ocipBuffer Source, uint * Histogram);
+
+/// Calculates the Otsu threshold given an histogram
+ocipError ocip_API ocipOtsuThreshold_B(ocipBuffer Source, uint * Value);
+
+
+
 // Statistics on image buffers ---------------------------------------------------------------------
 // All Statistics operations are Syncrhonous, meaning they block until the value is calculated and set to Result
 ocipError ocip_API ocipPrepareImageBufferStatistics(ocipProgram * ProgramPtr, ocipBuffer Image);   ///< See ocipPrepareExample2

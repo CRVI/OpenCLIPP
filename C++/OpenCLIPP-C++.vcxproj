@@ -187,6 +187,7 @@
     <ClInclude Include="..\include\c++\Programs\Filters.h" />
     <ClInclude Include="..\include\c++\Programs\FiltersVector.h" />
     <ClInclude Include="..\include\c++\Programs\Histogram.h" />
+    <ClInclude Include="..\include\c++\Programs\HistogramBuffer.h" />
     <ClInclude Include="..\include\c++\Programs\ImageProximityBuffer.h" />
     <ClInclude Include="..\include\c++\Programs\ImageProximityFFT.h" />
     <ClInclude Include="..\include\c++\Programs\Integral.h" />
@@ -241,6 +242,7 @@
     <ClCompile Include="programs\Filters.cpp" />
     <ClCompile Include="programs\FiltersVector.cpp" />
     <ClCompile Include="programs\Histogram.cpp" />
+    <ClCompile Include="programs\HistogramBuffer.cpp" />
     <ClCompile Include="programs\ImageProximityBuffer.cpp" />
     <ClCompile Include="programs\ImageProximityFFT.cpp" />
     <ClCompile Include="programs\Integral.cpp" />
@@ -269,6 +271,7 @@
     <None Include="..\cl-files\Convert_Buffer.cl" />
     <None Include="..\cl-files\Filters.cl" />
     <None Include="..\cl-files\Histogram.cl" />
+    <None Include="..\cl-files\Histogram_Buffer.cl" />
     <None Include="..\cl-files\ImageProximityFFT.cl" />
     <None Include="..\cl-files\Integral.cl" />
     <None Include="..\cl-files\Logic.cl" />

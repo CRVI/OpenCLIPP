@@ -52,6 +52,7 @@ struct SProgramList
       filters(CL),
       filtersVector(CL),
       histogram(CL),
+      histogramBuffer(CL),
       logic(CL),
       logicVector(CL),
       lut(CL),
@@ -73,6 +74,7 @@ struct SProgramList
    Filters filters;
    FiltersVector filtersVector;
    Histogram histogram;
+   HistogramBuffer histogramBuffer;
    Logic logic;
    LogicVector logicVector;
    Lut lut;
@@ -849,6 +851,15 @@ CONSTANT_OP(ocipScharrHoriz_V, ScharrHoriz, int)
 CONSTANT_OP(ocipScharr_V, Scharr, int)
 CONSTANT_OP(ocipHipass_V, Hipass, int)
 CONSTANT_OP(ocipLaplace_V, Laplace, int)
+
+
+
+#undef CLASS
+#define CLASS GetList().histogramBuffer
+
+REDUCE_OP(ocipHistogram_1C_B, Histogram1C, uint *)
+REDUCE_OP(ocipHistogram_4C_B, Histogram4C, uint *)
+REDUCE_RETURN_OP(ocipOtsuThreshold_B, OtsuThreshold, uint)
 
 
 
