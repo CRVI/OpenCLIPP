@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: OpenCLIPP.hpp
-//! @date   : Jan 2014
+//! @file	: Logic.cl
+//! @date   : Jul 2013
 //!
-//! @brief  : Main include file for C++ interface of OpenCLIPP
+//! @brief  : Logic (bitwise) operations on image buffers
 //! 
-//! Copyright (C) 2014 - CRVI
+//! Copyright (C) 2013 - CRVI
 //!
 //! This file is part of OpenCLIPP.
 //! 
@@ -22,22 +22,23 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "c++/OpenCL.h"
-#include "c++/Buffer.h"
-#include "c++/Image.h"
-#include "c++/Programs/Program.h"
-#include "c++/Programs/Arithmetic.h"
-#include "c++/Programs/Blob.h"
-#include "c++/Programs/Conversions.h"
-#include "c++/Programs/Filters.h"
-#include "c++/Programs/Histogram.h"
-#include "c++/Programs/Integral.h"
-#include "c++/Programs/Logic.h"
-#include "c++/Programs/Lut.h"
-#include "c++/Programs/Morphology.h"
-#include "c++/Programs/ImageProximity.h"
-#include "c++/Programs/ImageProximityFFT.h"
-#include "c++/Programs/Statistics.h"
-#include "c++/Programs/Transform.h"
-#include "c++/Programs/Thresholding.h"
-#include "c++/Programs/FFT.h"
+#define ARG_TYPE int
+
+#include "Vector.h"
+
+
+// Bitwise operations - float not allowed
+#ifndef FLOAT
+
+BINARY_OP(and_images, src1 & src2)
+BINARY_OP(or_images, src1 | src2)
+BINARY_OP(xor_images, src1 ^ src2)
+// image and value
+CONSTANT_OP(and_constant, src & value)
+CONSTANT_OP(or_constant, src | value)
+CONSTANT_OP(xor_constant, src ^ value)
+
+// Unary
+UNARY_OP(not_image, ~src)
+
+#endif   // not FLOAT

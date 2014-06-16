@@ -26,14 +26,14 @@
 
 #include "Program.h"
 #include "FFT.h"
-#include "StatisticsVector.h"
-#include "IntegralBuffer.h"
-#include "TransformBuffer.h"
+#include "Statistics.h"
+#include "Integral.h"
+#include "Transform.h"
 
 namespace OpenCLIPP
 {
 
-	/// A program that does Pattern Matching
+/// A program that does Pattern Matching
 class CL_API ImageProximityFFT : public ImageBufferProgram
 {
 public:

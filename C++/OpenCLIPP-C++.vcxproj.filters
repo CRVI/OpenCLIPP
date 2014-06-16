@@ -40,28 +40,13 @@
     <ClInclude Include="..\include\c++\OpenCL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\ArithmeticVector.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\c++\Programs\Blob.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\LogicVector.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\LutVector.h">
       <Filter>Programs</Filter>
     </ClInclude>
     <ClInclude Include="..\include\c++\Programs\Program.h">
       <Filter>Programs</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\StatisticsVector.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
     <ClInclude Include="programs\CustomKernel.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\MorphologyBuffer.h">
       <Filter>Programs</Filter>
     </ClInclude>
     <ClInclude Include="..\include\c++\Image.h">
@@ -79,22 +64,13 @@
     <ClInclude Include="programs\WorkGroup.h">
       <Filter>Programs</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\FiltersVector.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\c++\Programs\FFT.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\ThresholdingVector.h">
       <Filter>Programs</Filter>
     </ClInclude>
     <ClInclude Include="..\cl-files\Base.h">
       <Filter>OpenCL Files\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\cl-files\Buffers.h">
-      <Filter>OpenCL Files\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cl-files\Images.h">
       <Filter>OpenCL Files\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\cl-files\Vector.h">
@@ -106,22 +82,43 @@
     <ClInclude Include="..\cl-files\Median.h">
       <Filter>OpenCL Files\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\IntegralBuffer.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\TransformBuffer.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\ImageProximityBuffer.h">
-      <Filter>Programs</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\c++\Programs\ImageProximityFFT.h">
       <Filter>Programs</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\ConversionsBuffer.h">
+    <ClInclude Include="..\include\c++\Programs\Filters.h">
       <Filter>Programs</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\c++\Programs\HistogramBuffer.h">
+    <ClInclude Include="..\include\c++\Programs\Histogram.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\ImageProximity.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Integral.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Logic.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Lut.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Morphology.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Statistics.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Thresholding.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Transform.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Arithmetic.h">
+      <Filter>Programs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\c++\Programs\Conversions.h">
       <Filter>Programs</Filter>
     </ClInclude>
   </ItemGroup>
@@ -141,96 +138,96 @@
     <ClCompile Include="programs\Program.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
-    <ClCompile Include="programs\ArithmeticVector.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\LogicVector.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\LutVector.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\StatisticsVector.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
     <ClCompile Include="programs\StatisticsHelpers.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\MorphologyBuffer.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="programs\ThresholdingVector.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\FiltersVector.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
     <ClCompile Include="programs\FFT.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\IntegralBuffer.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\TransformBuffer.cpp">
-      <Filter>Programs</Filter>
-    </ClCompile>
-    <ClCompile Include="programs\ImageProximityBuffer.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
     <ClCompile Include="programs\ImageProximityFFT.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
-    <ClCompile Include="programs\ConversionsBuffer.cpp">
+    <ClCompile Include="programs\Thresholding.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
-    <ClCompile Include="programs\HistogramBuffer.cpp">
+    <ClCompile Include="programs\Transform.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Arithmetic.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Conversions.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Filters.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Histogram.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\ImageProximity.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Integral.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Logic.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Lut.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Morphology.cpp">
+      <Filter>Programs</Filter>
+    </ClCompile>
+    <ClCompile Include="programs\Statistics.cpp">
       <Filter>Programs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\cl-files\Arithmetic.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
     <None Include="..\cl-files\Blob.cl">
       <Filter>OpenCL Files</Filter>
     </None>
-    <None Include="..\cl-files\Morphology_Buffer.cl">
+    <None Include="..\cl-files\Convert.cl">
       <Filter>OpenCL Files</Filter>
     </None>
-    <None Include="..\cl-files\Vector_Arithmetic.cl">
+    <None Include="..\cl-files\Filters.cl">
       <Filter>OpenCL Files</Filter>
     </None>
-    <None Include="..\cl-files\Vector_Filters.cl">
+    <None Include="..\cl-files\Histogram.cl">
       <Filter>OpenCL Files</Filter>
     </None>
-    <None Include="..\cl-files\Vector_Logic.cl">
-      <Filter>OpenCL Files</Filter>
-    </None>
-    <None Include="..\cl-files\Vector_Lut.cl">
-      <Filter>OpenCL Files</Filter>
-    </None>
-    <None Include="..\cl-files\Vector_Statistics.cl">
-      <Filter>OpenCL Files</Filter>
-    </None>
-    <None Include="..\cl-files\Vector_Thresholding.cl">
-      <Filter>OpenCL Files</Filter>
-    </None>
-    <None Include="..\cl-files\Integral_Buffer.cl">
-      <Filter>OpenCL Files</Filter>
-    </None>
-    <None Include="..\cl-files\Transform_Buffer.cl">
-      <Filter>OpenCL Files</Filter>
-    </None>
-    <None Include="..\cl-files\ImageProximity_Buffer.cl">
+    <None Include="..\cl-files\ImageProximity.cl">
       <Filter>OpenCL Files</Filter>
     </None>
     <None Include="..\cl-files\ImageProximityFFT.cl">
       <Filter>OpenCL Files</Filter>
     </None>
-    <None Include="..\cl-files\Convert_Buffer.cl">
+    <None Include="..\cl-files\Integral.cl">
       <Filter>OpenCL Files</Filter>
     </None>
-    <None Include="..\cl-files\Histogram_Buffer.cl">
+    <None Include="..\cl-files\Logic.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Lut.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Morphology.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Statistics.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Thresholding.cl">
+      <Filter>OpenCL Files</Filter>
+    </None>
+    <None Include="..\cl-files\Transform.cl">
       <Filter>OpenCL Files</Filter>
     </None>
   </ItemGroup>

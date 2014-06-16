@@ -23,9 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Programs/FFT.h"
-#include "Programs/StatisticsVector.h"
-#include "Programs/IntegralBuffer.h"
-#include "Programs/TransformBuffer.h"
+#include "Programs/Statistics.h"
+#include "Programs/Integral.h"
+#include "Programs/Transform.h"
 #include "Programs/ImageProximityFFT.h"
 #include "kernel_helpers.h"
 
