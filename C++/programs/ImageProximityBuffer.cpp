@@ -24,6 +24,8 @@
 
 #include "Programs/ImageProximityBuffer.h"
 
+#include "WorkGroup.h"
+
 #include "kernel_helpers.h"
 
 namespace OpenCLIPP
@@ -41,9 +43,19 @@ void ImageProximityBuffer::SqrDistance(ImageBuffer& Source, ImageBuffer& Templat
    CheckSameNbChannels(Source, Dest);
    CheckFloat(Dest);
 
-   Kernel(SqrDistance, In(Source, Template), Out(Dest),
-      Source.Step(), Template.Step(), Dest.Step(),
-      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   if (Template.Width() <= 16 && Template.Height() <= 16)
+   {
+      Kernel_Local(SqrDistance_Cached, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
+   else
+   {
+      Kernel(SqrDistance, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
+
 }
 
 void ImageProximityBuffer::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
@@ -58,9 +70,18 @@ void ImageProximityBuffer::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Te
    CheckSameNbChannels(Source, Dest);
    CheckFloat(Dest);
 
-   Kernel(SqrDistance_Norm, In(Source, Template), Out(Dest),
-      Source.Step(), Template.Step(), Dest.Step(),
-      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   if (Template.Width() <= 16 && Template.Height() <= 16)
+   {
+      Kernel_Local(SqrDistance_Norm_Cached, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
+   else
+   {
+      Kernel(SqrDistance_Norm, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
 }
 
 void ImageProximityBuffer::AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
@@ -75,9 +96,18 @@ void ImageProximityBuffer::AbsDistance(ImageBuffer& Source, ImageBuffer& Templat
    CheckSameNbChannels(Source, Dest);
    CheckFloat(Dest);
 
-   Kernel(AbsDistance, In(Source, Template), Out(Dest),
-      Source.Step(), Template.Step(), Dest.Step(),
-      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   if (Template.Width() <= 16 && Template.Height() <= 16)
+   {
+      Kernel_Local(AbsDistance_Cached, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
+   else
+   {
+      Kernel(AbsDistance, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
 }
 
 void ImageProximityBuffer::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
@@ -92,9 +122,18 @@ void ImageProximityBuffer::CrossCorr(ImageBuffer& Source, ImageBuffer& Template,
    CheckSameNbChannels(Source, Dest);
    CheckFloat(Dest);
 
-   Kernel(CrossCorr, In(Source, Template), Out(Dest),
-      Source.Step(), Template.Step(), Dest.Step(),
-      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   if (Template.Width() <= 16 && Template.Height() <= 16)
+   {
+      Kernel_Local(CrossCorr_Cached, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
+   else
+   {
+      Kernel(CrossCorr, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
 }
 
 void ImageProximityBuffer::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
@@ -109,9 +148,18 @@ void ImageProximityBuffer::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Temp
    CheckSameNbChannels(Source, Dest);
    CheckFloat(Dest);
 
-   Kernel(CrossCorr_Norm, In(Source, Template), Out(Dest),
-      Source.Step(), Template.Step(), Dest.Step(),
-      Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   if (Template.Width() <= 16 && Template.Height() <= 16)
+   {
+      Kernel_Local(CrossCorr_Norm_Cached, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
+   else
+   {
+      Kernel(CrossCorr_Norm, In(Source, Template), Out(Dest),
+         Source.Step(), Template.Step(), Dest.Step(),
+         Template.Width(), Template.Height(), Dest.Width(), Dest.Height());
+   }
 }
 
 }
