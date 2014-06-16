@@ -36,9 +36,6 @@ template<typename DataType>
 class LutBench : public IBench1in1out
 {
 public:
-   LutBench()
-   :  IBench1in1out(USE_BUFFER)
-   { }
 
    void Create(uint Width, uint Height);
    void Free();
@@ -110,10 +107,7 @@ void LutBench<DataType>::RunIPP()
 template<typename DataType>
 void LutBench<DataType>::RunCL()
 {
-   if (CLUsesBuffer())
-      ocipLut_V(m_CLBufferSrc, m_CLBufferDst, m_Levels.data(), m_Values.data(), Length);
-   else
-      ocipLut(m_CLSrc, m_CLDst, m_Levels.data(), m_Values.data(), Length);
+   ocipLut_V(m_CLBufferSrc, m_CLBufferDst, m_Levels.data(), m_Values.data(), Length);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

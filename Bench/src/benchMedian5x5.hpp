@@ -22,7 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-class Median5x5Bench : public BenchUnaryBase<unsigned char, true>
+class Median5x5Bench : public BenchUnaryBase<unsigned char>
 {
 public:
    Median5x5Bench()
@@ -58,10 +58,7 @@ void Median5x5Bench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median5x5Bench::RunCL()
 {
-   if (CLUsesBuffer())
-      ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 5);
-   else
-      ocipMedian(m_CLSrc, m_CLDst, 5);
+   ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 5);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median5x5Bench::RunCV()

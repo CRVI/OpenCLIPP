@@ -41,10 +41,7 @@ void CONCATENATE(BENCH_NAME, Bench)::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void CONCATENATE(BENCH_NAME, Bench)::RunCL()
 {
-   if (m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufferDst, 3);
-   else
-      CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLDst, 3);
+   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufferDst, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void CONCATENATE(BENCH_NAME, Bench)::RunNPP()

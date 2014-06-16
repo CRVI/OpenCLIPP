@@ -5,7 +5,7 @@ template<typename DataType> class RotateCubicBench;
 
 
 template<typename DataType>
-class RotateBench : public BenchUnaryBase<DataType, USE_BUFFER>
+class RotateBench : public BenchUnaryBase<DataType>
 {
 public:
    RotateBench(ocipInterpolationType Interpolation = ocipNearestNeighbour)
@@ -22,7 +22,7 @@ public:
 
    void Create(uint Width, uint Height)
    {
-      BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height);
+      BenchUnaryBase<DataType>::Create(Width, Height);
 
       IPP_CODE(
          m_ImgDstIPP.MakeBlack();
@@ -116,10 +116,7 @@ public:
 template<typename DataType>
 void RotateBench<DataType>::RunCL()
 {
-   if (this->m_UsesBuffer)
-      ocipRotate_V(this->m_CLBufferSrc, this->m_CLBufferDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
-   else
-      ocipRotate(this->m_CLSrc, this->m_CLDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
+   ocipRotate_V(this->m_CLBufferSrc, this->m_CLBufferDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

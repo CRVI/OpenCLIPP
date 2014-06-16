@@ -23,8 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#define COMPARE_USE_BUFFER USE_BUFFER
-
 #define VALUE 100
 #define USHORT_VALUE 5000
 #define FLOAT_VALUE 0.5

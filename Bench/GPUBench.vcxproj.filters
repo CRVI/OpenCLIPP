@@ -64,9 +64,6 @@
     <ClInclude Include="src\benchTransfer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\benchImageTransfer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\benchIntegral.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -45,10 +45,7 @@ void GradientBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void GradientBench::RunCL()
 {
-   if (m_UsesBuffer)
-      ocipGradient_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 3);
-   else
-      ocipGradient(m_CLSrc, m_CLDst, m_CLTmp, 3);
+   ocipGradient_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void GradientBench::RunNPP()

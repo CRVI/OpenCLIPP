@@ -46,10 +46,7 @@ void BlackHatBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void BlackHatBench::RunCL()
 {
-   if (m_UsesBuffer)
-      ocipBlackHat_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 1, 3);
-   else
-      ocipBlackHat(m_CLSrc, m_CLDst, m_CLTmp, 1, 3);
+   ocipBlackHat_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 1, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void BlackHatBench::RunNPP()

@@ -53,7 +53,7 @@ typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BenchF32);
 #endif // HAS_FLOAT
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, USE_BUFFER>
+class CLASS_NAME : public BenchUnaryBase<DataType>
 {
 public:
    void RunIPP();
@@ -71,10 +71,7 @@ public:
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferDst CONSTANT_MIDDLE CONSTANT_LAST);
-   else
-      CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLDst CONSTANT_MIDDLE CONSTANT_LAST);
+   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferDst CONSTANT_MIDDLE CONSTANT_LAST);
 }
 #ifndef NO_UNSIGNED
 //-----------------------------------------------------------------------------------------------------------------------------

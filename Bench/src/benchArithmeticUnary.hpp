@@ -31,7 +31,7 @@ typedef CLASS_NAME<unsigned short>  CONCATENATE(BENCH_NAME, BenchU16);
 typedef CLASS_NAME<float>           CONCATENATE(BENCH_NAME, BenchF32);
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, USE_BUFFER>
+class CLASS_NAME : public BenchUnaryBase<DataType>
 {
 public:
    void RunIPP();
@@ -75,10 +75,7 @@ bool CLASS_NAME<float>::CompareTolRelative() const
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferDst CONSTANT_LAST);
-   else
-      CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLDst CONSTANT_LAST);
+   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferDst CONSTANT_LAST);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

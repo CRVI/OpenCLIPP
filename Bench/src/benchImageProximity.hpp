@@ -35,16 +35,13 @@ class CLASS_NAME : public IBench1in1out
 public:
 
 #ifdef IMG_PROX_FFT
-   const static int UsesBuffer = true;
    const static int TemplateSize = 200;
 #else
-   const static int UsesBuffer = PROXIMITY_USE_BUFFER;
    const static int TemplateSize = 16;
 #endif
 
    CLASS_NAME()
-   :  IBench1in1out(UsesBuffer),
-      m_Program(nullptr),
+   :  m_Program(nullptr),
       m_NPPTemplate(nullptr)
    { }
 
@@ -64,7 +61,6 @@ protected:
 
    std::unique_ptr<CImageROI> m_ImgTemplate;
 
-   ocipImage m_CLTemplate;
    ocipBuffer m_CLBufTemplate;
 
    void * m_NPPTemplate;
@@ -87,7 +83,6 @@ void CLASS_NAME<DataType>::Create(uint Width, uint Height)
    m_ImgTemplate = std::unique_ptr<CImageROI>(new CImageROI(m_ImgSrc, 10, 10,
       min(TemplateSize, int(m_ImgSrc.Width) - 10), min(TemplateSize, int(m_ImgSrc.Height) - 10)));
 
-   ocipCreateImage(&m_CLTemplate, m_ImgTemplate->ToSImage(), m_ImgTemplate->Data(), CL_MEM_READ_WRITE);
    ocipCreateImageBuffer(&m_CLBufTemplate, m_ImgTemplate->ToSImage(), m_ImgTemplate->Data(), CL_MEM_READ_WRITE);
 
 #ifdef IMG_PROX_FFT
@@ -120,7 +115,6 @@ void CLASS_NAME<DataType>::Free()
 {
    IBench1in1out::Free();
 
-   ocipReleaseImage(m_CLTemplate);
    ocipReleaseImageBuffer(m_CLBufTemplate);
 
    ocipReleaseProgram(m_Program);
@@ -196,10 +190,7 @@ void CLASS_NAME<DataType>::RunCL()
 #ifdef IMG_PROX_FFT
    CONCATENATE(ocip, BENCH_NAME)(m_Program, m_CLBufferSrc, m_CLBufTemplate, m_CLBufferDst);
 #else
-   if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufTemplate, m_CLBufferDst);
-   else
-      CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLTemplate, m_CLDst);
+   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _B)(m_CLBufferSrc, m_CLBufTemplate, m_CLBufferDst);
 #endif
 }
 

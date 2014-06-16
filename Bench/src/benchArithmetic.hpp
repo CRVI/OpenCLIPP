@@ -25,11 +25,6 @@
 /*
 Defines used in this file :
 
-USE_BUFFER :
-   Needs to be set before including this file
-   Set to true or false
-   Used to select Image Buffer or Image mode of ocip for primitives that support both
-
 BENCH_NAME :
    Name of the primitive to test
 

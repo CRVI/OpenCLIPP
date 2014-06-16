@@ -60,25 +60,19 @@ public:
 class IBench1in0out : public IBench
 {
 public:
-   IBench1in0out(bool CLUsesBuffer = false)
-   : m_UsesBuffer(CLUsesBuffer)
-   , m_CLSrc(nullptr)
-   , m_CLBufferSrc(nullptr)
+   IBench1in0out()
+   : m_CLBufferSrc(nullptr)
    , m_NPPSrc(nullptr)
    , m_NPPSrcStep(0)
    { }
 
    template<typename DataType> void Create(uint Width, uint Height, bool AllowNegative = true, int NbChannels = 1);
    void Free();
-   bool CLUsesBuffer() const { return m_UsesBuffer; }
 
 protected:
 
-   bool m_UsesBuffer;
-
    CSimpleImage m_ImgSrc;
 
-   ocipImage m_CLSrc;
    ocipBuffer m_CLBufferSrc;
 
    void * m_NPPSrc;
@@ -93,10 +87,8 @@ protected:
 class IBench1in1out : public IBench1in0out
 {
 public:
-   IBench1in1out(bool CLUsesBuffer = false)
-   : IBench1in0out(CLUsesBuffer)
-   , m_CLDst(nullptr)
-   , m_CLBufferDst(nullptr)
+   IBench1in1out()
+   : m_CLBufferDst(nullptr)
    , m_NPPDst(nullptr)
    , m_NPPDstStep(0)
    { }
@@ -115,7 +107,6 @@ protected:
    CSimpleImage m_ImgDstNPP;
    CSimpleImage m_ImgDstCV;
 
-   ocipImage m_CLDst;
    ocipBuffer m_CLBufferDst;
 
    void * m_NPPDst;
@@ -127,10 +118,8 @@ protected:
 class IBench2in1out : public IBench1in1out
 {
 public:
-   IBench2in1out(bool CLUsesBuffer = false)
-   : IBench1in1out(CLUsesBuffer)
-   , m_CLSrcB(nullptr)
-   , m_CLBufferSrcB(nullptr)
+   IBench2in1out()
+   : m_CLBufferSrcB(nullptr)
    , m_NPPSrcB(nullptr)
    , m_NPPSrcBStep(0)
    { }
@@ -141,7 +130,6 @@ public:
 protected:
    CSimpleImage m_ImgSrcB;
 
-   ocipImage m_CLSrcB;
    ocipBuffer m_CLBufferSrcB;
 
    void * m_NPPSrcB;
@@ -150,14 +138,10 @@ protected:
    CV_CODE(oclMat m_CVSrcB);
 };
 
-template<typename DataType, bool UseBuffer>
+template<typename DataType>
 class BenchUnaryBase : public IBench1in1out
 {
 public:
-   BenchUnaryBase()
-   : IBench1in1out(UseBuffer)
-   { }
-
    void Create(uint Width, uint Height, int NbChannels = 1)
    {
       IBench1in1out::Create<DataType, DataType>(Width, Height,
@@ -166,14 +150,10 @@ public:
 
 };
 
-template<typename DataType, bool UseBuffer>
+template<typename DataType>
 class BenchBinaryBase : public IBench2in1out
 {
 public:
-   BenchBinaryBase()
-   : IBench2in1out(UseBuffer)
-   { }
-
    void Create(uint Width, uint Height)
    {
       IBench2in1out::Create<DataType, DataType>(Width, Height);
@@ -309,16 +289,8 @@ inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative, i
    }
 
    // CL
-   if (m_UsesBuffer)
-   {
-      ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
-      ocipSendImageBuffer(m_CLBufferSrc);
-   }
-   else
-   {
-      ocipCreateImage(&m_CLSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
-      ocipSendImage(m_CLSrc);
-   }
+   ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
+   ocipSendImageBuffer(m_CLBufferSrc);
 
    // IPP
    IPP_CODE(
@@ -348,7 +320,6 @@ inline void IBench1in0out::Free()
    NPP_CODE(nppiFree(m_NPPSrc);)
 
    ocipReleaseImageBuffer(m_CLBufferSrc);
-   ocipReleaseImage(m_CLSrc);
 
    CV_CODE( m_CVSrc.release(); )
 }
@@ -370,10 +341,7 @@ inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint D
    // CL
    m_ImgDstCL.Create<DstType>(DstWidth, DstHeight, NbChannelsDst);
 
-   if (m_UsesBuffer)
-      ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-   else
-      ocipCreateImage(&m_CLDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
 
    // NPP
    NPP_CODE(
@@ -395,7 +363,6 @@ inline void IBench1in1out::Free()
    NPP_CODE(nppiFree(m_NPPDst);)
 
    ocipReleaseImageBuffer(m_CLBufferDst);
-   ocipReleaseImage(m_CLDst);
 
    CV_CODE( m_CVDst.release(); )
 }
@@ -410,16 +377,8 @@ inline void IBench2in1out::Create(uint Width, uint Height)
    FillRandomImg(m_ImgSrcB, 1);
 
    // CL
-   if (m_UsesBuffer)
-   {
-      ocipCreateImageBuffer(&m_CLBufferSrcB, m_ImgSrcB, m_ImgSrcB.Data(), CL_MEM_READ_ONLY);
-      ocipSendImageBuffer(m_CLBufferSrcB);
-   }
-   else
-   {
-      ocipCreateImage(&m_CLSrcB, m_ImgSrcB, m_ImgSrcB.Data(), CL_MEM_READ_ONLY);
-      ocipSendImage(m_CLSrcB);
-   }
+   ocipCreateImageBuffer(&m_CLBufferSrcB, m_ImgSrcB, m_ImgSrcB.Data(), CL_MEM_READ_ONLY);
+   ocipSendImageBuffer(m_CLBufferSrcB);
 
    // NPP
    NPP_CODE(
@@ -442,7 +401,6 @@ inline void IBench2in1out::Free()
    NPP_CODE(nppiFree(m_NPPSrcB);)
 
    ocipReleaseImageBuffer(m_CLBufferSrcB);
-   ocipReleaseImage(m_CLSrcB);
 
    CV_CODE( m_CVSrcB.release(); )
 }
@@ -450,10 +408,7 @@ inline void IBench2in1out::Free()
 template<class T> 
 inline bool IBench1in1out::CompareCL(T * This)
 {
-   if (m_UsesBuffer)
-      ocipReadImageBuffer(m_CLBufferDst);
-   else
-      ocipReadImage(m_CLDst);
+   ocipReadImageBuffer(m_CLBufferDst);
 
    return CompareImages(m_ImgDstCL, m_ImgDstIPP, m_ImgSrc, *This);
 }

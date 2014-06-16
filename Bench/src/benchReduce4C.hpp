@@ -77,10 +77,7 @@ void CONCATENATE(BENCH_NAME, 4CBench)<float>::RunIPP()
 template<typename DataType>
 void CONCATENATE(BENCH_NAME, 4CBench)<DataType>::RunCL()
 {
-   if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_Program, this->m_CLBufferSrc, this->m_DstCL CL_ADDITIONAL_PARAMS);
-   else
-      CONCATENATE(ocip, BENCH_NAME)(this->m_Program, this->m_CLSrc, this->m_DstCL CL_ADDITIONAL_PARAMS);
+   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_Program, this->m_CLBufferSrc, this->m_DstCL CL_ADDITIONAL_PARAMS);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

@@ -63,9 +63,6 @@ template<typename DataType>
 class ResizeBenchBase : public IBench1in1out
 {
 public:
-   ResizeBenchBase()
-   :  IBench1in1out(USE_BUFFER)
-   { }
 
    void Create(uint Width, uint Height);
    void Free();
@@ -201,10 +198,7 @@ void ResizeBenchBase<DataType>::Free()
 template<typename DataType>
 void ResizeBenchBase<DataType>::RunCL()
 {
-   if (m_UsesBuffer)
-      ocipResize_V(m_CLBufferSrc, m_CLBufferDst, m_Interpolation, false);
-   else
-      ocipResize(m_CLSrc, m_CLDst, m_Interpolation, false);
+   ocipResize_V(m_CLBufferSrc, m_CLBufferDst, m_Interpolation, false);
 }
 
 template<typename DataType>

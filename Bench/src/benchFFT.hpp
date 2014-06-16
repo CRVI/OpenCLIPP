@@ -33,9 +33,6 @@ double Log2( double n )
 class FFTForwardBench : public IBench1in1out
 {
 public:
-   FFTForwardBench()
-   : IBench1in1out(true)
-   { }
 
    void Create(uint Width, uint Height);
    void Free();
@@ -63,9 +60,6 @@ private:
 class FFTBackwardBench : public IBench1in1out
 {
 public:
-   FFTBackwardBench()
-   : IBench1in1out(true)
-   { }
 
    void Create(uint Width, uint Height);
    void Free();

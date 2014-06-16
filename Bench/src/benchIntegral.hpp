@@ -32,8 +32,7 @@ class IntegralBench : public IBench1in1out
 {
 public:
    IntegralBench()
-   :  IBench1in1out(USE_BUFFER),
-      m_Program(nullptr)
+   :  m_Program(nullptr)
    { }
 
    void Create(uint Width, uint Height);
@@ -65,27 +64,9 @@ void IntegralBench<DataType>::Create(uint Width, uint Height)
    // Re-allocate with proper size for CL - which require same size images
    m_ImgDstCL.Create<DataType>(Width, Height);
 
-   if (m_UsesBuffer)
-   {
-      ocipReleaseImageBuffer(m_CLBufferDst);
-      ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-      ocipPrepareImageBufferIntegral(&m_Program, m_CLBufferSrc);
-   }
-   else
-   {
-      if (is_same<DataType, float>::value)
-      {
-         ocipReleaseImage(m_CLDst);
-         ocipCreateImage(&m_CLDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-         ocipPrepareIntegral(&m_Program, m_CLSrc);
-      }
-      else
-      {
-         // F64 images are not supported in images
-      }
-
-   }
-
+   ocipReleaseImageBuffer(m_CLBufferDst);
+   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipPrepareImageBufferIntegral(&m_Program, m_CLBufferSrc);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -105,17 +86,7 @@ void IntegralBench<DataType>::RunIPP()
 template<typename DataType>
 void IntegralBench<DataType>::RunCL()
 {
-   if (m_UsesBuffer)
-   {
-      ocipIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
-   }
-   else
-   {
-      if (is_same<DataType, double>::value)  //There's no function for output image type of F64(double)
-         return;
-
-      ocipIntegral(m_Program, m_CLSrc, m_CLDst);
-   }
+   ocipIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -133,17 +104,7 @@ void IntegralBench<DataType>::RunNPP()
 template<typename DataType>
 bool IntegralBench<DataType>::CompareCL(IntegralBench * This)
 {
-   if (m_UsesBuffer)
-   {
-      ocipReadImageBuffer(m_CLBufferDst);
-   }
-   else
-   {
-      if (is_same<DataType, double>::value)
-         return false;  // F64 is not supported in images
-
-      ocipReadImage(m_CLDst);
-   }
+   ocipReadImageBuffer(m_CLBufferDst);
 
    // IPP results has a 1px added black line on the left and top of the image
    CImageROI ROI(m_ImgDstIPP, 1, 1, m_ImgDstCL.Width, m_ImgDstCL.Height);

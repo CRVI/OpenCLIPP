@@ -22,7 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define THRESHOLD_USE_BUFFER USE_BUFFER
 
 IPP_CODE(IppCmpOp GetIppCmpOp(ECompareOperation Op) { return IppCmpOp(Op); } )   // Same numerical value
 NPP_CODE(NppCmpOp GetNppCmpOp(ECompareOperation Op) { return NppCmpOp(Op); } )   // Same numerical value

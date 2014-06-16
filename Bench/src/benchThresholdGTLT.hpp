@@ -37,14 +37,8 @@
 #define FLOAT_THRESHGT 0.2f
 #define FLOAT_VALUEHIGHER 0.5f
 
-template<typename DataType> class ThresholdGTLTBench;
-
-typedef ThresholdGTLTBench<unsigned char>   ThresholdGTLTBenchU8;
-typedef ThresholdGTLTBench<unsigned short>  ThresholdGTLTBenchU16;
-typedef ThresholdGTLTBench<float>           ThresholdGTLTBenchF32;
-
 template<typename DataType>
-class ThresholdGTLTBench : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
+class ThresholdGTLTBench : public BenchUnaryBase<DataType>
 {
 public:
    void RunIPP();
@@ -110,10 +104,7 @@ void ThresholdGTLTBench<DataType>::RunCL()
       valueLT  = FLOAT_VALUELOWER;
    }
 
-   if (this->m_UsesBuffer)
-      ocipThresholdGTLT_V(this->m_CLBufferSrc, this->m_CLBufferDst, threshLT, valueLT, threshGT, valueGT);
-   else
-      ocipThresholdGTLT(this->m_CLSrc, this->m_CLDst, threshLT, valueLT, threshGT, valueGT);
+   ocipThresholdGTLT_V(this->m_CLBufferSrc, this->m_CLBufferDst, threshLT, valueLT, threshGT, valueGT);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

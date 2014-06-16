@@ -24,8 +24,6 @@
 
 #include <memory>
 
-#define PROXIMITY_USE_BUFFER USE_BUFFER
-
 #define BENCH_NAME SqrDistance_Norm
 #define IPP_NAME SqrDistanceSame_Norm
 #include "benchImageProximity.hpp"

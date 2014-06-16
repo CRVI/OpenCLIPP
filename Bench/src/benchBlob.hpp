@@ -26,8 +26,7 @@ class BlobBench : public IBench1in0out
 {
 public:
    BlobBench()
-   :  IBench1in0out(true),
-      m_CLBufferDst(nullptr),
+   :  m_CLBufferDst(nullptr),
       m_Program(nullptr)
    { }
 

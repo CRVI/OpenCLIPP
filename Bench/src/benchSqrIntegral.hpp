@@ -32,8 +32,8 @@ class SqrIntegralBench : public IBench1in1out
 {
 public:
 
-   SqrIntegralBench(): IBench1in1out(USE_BUFFER),
-                 m_Program(nullptr) 
+   SqrIntegralBench()
+   :  m_Program(nullptr)
    { }
 
    void RunIPP();
@@ -70,26 +70,9 @@ void SqrIntegralBench<DataType>::Create(uint Width, uint Height)
 
    m_IppIntegral.Create<float>(m_ImgDstIPP.Width, m_ImgDstIPP.Height, m_ImgDstIPP.Channels);
 
-   if (m_UsesBuffer)
-   {
-      ocipReleaseImageBuffer(m_CLBufferDst);
-      ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-      ocipPrepareImageBufferIntegral(&m_Program, m_CLBufferSrc);
-   }
-   else
-   {
-     if (is_same<DataType, float>::value)
-      {
-         ocipReleaseImage(m_CLDst);
-         ocipCreateImage(&m_CLDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-         ocipPrepareIntegral(&m_Program, m_CLSrc);
-      }
-      else
-      {
-         // F64 images are not supported in images
-      }
-
-   }
+   ocipReleaseImageBuffer(m_CLBufferDst);
+   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipPrepareImageBufferIntegral(&m_Program, m_CLBufferSrc);
    
 }
 
@@ -109,30 +92,10 @@ void SqrIntegralBench<DataType>::RunIPP()
    IPP_CODE(ippiSqrIntegral_8u32f64f_C1R(m_ImgSrc.Data(), m_ImgSrc.Step, (Ipp32f*) m_IppIntegral.Data(), m_IppIntegral.Step, (Ipp64f*) m_ImgDstIPP.Data(), m_ImgDstIPP.Step, m_IPPRoi, 0, 0);)
 }
 //-----------------------------------------------------------------------------------------------------------------------------
-template<>
-void SqrIntegralBench<float>::RunCL()
+template<typename DataType>
+void SqrIntegralBench<DataType>::RunCL()
 {
-   if (m_UsesBuffer)
-   {
-      ocipSqrIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
-   }
-   else
-   {
-      ocipSqrIntegral(m_Program, m_CLSrc, m_CLDst);
-   }
-}
-//-----------------------------------------------------------------------------------------------------------------------------
-template<>
-void SqrIntegralBench<double>::RunCL()
-{
-   if (m_UsesBuffer)
-   {
-      ocipSqrIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
-   }
-   else
-   {
-      //There's no function for output image type of F64(double)
-   }
+   ocipSqrIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -147,17 +110,7 @@ void SqrIntegralBench<DataType>::RunCV()
 template<typename DataType>
 bool SqrIntegralBench<DataType>::CompareCL(SqrIntegralBench * This)
 {
-   if (m_UsesBuffer)
-   {
-      ocipReadImageBuffer(m_CLBufferDst);
-   }
-   else
-   {
-       if (is_same<DataType, double>::value)
-         return false;  // F64 is not supported in images
-
-      ocipReadImage(m_CLDst);
-   }
+   ocipReadImageBuffer(m_CLBufferDst);
 
    // IPP results has a 1px added black line on the left and top of the image
    CImageROI ROI(m_ImgDstIPP, 1, 1, m_ImgDstCL.Width, m_ImgDstCL.Height);

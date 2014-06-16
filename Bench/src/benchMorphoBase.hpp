@@ -24,15 +24,11 @@
 
 #pragma once
 
-#define MORPHO_USES_BUFFER true
-
 class MorphoBenchBase : public IBench1in1out
 {
 public:
    MorphoBenchBase()
-   : IBench1in1out(MORPHO_USES_BUFFER)
-   , m_CLTmp(nullptr)
-   , m_CLBufferTmp(nullptr)
+   : m_CLBufferTmp(nullptr)
    , m_NPPTmp(nullptr)
    , m_NPPTmpStep(0)
    , m_MaskSize(3, 3)
@@ -51,7 +47,6 @@ protected:
 
    CSimpleImage m_ImgTemp;
 
-   ocipImage m_CLTmp;
    ocipBuffer m_CLBufferTmp;
 
    unsigned char * m_NPPTmp;
@@ -83,10 +78,7 @@ inline void MorphoBenchBase::Create(uint Width, uint Height)
       )
 
    // CL
-   if (m_UsesBuffer)
-      ocipCreateImageBuffer(&m_CLBufferTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
-   else
-      ocipCreateImage(&m_CLTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
+   ocipCreateImageBuffer(&m_CLBufferTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
 
    // NPP
    NPP_CODE(m_NPPTmp = (Npp8u*) NPP_Malloc<unsigned char>(Width, Height, m_NPPTmpStep);)
@@ -97,7 +89,6 @@ inline void MorphoBenchBase::Free()
    IBench1in1out::Free();
 
    ocipReleaseImageBuffer(m_CLBufferTmp);
-   ocipReleaseImage(m_CLTmp);
 
    NPP_CODE(nppiFree(m_NPPTmp);)
 }

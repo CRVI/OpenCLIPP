@@ -22,8 +22,6 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define USE_BUFFER true // Set to false to use Image mode
-
 #include "benchBase.hpp"
 #include "benchArithmetic.hpp"
 #include "benchStatistics.hpp"
@@ -40,7 +38,6 @@
 #include "benchTransfer.hpp"
 #include "benchImageProximityBase.hpp"
 #include "benchImageProximityFFTBase.hpp"
-#include "benchImageTransfer.hpp"
 #include "benchIntegral.hpp"
 #include "benchSqrIntegral.hpp"
 #include "benchResize.hpp"
@@ -233,17 +230,13 @@ void RunBench()
    Bench(IntegralBenchF32);
    //Bench(IntegralBenchF64);       // Not supported by IPP
    //Bench(SqrIntegralBenchF32);    // Not supported by IPP
-   if (USE_BUFFER)                  // F64 is only supported using buffer
-   {
-      Bench(SqrIntegralBenchF64);
-   }
+   Bench(SqrIntegralBenchF64);
 
    Bench(BlobBench);
 
 #else // FULL_TESTS
    // Benchmark mode
    Bench(TransferBench);
-   Bench(ImageTransferBench);
 
    Bench(AbsDiffCBenchU8);
    Bench(AbsDiffBenchU8);

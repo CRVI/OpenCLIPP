@@ -37,7 +37,7 @@ float FilterTolerance<float>()
 
 
 template<typename DataType, int mask_size = 1, int channels = 1>
-class FilterBenchBase : public BenchUnaryBase<DataType, USE_BUFFER>
+class FilterBenchBase : public BenchUnaryBase<DataType>
 {
 public:
    void Create(uint Width, uint Height);
@@ -60,10 +60,7 @@ class FILTER_CLASS_NAME(Name, width, nb_channels) : public FilterBenchBase<FILTE
 public:\
    void RunCL()\
    {\
-      if (CLUsesBuffer())\
-         CONCATENATE(CONCATENATE(ocip, Name), _V) (m_CLBufferSrc, m_CLBufferDst, width);\
-      else\
-         CONCATENATE(ocip, Name) (m_CLSrc, m_CLDst, width);\
+      CONCATENATE(CONCATENATE(ocip, Name), _V) (m_CLBufferSrc, m_CLBufferDst, width);\
    }\
    void RunIPP()\
    {\
@@ -87,7 +84,7 @@ public:\
 template<typename DataType, int mask_size, int channels>
 void FilterBenchBase<DataType, mask_size, channels>::Create(uint Width, uint Height)
 {
-   BenchUnaryBase<DataType, USE_BUFFER>::Create(Width, Height, channels);
+   BenchUnaryBase<DataType>::Create(Width, Height, channels);
 
    IPP_CODE(
       m_IPPRoi.width -= mask_size * 2;
@@ -234,10 +231,7 @@ class FILTER_CLASS_NAME(Name, width, nb_channels) : public AdvancedFilter<FILTER
 public:\
    void RunCL()\
    {\
-      if (CLUsesBuffer())\
-         CONCATENATE(CONCATENATE(ocip, Name), _V) (m_CLBufferSrc, m_CLBufferDst, width);\
-      else\
-         CONCATENATE(ocip, Name) (m_CLSrc, m_CLDst, width);\
+      CONCATENATE(CONCATENATE(ocip, Name), _V) (m_CLBufferSrc, m_CLBufferDst, width);\
    }\
    void RunIPP()\
    {\

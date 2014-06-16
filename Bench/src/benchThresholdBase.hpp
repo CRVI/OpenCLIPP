@@ -23,15 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define CLASS_NAME CONCATENATE(CONCATENATE(BENCH_NAME,THRESHOLD_TYPE), Bench)
-template<typename DataType> class CLASS_NAME;
-
-typedef CLASS_NAME<unsigned char>   CONCATENATE(CONCATENATE(BENCH_NAME,THRESHOLD_TYPE), BenchU8);
-typedef CLASS_NAME<unsigned short>  CONCATENATE(CONCATENATE(BENCH_NAME,THRESHOLD_TYPE), BenchU16);
-typedef CLASS_NAME<float>           CONCATENATE(CONCATENATE(BENCH_NAME,THRESHOLD_TYPE), BenchF32);
-
 
 template<typename DataType>
-class CLASS_NAME : public BenchUnaryBase<DataType, THRESHOLD_USE_BUFFER>
+class CLASS_NAME : public BenchUnaryBase<DataType>
 {
 public:
    void RunIPP();
@@ -82,10 +76,7 @@ void CLASS_NAME<DataType>::RunCL()
    float thresh = GetThreshold<DataType>();
    float value = GetThresholdValue<DataType>(THRESHOLD_TYPE);
 
-   if (this->m_UsesBuffer)
-      CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferDst, thresh, value, THRESHOLD_TYPE);
-   else
-      CONCATENATE(ocip, BENCH_NAME)(this->m_CLSrc, this->m_CLDst, thresh, value, THRESHOLD_TYPE);
+   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_CLBufferSrc, this->m_CLBufferDst, thresh, value, THRESHOLD_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-class Median3x3Bench : public BenchUnaryBase<unsigned char, true>
+class Median3x3Bench : public BenchUnaryBase<unsigned char>
 {
 public:
    Median3x3Bench()
@@ -58,10 +58,7 @@ void Median3x3Bench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median3x3Bench::RunCL()
 {
-   if (CLUsesBuffer())
-      ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 3);
-   else
-      ocipMedian(m_CLSrc, m_CLDst, 3);
+   ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median3x3Bench::RunCV()

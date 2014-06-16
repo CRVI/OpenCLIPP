@@ -27,8 +27,7 @@ class BenchReduceBase : public IBench1in0out
 {
 public:
    BenchReduceBase()
-   : IBench1in0out(USE_BUFFER)
-   , m_Program(nullptr)
+   : m_Program(nullptr)
    , m_IndxNPP(nullptr)
    , m_NPPWorkBuffer(nullptr)
    { }
@@ -77,10 +76,7 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
 
    CV_CODE( m_IndxCV = Point(0, 0); )
 
-   if (CLUsesBuffer())
-      ocipPrepareImageBufferStatistics(&m_Program, m_CLBufferSrc);
-   else
-      ocipPrepareStatistics(&m_Program, m_CLSrc);
+   ocipPrepareImageBufferStatistics(&m_Program, m_CLBufferSrc);
 
    NPP_CODE(
       int BufferSize = 0;
@@ -94,31 +90,14 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
    if (std::is_same<float, DataType>::value)
    {
       // To prevent float values from overflowing, we divide the values to get them smaller
-      if (this->m_UsesBuffer)
-      {
-         ocipDivC_V(m_CLBufferSrc, m_CLBufferSrc, 1000000);
-         ocipReadImageBuffer(m_CLBufferSrc);
-      }
-      else
-      {
-         ocipDivC(m_CLSrc, m_CLSrc, 1000000);
-         ocipReadImage(m_CLSrc);
-      }
-      
+      ocipDivC_V(m_CLBufferSrc, m_CLBufferSrc, 1000000);
+      ocipReadImageBuffer(m_CLBufferSrc);      
    }
    else if (std::is_same<unsigned char, DataType>::value)
    {
       // Remove smallest and biggest values
-      if (this->m_UsesBuffer)
-      {
-         ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 253, 250);
-         ocipReadImageBuffer(m_CLBufferSrc);
-      }
-      else
-      {
-         ocipThresholdGTLT(m_CLSrc, m_CLSrc, 2, 3, 253, 250);
-         ocipReadImage(m_CLSrc);
-      }
+      ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 253, 250);
+      ocipReadImageBuffer(m_CLBufferSrc);
 
       // Place a single high and low pixel at a random location
       CImage<unsigned char>& Img = static_cast<CImage<unsigned char>&>(m_ImgSrc);
@@ -128,16 +107,8 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
    if (std::is_same<unsigned short, DataType>::value)
    {
       // Remove smallest and biggest values
-      if (this->m_UsesBuffer)
-      {
-         ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 64000, 63200);
-         ocipReadImageBuffer(m_CLBufferSrc);
-      }
-      else
-      {
-         ocipThresholdGTLT(m_CLSrc, m_CLSrc, 2, 3, 64000, 63200);
-         ocipReadImage(m_CLSrc);
-      }
+      ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 64000, 63200);
+      ocipReadImageBuffer(m_CLBufferSrc);
 
       // Place a single high and low pixel at a random location
       CImage<unsigned short>& Img = static_cast<CImage<unsigned short>&>(m_ImgSrc);
@@ -146,10 +117,7 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
    }
 
    // Resend the image
-   if (this->m_UsesBuffer)
-      ocipSendImageBuffer(m_CLBufferSrc);
-   else
-      ocipSendImage(m_CLSrc);
+   ocipSendImageBuffer(m_CLBufferSrc);
 
    NPP_CODE(
       cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
