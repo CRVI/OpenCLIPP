@@ -141,8 +141,12 @@ bool FFT::IsPlanCompatible(clfftPlanHandle ForwardPlan, const ImageBase& Real, c
 void FFT::PrepareFor(const ImageBase& Real, const ImageBase& Complex)
 {
    // Verify image types
-   if (Real.DataType() != SImage::F32 || Complex.DataType() != SImage::F32)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "FFT works only with F32 images");
+
+   if (Real.DataType() != Complex.DataType())
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Different data types used in FFT");
+
+   if (Complex.DataType() != SImage::F32 && Complex.DataType() != SImage::F64)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "FFT works only with F32 ou F64 images");
 
    if (Real.NbChannels() != 1)
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "FFT works only with images with 1 channel for Real images");
@@ -187,7 +191,11 @@ void FFT::PrepareFor(const ImageBase& Real, const ImageBase& Complex)
    cl_int err = clfftCreateDefaultPlan(&m_ForwardPlan, *m_CL, CLFFT_2D, clLengths);
 
    // Set plan parameters
-   err = clfftSetPlanPrecision(m_ForwardPlan, CLFFT_SINGLE);
+   if(Real.DataType() == SImage::F32)
+      err = clfftSetPlanPrecision(m_ForwardPlan, CLFFT_SINGLE);
+   else
+      err = clfftSetPlanPrecision(m_ForwardPlan, CLFFT_DOUBLE);
+
    err = clfftSetLayout(m_ForwardPlan, CLFFT_REAL, CLFFT_HERMITIAN_INTERLEAVED);
    err = clfftSetResultLocation(m_ForwardPlan, CLFFT_OUTOFPLACE);
 
@@ -204,7 +212,11 @@ void FFT::PrepareFor(const ImageBase& Real, const ImageBase& Complex)
    err = clfftCreateDefaultPlan(&m_BackwardPlan, *m_CL, CLFFT_2D, clLengths);
 
    // Set plan parameters
-   err = clfftSetPlanPrecision(m_BackwardPlan, CLFFT_SINGLE);
+   if(Real.DataType() == SImage::F32)
+      err = clfftSetPlanPrecision(m_BackwardPlan, CLFFT_SINGLE);
+   else
+      err = clfftSetPlanPrecision(m_BackwardPlan, CLFFT_DOUBLE);
+
    err = clfftSetLayout(m_BackwardPlan, CLFFT_HERMITIAN_INTERLEAVED, CLFFT_REAL);
    err = clfftSetResultLocation(m_BackwardPlan, CLFFT_OUTOFPLACE);
    err = clfftSetPlanInStride(m_BackwardPlan, CLFFT_2D, ComplexStrides);
