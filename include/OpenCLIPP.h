@@ -668,14 +668,6 @@ ocipError ocip_API ocipScale2_V(    ocipBuffer Source, ocipBuffer Dest, int Offs
 /// Both images must be of the same type.
 ocipError ocip_API ocipCopy_V(      ocipBuffer Source, ocipBuffer Dest);
 
-/// Copies an image buffer to an image.
-/// Both images must be of similar types
-ocipError ocip_API ocipToImage_V(   ocipBuffer Source, ocipBuffer Dest);
-
-/// Copies an image to an image buffer.
-/// Both images must be of similar types
-ocipError ocip_API ocipToBuffer_V(  ocipBuffer Source, ocipBuffer Dest);
-
 /// Converts a color (4 channel) image to a 1 channel image by averaging the first 3 channels
 ocipError ocip_API ocipToGray_V(    ocipBuffer Source, ocipBuffer Dest);
 

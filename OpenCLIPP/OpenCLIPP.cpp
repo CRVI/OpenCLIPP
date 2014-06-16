@@ -677,7 +677,7 @@ UNARY_OP(ocipCopy_V, Copy)
 UNARY_OP(ocipToGray_V, ToGray)
 UNARY_OP(ocipToColor_V, ToColor)
 
-ocipError ocip_API ocipScale2_V(ocipImage Source, ocipImage Dest, int Offset, float Ratio)
+ocipError ocip_API ocipScale2_V(ocipBuffer Source, ocipBuffer Dest, int Offset, float Ratio)
 {
    H( CLASS.Scale(Buf(Source), Buf(Dest), Offset, Ratio) )
 }
