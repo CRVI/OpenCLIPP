@@ -41,7 +41,7 @@ namespace OpenCLIPP
 {
 void Integral::PrepareFor(ImageBase& Source)
 {
-   ImageBufferProgram::PrepareFor(Source);
+   ImageProgram::PrepareFor(Source);
 
    SSize VerticalImgSize_F32 = {GetNbGroupsW(Source) - 1, Source.Height()};
    SSize HorizontalImgSize_F32 = {Source.Width(), GetNbGroupsH(Source) - 1};

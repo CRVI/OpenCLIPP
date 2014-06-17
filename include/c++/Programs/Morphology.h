@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program that does morphological operations
-class CL_API Morphology : public ImageBufferProgram
+class CL_API Morphology : public ImageProgram
 {
 public:
    Morphology(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Morphology.cl"),
+   :  ImageProgram(CL, "Morphology.cl"),
       m_Arithmetic(CL)
    { }
 

@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program that does transformations
-class CL_API Transform : public ImageBufferProgram
+class CL_API Transform : public ImageProgram
 {
 public:
    Transform(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Transform.cl")
+   :  ImageProgram(CL, "Transform.cl")
    { }
 
    /// Lists the possible interpolation types useable in some primitives

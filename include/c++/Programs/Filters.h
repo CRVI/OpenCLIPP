@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program for convolution-type filters on images
-class CL_API Filters : public ImageBufferProgram
+class CL_API Filters : public ImageProgram
 {
 public:
    Filters(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Filters.cl")
+   :  ImageProgram(CL, "Filters.cl")
    { }
 
    /// Gaussian blur filter.

@@ -31,7 +31,7 @@ namespace OpenCLIPP
 {
 
 Blob::Blob(COpenCL& CL)
-:  ImageBufferProgram(CL, "Blob.cl"),
+:  ImageProgram(CL, "Blob.cl"),
    m_InfoBuffer(CL, &m_BlobInfo, 1)
 { }
 

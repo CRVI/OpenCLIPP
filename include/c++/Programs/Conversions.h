@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program used to Convert the type of an image
-class CL_API Conversions : public ImageBufferProgram
+class CL_API Conversions : public ImageProgram
 {
 public:
    Conversions(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Convert.cl")
+   :  ImageProgram(CL, "Convert.cl")
    { }
 
    /// From any image type to any image type - no value scaling

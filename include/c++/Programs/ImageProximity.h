@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program for convolution-type filters on images
-class CL_API ImageProximity : public ImageBufferProgram
+class CL_API ImageProximity : public ImageProgram
 {
 public:
    ImageProximity(COpenCL& CL)
-   :  ImageBufferProgram(CL, "ImageProximity.cl")
+   :  ImageProgram(CL, "ImageProximity.cl")
    { }
 
    // Use only small template images (<=16x16 pixels)

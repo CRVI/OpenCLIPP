@@ -34,12 +34,12 @@ namespace OpenCLIPP
 {
 
 /// A program that does Pattern Matching
-class CL_API ImageProximityFFT : public ImageBufferProgram
+class CL_API ImageProximityFFT : public ImageProgram
 {
 public:
 
    ImageProximityFFT(COpenCL& CL)
-   :  ImageBufferProgram(CL, "ImageProximityFFT.cl"),
+   :  ImageProgram(CL, "ImageProximityFFT.cl"),
       m_integral(CL),
       m_statistics(CL),
       m_transform(CL),

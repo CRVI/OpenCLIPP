@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program that calculates the Histogram of an image
-class CL_API Histogram : public ImageBufferProgram
+class CL_API Histogram : public ImageProgram
 {
 public:
    Histogram(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Histogram.cl")
+   :  ImageProgram(CL, "Histogram.cl")
    { }
 
    /// Calculates the Histogram of the first channel of the image

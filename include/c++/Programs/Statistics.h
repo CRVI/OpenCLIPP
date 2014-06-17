@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program that does statistical reductions
-class CL_API Statistics : public ImageBufferProgram
+class CL_API Statistics : public ImageProgram
 {
 public:
    Statistics(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Statistics.cl"),
+   :  ImageProgram(CL, "Statistics.cl"),
       m_ResultBuffer(*m_CL, m_Result, 4)
    { }
 

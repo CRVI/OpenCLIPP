@@ -173,11 +173,18 @@ ImageProgram::ImageProgram(COpenCL& CL, bool fromSource, const char * Source)
 
 const vector<string> ImageProgram::GetOptions()
 {
-   const char * Defines[NbPixelTypes] = {"I", "UI", "F"};
+   vector<string> Options(SImage::NbDataTypes * MaxNbChannels);
 
-   vector<string> Options(NbPixelTypes);
-   for (int i = 0; i < NbPixelTypes; i++)
-      Options[i] = string("-D ") + Defines[i];
+   for (int i = 0; i < SImage::NbDataTypes; i++)
+   {
+      SImage::EDataType Type = SImage::EDataType(i);
+
+      string options = string("-D ") + GetDataTypeList()[i];
+
+      Options[GetProgramId(Type, 1)] = options;
+      for (int j = 2; j <= MaxNbChannels; j++)
+         Options[GetProgramId(Type, j)] = options + " -D NBCHAN=" + to_string(j);
+   }
 
    return Options;
 }
@@ -189,13 +196,13 @@ void ImageProgram::PrepareFor(const ImageBase& Source)
 
 Program& ImageProgram::SelectProgram(const ImageBase& Img1)
 {
-   if (Img1.IsFloat())
-      return GetProgram(Float);
+   if (Img1.DataType() < 0 || Img1.DataType() >= SImage::NbDataTypes)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageProgram");
 
-   if (Img1.IsUnsigned())
-      return GetProgram(Unsigned);
+   if (Img1.NbChannels() < 1 || Img1.NbChannels() > MaxNbChannels)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported number of channels");
 
-   return GetProgram(Signed);
+   return GetProgram(GetProgramId(Img1.DataType(), Img1.NbChannels()));
 }
 
 Program& ImageProgram::SelectProgram(const ImageBase& Img1, const ImageBase&)
@@ -216,77 +223,7 @@ Program& ImageProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, co
    return SelectProgram(Img1);
 }
 
-
-// ImageBufferProgram
-ImageBufferProgram::ImageBufferProgram(COpenCL& CL, const char * Path)
-:  MultiProgram(CL)
-{
-   const vector<string> Options = GetOptions();
-
-   SetProgramInfo(Path, Options);
-}
-
-ImageBufferProgram::ImageBufferProgram(COpenCL& CL, bool fromSource, const char * Source)
-:  MultiProgram(CL)
-{
-   const vector<string> Options = GetOptions();
-
-   SetProgramInfo(fromSource, Source, Options);
-}
-
-const vector<string> ImageBufferProgram::GetOptions()
-{
-   vector<string> Options(SImage::NbDataTypes * MaxNbChannels);
-
-   for (int i = 0; i < SImage::NbDataTypes; i++)
-   {
-      SImage::EDataType Type = SImage::EDataType(i);
-
-      string options = string("-D ") + GetDataTypeList()[i];
-
-      Options[GetProgramId(Type, 1)] = options;
-      for (int j = 2; j <= MaxNbChannels; j++)
-         Options[GetProgramId(Type, j)] = options + " -D NBCHAN=" + to_string(j);
-   }
-
-   return Options;
-}
-
-void ImageBufferProgram::PrepareFor(const ImageBase& Source)
-{
-   SelectProgram(Source).Build();
-}
-
-Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1)
-{
-   if (Img1.DataType() < 0 || Img1.DataType() >= SImage::NbDataTypes)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported image format used with ImageBufferProgram");
-
-   if (Img1.NbChannels() < 1 || Img1.NbChannels() > MaxNbChannels)
-      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "unsupported number of channels");
-
-   return GetProgram(GetProgramId(Img1.DataType(), Img1.NbChannels()));
-}
-
-Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&)
-{
-   // Only Img1 is used to select the program
-   return SelectProgram(Img1);
-}
-
-Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&)
-{
-   // Only Img1 is used to select the program
-   return SelectProgram(Img1);
-}
-
-Program& ImageBufferProgram::SelectProgram(const ImageBase& Img1, const ImageBase&, const ImageBase&, const ImageBase&)
-{
-   // Only Img1 is used to select the program
-   return SelectProgram(Img1);
-}
-
-uint ImageBufferProgram::GetProgramId(SImage::EDataType Type, uint NbChannels)
+uint ImageProgram::GetProgramId(SImage::EDataType Type, uint NbChannels)
 {
    return (NbChannels - 1) * SImage::NbDataTypes + Type;
 }

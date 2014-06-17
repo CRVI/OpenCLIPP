@@ -30,11 +30,11 @@ namespace OpenCLIPP
 {
 
 /// A program that does LUT (Look Up Table) transformation of images
-class CL_API Lut : public ImageBufferProgram
+class CL_API Lut : public ImageProgram
 {
 public:
    Lut(COpenCL& CL)
-   :  ImageBufferProgram(CL, "Lut.cl")
+   :  ImageProgram(CL, "Lut.cl")
    { }
 
    /// Performs a LUT operation.

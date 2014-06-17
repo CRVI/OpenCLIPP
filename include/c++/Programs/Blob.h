@@ -30,7 +30,7 @@ namespace OpenCLIPP
 {
 
 /// A program that does Blob labeling on an image
-class CL_API Blob : public ImageBufferProgram
+class CL_API Blob : public ImageProgram
 {
 public:
    Blob(COpenCL& CL);

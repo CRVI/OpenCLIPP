@@ -122,8 +122,9 @@ private:
    std::vector<ProgramPtr> m_Programs;
 };
 
-/// A program that operates on Images.
-/// Contains 3 program versions : int, uint and float
+
+/// A program that can operate on all supported data types.
+/// Contains a version of the program for each data type : S8, U8, S16, U16, S32, U32, F32, F64
 class CL_API ImageProgram : public MultiProgram
 {
 public:
@@ -142,53 +143,6 @@ public:
    /// \param fromSource : Indicates that source code is directly specified (instead of using a .cl file)
    /// \param Source : OpenCL C source code of the program
    ImageProgram(COpenCL& CL, bool fromSource, const char * Source);
-
-   /// Enumerates allowed pixel types
-   enum EPixelTypes      // Keep in synch with list in constructor
-   {
-      Signed,        ///< Signed integer
-      Unsigned,      ///< Unsigned integer
-      Float,         ///< float (32-bit only)
-      NbPixelTypes,
-   };
-
-   /// Build the version of the program appropriate for this image.
-   /// Building can take a lot of time (100+ms) so it is better to build
-   /// the program during when starting so it will be ready when needed.
-   void PrepareFor(const ImageBase& Source);
-
-   /// Selects the appropriate program version for this image.
-   /// Also builds the program version if it was not already built.
-   Program& SelectProgram(const ImageBase& Img1);
-   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2);
-   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3);
-   Program& SelectProgram(const ImageBase& Img1, const ImageBase& Img2, const ImageBase& Img3, const ImageBase& Img4);
-
-private:
-   static const std::vector<std::string> GetOptions();
-};
-
-
-/// A program that can operate on all supported data types.
-/// Contains a version of the program for each data type : S8, U8, S16, U16, S32, U32, F32, F64
-class CL_API ImageBufferProgram : public MultiProgram
-{
-public:
-
-   /// Initialize the program with a .cl file.
-   /// Program is not built by the constructor, it will be built when needed.
-   /// Call PrepareFor() to have the program ready for later use.
-   /// \param CL : A COpenCL instance
-   /// \param Path : Path of the .cl file - must be relative to the path given by COpenCL::SetClFilesPath()
-   ImageBufferProgram(COpenCL& CL, const char * Path);
-
-   /// Initialize the program with source code.
-   /// Program is not built by the constructor, it will be built when needed.
-   /// Call PrepareFor() to have the program ready for later use.
-   /// \param CL : A COpenCL instance
-   /// \param fromSource : Indicates that source code is directly specified (instead of using a .cl file)
-   /// \param Source : OpenCL C source code of the program
-   ImageBufferProgram(COpenCL& CL, bool fromSource, const char * Source);
 
    /// Build the version of the program appropriate for this image.
    /// Building can take a lot of time (100+ms) so it is better to build

@@ -29,11 +29,11 @@
 namespace OpenCLIPP
 {
    /// A program that does image thresholding
-class CL_API Integral : public ImageBufferProgram
+class CL_API Integral : public ImageProgram
 {
 public:
    Integral(COpenCL& CL)
-      : ImageBufferProgram(CL, "Integral.cl")
+      : ImageProgram(CL, "Integral.cl")
    { }
 
    /// Scans the image and generates the Integral sum into Dest - Dest must be F32 or F64
