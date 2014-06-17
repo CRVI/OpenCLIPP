@@ -39,7 +39,7 @@ using namespace cl;
 
 namespace OpenCLIPP
 {
-void IntegralBuffer::PrepareFor(ImageBase& Source)
+void Integral::PrepareFor(ImageBase& Source)
 {
    ImageBufferProgram::PrepareFor(Source);
 
@@ -95,7 +95,7 @@ void IntegralBuffer::PrepareFor(ImageBase& Source)
    m_HorizontalJunctions_F64 = std::make_shared<TempImageBuffer>(*m_CL, HorizontalImgSize_F64, SImage::F64);
 }
 
-void IntegralBuffer::IntegralSum(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::IntegralSum(ImageBuffer& Source, ImageBuffer& Dest)
 {
    switch (Dest.DataType())
    {
@@ -118,7 +118,7 @@ void IntegralBuffer::IntegralSum(ImageBuffer& Source, ImageBuffer& Dest)
 
 }
 
-void IntegralBuffer::SqrIntegral(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::SqrIntegral(ImageBuffer& Source, ImageBuffer& Dest)
 {
    switch (Dest.DataType())
    {
@@ -141,7 +141,7 @@ void IntegralBuffer::SqrIntegral(ImageBuffer& Source, ImageBuffer& Dest)
 
 }
 
-void IntegralBuffer::Integral_F32(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::Integral_F32(ImageBuffer& Source, ImageBuffer& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
@@ -167,7 +167,7 @@ void IntegralBuffer::Integral_F32(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void IntegralBuffer::SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
@@ -193,7 +193,7 @@ void IntegralBuffer::SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void IntegralBuffer::Integral_F64(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::Integral_F64(ImageBuffer& Source, ImageBuffer& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
@@ -219,7 +219,7 @@ void IntegralBuffer::Integral_F64(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void IntegralBuffer::SqrIntegral_F64(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::SqrIntegral_F64(ImageBuffer& Source, ImageBuffer& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);

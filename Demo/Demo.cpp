@@ -69,7 +69,7 @@ int main(int /*argc*/, char ** /*argv*/)
    // Initialize OpenCL
    COpenCL CL;
    CL.SetClFilesPath("D:/OpenCLIPP/cl-files/");
-   FiltersVector Filters(CL);
+   Filters Filters(CL);
 
    // Display device name
    string Name = CL.GetDeviceName();

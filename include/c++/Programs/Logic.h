@@ -30,10 +30,10 @@ namespace OpenCLIPP
 {
 
 /// A program that does logic (bitwise) operations on image buffers
-class CL_API LogicVector : public VectorProgram
+class CL_API Logic : public VectorProgram
 {
 public:
-   LogicVector(COpenCL& CL)
+   Logic(COpenCL& CL)
       :  VectorProgram(CL, "Logic.cl")
    { }
 

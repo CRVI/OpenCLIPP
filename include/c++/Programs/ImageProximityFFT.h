@@ -46,7 +46,7 @@ public:
       m_fft(CL)
    { }
 
-   // If Template is small (<16x16 pixels), ImageProximityBuffer may be faster
+   // If Template is small (<16x16 pixels), ImageProximity may be faster
 
    // FFT operations do not work on images bigger than 16.7Mpixels
 
@@ -86,9 +86,9 @@ protected:
    std::shared_ptr<TempImageBuffer> m_bigger_source;
 
 
-   IntegralBuffer   m_integral;
-   StatisticsVector m_statistics;
-   TransformBuffer  m_transform;
+   Integral   m_integral;
+   Statistics m_statistics;
+   Transform  m_transform;
    FFT              m_fft;
 
    /// prepare for the square different template matching

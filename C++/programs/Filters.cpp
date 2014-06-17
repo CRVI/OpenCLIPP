@@ -49,7 +49,7 @@ static void GenerateBlurMask(std::vector<float>& Mask, float Sigma, int MaskSize
         v /= sum;
 }
 
-void FiltersVector::GaussianBlur(ImageBuffer& Source, ImageBuffer& Dest, float Sigma)
+void Filters::GaussianBlur(ImageBuffer& Source, ImageBuffer& Dest, float Sigma)
 {
    CheckCompatibility(Source, Dest);
 
@@ -74,7 +74,7 @@ void FiltersVector::GaussianBlur(ImageBuffer& Source, ImageBuffer& Dest, float S
    Kernel(gaussian_blur, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width(), Source.Height(), MaskBuffer, MaskSize);
 }
 
-void FiltersVector::Gauss(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Gauss(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -93,7 +93,7 @@ void FiltersVector::Gauss(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Gauss - allowed : 3, 5");
 }
 
-void FiltersVector::Sharpen(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Sharpen(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -103,7 +103,7 @@ void FiltersVector::Sharpen(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    Kernel(sharpen3, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void FiltersVector::Smooth(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Smooth(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -124,7 +124,7 @@ void FiltersVector::Smooth(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    return true;
 }*/
 
-void FiltersVector::Median(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Median(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -148,7 +148,7 @@ void FiltersVector::Median(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    Kernel(median5, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void FiltersVector::SobelVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::SobelVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -167,7 +167,7 @@ void FiltersVector::SobelVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in SobelVert - allowed : 3, 5");
 }
 
-void FiltersVector::SobelHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::SobelHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -186,7 +186,7 @@ void FiltersVector::SobelHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in SobelHoriz - allowed : 3, 5");
 }
 
-void FiltersVector::SobelCross(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::SobelCross(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -205,7 +205,7 @@ void FiltersVector::SobelCross(ImageBuffer& Source, ImageBuffer& Dest, int Width
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in SobelCross - allowed : 3, 5");
 }
 
-void FiltersVector::Sobel(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Sobel(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -224,7 +224,7 @@ void FiltersVector::Sobel(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Sobel - allowed : 3, 5");
 }
 
-void FiltersVector::PrewittVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::PrewittVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -237,7 +237,7 @@ void FiltersVector::PrewittVert(ImageBuffer& Source, ImageBuffer& Dest, int Widt
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in PrewittVert - allowed : 3");
 }
 
-void FiltersVector::PrewittHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::PrewittHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -250,7 +250,7 @@ void FiltersVector::PrewittHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Wid
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in PrewittHoriz - allowed : 3");
 }
 
-void FiltersVector::Prewitt(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Prewitt(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -263,7 +263,7 @@ void FiltersVector::Prewitt(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Prewitt - allowed : 3");
 }
 
-void FiltersVector::ScharrVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::ScharrVert(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -276,7 +276,7 @@ void FiltersVector::ScharrVert(ImageBuffer& Source, ImageBuffer& Dest, int Width
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in ScharrVert - allowed : 3");
 }
 
-void FiltersVector::ScharrHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::ScharrHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -289,7 +289,7 @@ void FiltersVector::ScharrHoriz(ImageBuffer& Source, ImageBuffer& Dest, int Widt
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in ScharrHoriz - allowed : 3");
 }
 
-void FiltersVector::Scharr(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Scharr(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -302,7 +302,7 @@ void FiltersVector::Scharr(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Scharr - allowed : 3");
 }
 
-void FiltersVector::Hipass(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Hipass(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -321,7 +321,7 @@ void FiltersVector::Hipass(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    throw cl::Error(CL_INVALID_ARG_VALUE, "Invalid width used in Hipass - allowed : 3, 5");
 }
 
-void FiltersVector::Laplace(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Filters::Laplace(ImageBuffer& Source, ImageBuffer& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 

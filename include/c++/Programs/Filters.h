@@ -30,10 +30,10 @@ namespace OpenCLIPP
 {
 
 /// A program for convolution-type filters on images
-class CL_API FiltersVector : public ImageBufferProgram
+class CL_API Filters : public ImageBufferProgram
 {
 public:
-   FiltersVector(COpenCL& CL)
+   Filters(COpenCL& CL)
    :  ImageBufferProgram(CL, "Filters.cl")
    { }
 

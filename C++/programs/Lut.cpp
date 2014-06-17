@@ -35,7 +35,7 @@ namespace OpenCLIPP
 {
 
 
-void LutVector::LUT(ImageBuffer& Source, ImageBuffer& Dest, uint * levels, uint * values, uint NbValues)
+void Lut::LUT(ImageBuffer& Source, ImageBuffer& Dest, uint * levels, uint * values, uint NbValues)
 {
    CheckCompatibility(Source, Dest);
 
@@ -71,7 +71,7 @@ void LutVector::LUT(ImageBuffer& Source, ImageBuffer& Dest, uint * levels, uint 
       Source.Width() * Source.NbChannels(), Levels, Values, NbValues);
 }
 
-void LutVector::LUTLinear(ImageBuffer& Source, ImageBuffer& Dest, float * levels, float * values, uint NbValues)
+void Lut::LUTLinear(ImageBuffer& Source, ImageBuffer& Dest, float * levels, float * values, uint NbValues)
 {
    CheckCompatibility(Source, Dest);
 
@@ -82,7 +82,7 @@ void LutVector::LUTLinear(ImageBuffer& Source, ImageBuffer& Dest, float * levels
       Source.Width() * Source.NbChannels(), Levels, Values, NbValues);
 }
 
-void LutVector::BasicLut(ImageBuffer& Source, ImageBuffer& Dest, unsigned char * values)
+void Lut::BasicLut(ImageBuffer& Source, ImageBuffer& Dest, unsigned char * values)
 {
    if (Source.Depth() != 8 || !Source.IsUnsigned() || Source.NbChannels() != 1)
       throw cl::Error(CL_INVALID_VALUE, "BasicLut can only accept 1 channel unsigned integer images");
@@ -105,7 +105,7 @@ void LutVector::BasicLut(ImageBuffer& Source, ImageBuffer& Dest, unsigned char *
 
 }
 
-void LutVector::Scale(ImageBuffer& Source, ImageBuffer& Dest, float SrcMin, float SrcMax, float DstMin, float DstMax)
+void Lut::Scale(ImageBuffer& Source, ImageBuffer& Dest, float SrcMin, float SrcMax, float DstMin, float DstMax)
 {
    float Levels[2] = {SrcMin, SrcMax};
    float Values[2] = {DstMin, DstMax};

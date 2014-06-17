@@ -30,10 +30,10 @@ namespace OpenCLIPP
 {
 
 /// A program that does transformations
-class CL_API TransformBuffer : public ImageBufferProgram
+class CL_API Transform : public ImageBufferProgram
 {
 public:
-   TransformBuffer(COpenCL& CL)
+   Transform(COpenCL& CL)
    :  ImageBufferProgram(CL, "Transform.cl")
    { }
 

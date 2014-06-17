@@ -36,7 +36,7 @@ namespace OpenCLIPP
 
 // Bitwise operations - float images not allowed
 
-void LogicVector::And(ImageBuffer& Source1, ImageBuffer& Source2,
+void Logic::And(ImageBuffer& Source1, ImageBuffer& Source2,
                              ImageBuffer& Dest)
 {
    CheckSimilarity(Source1, Source2);
@@ -47,7 +47,7 @@ void LogicVector::And(ImageBuffer& Source1, ImageBuffer& Source2,
       Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void LogicVector::Or(ImageBuffer& Source1, ImageBuffer& Source2,
+void Logic::Or(ImageBuffer& Source1, ImageBuffer& Source2,
                             ImageBuffer& Dest)
 {
    CheckSimilarity(Source1, Source2);
@@ -58,7 +58,7 @@ void LogicVector::Or(ImageBuffer& Source1, ImageBuffer& Source2,
       Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void LogicVector::Xor(ImageBuffer& Source1, ImageBuffer& Source2,
+void Logic::Xor(ImageBuffer& Source1, ImageBuffer& Source2,
                              ImageBuffer& Dest)
 {
    CheckSimilarity(Source1, Source2);
@@ -69,7 +69,7 @@ void LogicVector::Xor(ImageBuffer& Source1, ImageBuffer& Source2,
       Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void LogicVector::And(ImageBuffer& Source, ImageBuffer& Dest, uint value)
+void Logic::And(ImageBuffer& Source, ImageBuffer& Dest, uint value)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);
@@ -78,7 +78,7 @@ void LogicVector::And(ImageBuffer& Source, ImageBuffer& Dest, uint value)
       Source.Width() * Source.NbChannels(), value);
 }
 
-void LogicVector::Or(ImageBuffer& Source, ImageBuffer& Dest, uint value)
+void Logic::Or(ImageBuffer& Source, ImageBuffer& Dest, uint value)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);
@@ -87,7 +87,7 @@ void LogicVector::Or(ImageBuffer& Source, ImageBuffer& Dest, uint value)
       Source.Width() * Source.NbChannels(), value);
 }
 
-void LogicVector::Xor(ImageBuffer& Source, ImageBuffer& Dest, uint value)
+void Logic::Xor(ImageBuffer& Source, ImageBuffer& Dest, uint value)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);
@@ -96,7 +96,7 @@ void LogicVector::Xor(ImageBuffer& Source, ImageBuffer& Dest, uint value)
       Source.Width() * Source.NbChannels(), value);
 }
 
-void LogicVector::Not(ImageBuffer& Source, ImageBuffer& Dest)
+void Logic::Not(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);

@@ -2,7 +2,7 @@
 //! @file	: Histogram.cpp
 //! @date   : Jun 2014
 //!
-//! @brief  : HistogramBuffer calculation on images
+//! @brief  : Histogram calculation on images
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -31,7 +31,7 @@ namespace OpenCLIPP
 
 
 // Histogram must be an array of at least 256 elements
-void HistogramBuffer::Histogram1C(ImageBuffer& Source, uint * Histogram)
+void Histogram::Histogram1C(ImageBuffer& Source, uint * Histogram)
 {
    const static int Length = 256;
 
@@ -47,7 +47,7 @@ void HistogramBuffer::Histogram1C(ImageBuffer& Source, uint * Histogram)
 }
 
 // Histogram must be an array of at least 1024 elements
-void HistogramBuffer::Histogram4C(ImageBuffer& Source, uint * Histogram)
+void Histogram::Histogram4C(ImageBuffer& Source, uint * Histogram)
 {
    const static int Length = 256 * 4;
 
@@ -62,7 +62,7 @@ void HistogramBuffer::Histogram4C(ImageBuffer& Source, uint * Histogram)
    Buffer.Read(true);
 }
 
-uint HistogramBuffer::OtsuThreshold(uint Histogram[256], uint NbPixels)
+uint Histogram::OtsuThreshold(uint Histogram[256], uint NbPixels)
 {
    double sum = 0;
    for (int i = 0; i < 256; i++)
@@ -103,7 +103,7 @@ uint HistogramBuffer::OtsuThreshold(uint Histogram[256], uint NbPixels)
    return threshold;
 }
 
-uint HistogramBuffer::OtsuThreshold(ImageBuffer& Source)
+uint Histogram::OtsuThreshold(ImageBuffer& Source)
 {
    uint Histogram[256];
    Histogram1C(Source, Histogram);

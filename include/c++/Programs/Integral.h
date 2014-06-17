@@ -29,10 +29,10 @@
 namespace OpenCLIPP
 {
    /// A program that does image thresholding
-class CL_API IntegralBuffer : public ImageBufferProgram
+class CL_API Integral : public ImageBufferProgram
 {
 public:
-   IntegralBuffer(COpenCL& CL)
+   Integral(COpenCL& CL)
       : ImageBufferProgram(CL, "Integral.cl")
    { }
 

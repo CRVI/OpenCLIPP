@@ -34,7 +34,7 @@ double GetTypeMin(const ImageBuffer& Img);
 
 // Copy & Convert
 
-void ConversionsBuffer::Convert(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::Convert(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSameSize(Source, Dest);
 
@@ -77,7 +77,7 @@ void ConversionsBuffer::Convert(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void ConversionsBuffer::Scale(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::Scale(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSameSize(Source, Dest);
 
@@ -99,7 +99,7 @@ void ConversionsBuffer::Scale(ImageBuffer& Source, ImageBuffer& Dest)
    Scale(Source, Dest, Offset, Ratio);
 }
 
-void ConversionsBuffer::Scale(ImageBuffer& Source, ImageBuffer& Dest, int Offset, float Ratio)
+void Conversions::Scale(ImageBuffer& Source, ImageBuffer& Dest, int Offset, float Ratio)
 {
    CheckSameSize(Source, Dest);
 
@@ -136,7 +136,7 @@ void ConversionsBuffer::Scale(ImageBuffer& Source, ImageBuffer& Dest, int Offset
 
 }
 
-void ConversionsBuffer::Copy(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::Copy(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSimilarity(Source, Dest);
 
@@ -154,7 +154,7 @@ void ConversionsBuffer::Copy(ImageBuffer& Source, ImageBuffer& Dest)
    Kernel(copy, Source, Dest, Source.Step(), Dest.Step());
 }
 
-void ConversionsBuffer::ToGray(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::ToGray(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSizeAndType(Source, Dest);
    Check1Channel(Dest);
@@ -162,7 +162,7 @@ void ConversionsBuffer::ToGray(ImageBuffer& Source, ImageBuffer& Dest)
    Kernel(to_gray, Source, Dest);
 }
 
-void ConversionsBuffer::SelectChannel(ImageBuffer& Source, ImageBuffer& Dest, int ChannelNo)
+void Conversions::SelectChannel(ImageBuffer& Source, ImageBuffer& Dest, int ChannelNo)
 {
    CheckSizeAndType(Source, Dest);
    Check1Channel(Dest);
@@ -187,7 +187,7 @@ void ConversionsBuffer::SelectChannel(ImageBuffer& Source, ImageBuffer& Dest, in
    
 }
 
-void ConversionsBuffer::ToColor(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::ToColor(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSizeAndType(Source, Dest);
    Check1Channel(Source);
@@ -207,7 +207,7 @@ void ConversionsBuffer::ToColor(ImageBuffer& Source, ImageBuffer& Dest)
       Kernel(to_4channels, Source, Dest, Source.Step(), Dest.Step());
       break;
    default:
-      throw cl::Error(CL_INVALID_ARG_VALUE, "Wrong ChannelNo in ConversionsBuffer::SelectChannel() - allowed values : 1 to 4");
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Wrong ChannelNo in Conversions::SelectChannel() - allowed values : 1 to 4");
    }
 
    // select_channel1 does what we want

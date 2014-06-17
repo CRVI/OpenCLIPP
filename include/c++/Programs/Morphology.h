@@ -30,10 +30,10 @@ namespace OpenCLIPP
 {
 
 /// A program that does morphological operations
-class CL_API MorphologyBuffer : public ImageBufferProgram
+class CL_API Morphology : public ImageBufferProgram
 {
 public:
-   MorphologyBuffer(COpenCL& CL)
+   Morphology(COpenCL& CL)
    :  ImageBufferProgram(CL, "Morphology.cl"),
       m_Arithmetic(CL)
    { }
@@ -53,7 +53,7 @@ public:
    void Gradient(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Width = 3);                 ///< Dilate - Erode
 
 private:
-   ArithmeticVector m_Arithmetic;
+   Arithmetic m_Arithmetic;
 
 };
 

@@ -30,10 +30,10 @@ namespace OpenCLIPP
 {
 
 /// A program that does Arithmetic operations on image buffers
-class CL_API ArithmeticVector : public VectorProgram
+class CL_API Arithmetic : public VectorProgram
 {
 public:
-   ArithmeticVector(COpenCL& CL)
+   Arithmetic(COpenCL& CL)
       :  VectorProgram(CL, "Arithmetic.cl")
    { }
 

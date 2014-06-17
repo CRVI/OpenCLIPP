@@ -45,28 +45,28 @@ using namespace OpenCLIPP;
 struct SProgramList
 {
    SProgramList(COpenCL& CL)
-   :  arithmeticVector(CL),
-      conversionsBuffer(CL),
-      filtersVector(CL),
-      histogramBuffer(CL),
-      logicVector(CL),
-      lutVector(CL),
-      morphologyBuffer(CL),
-      imageProximityBuffer(CL),
-      transformBuffer(CL),
-      thresholdingVector(CL)
+   :  arithmetic(CL),
+      conversions(CL),
+      filters(CL),
+      histogram(CL),
+      logic(CL),
+      lut(CL),
+      morphology(CL),
+      imageProximity(CL),
+      transform(CL),
+      thresholding(CL)
    { }
 
-   ArithmeticVector arithmeticVector;
-   ConversionsBuffer conversionsBuffer;
-   FiltersVector filtersVector;
-   HistogramBuffer histogramBuffer;
-   LogicVector logicVector;
-   LutVector lutVector;
-   MorphologyBuffer morphologyBuffer;
-   ImageProximityBuffer imageProximityBuffer;
-   TransformBuffer transformBuffer;
-   ThresholdingVector thresholdingVector;
+   Arithmetic arithmetic;
+   Conversions conversions;
+   Filters filters;
+   Histogram histogram;
+   Logic logic;
+   Lut lut;
+   Morphology morphology;
+   ImageProximity imageProximity;
+   Transform transform;
+   Thresholding thresholding;
 };
 
 // List of program for each context
@@ -300,22 +300,22 @@ ocipError ocip_API fun(PROGRAM_ARG IMAGE_ARG Source, type * Result)\
 #undef PROGRAM_ARG
 #define PROGRAM_ARG 
 
-PREPARE(ocipPrepareImageBufferConversion, conversionsBuffer)
-PREPARE(ocipPrepareImageBufferArithmetic, arithmeticVector)
-PREPARE(ocipPrepareImageBufferLogic, logicVector)
-PREPARE(ocipPrepareImageBufferLUT, lutVector)
-PREPARE(ocipPrepareImageBufferMorphology, morphologyBuffer)
-PREPARE(ocipPrepareImageBufferFilters, morphologyBuffer)
-PREPARE(ocipPrepareImageBufferThresholding, thresholdingVector)
-PREPARE(ocipPrepareImageBufferProximity, imageProximityBuffer)
+PREPARE(ocipPrepareImageBufferConversion, conversions)
+PREPARE(ocipPrepareImageBufferArithmetic, arithmetic)
+PREPARE(ocipPrepareImageBufferLogic, logic)
+PREPARE(ocipPrepareImageBufferLUT, lut)
+PREPARE(ocipPrepareImageBufferMorphology, morphology)
+PREPARE(ocipPrepareImageBufferFilters, morphology)
+PREPARE(ocipPrepareImageBufferThresholding, thresholding)
+PREPARE(ocipPrepareImageBufferProximity, imageProximity)
 
-PREPARE2(ocipPrepareImageBufferStatistics, StatisticsVector)
-PREPARE2(ocipPrepareImageBufferIntegral, IntegralBuffer)
+PREPARE2(ocipPrepareImageBufferStatistics, Statistics)
+PREPARE2(ocipPrepareImageBufferIntegral, Integral)
 PREPARE2(ocipPrepareBlob, Blob)
 
 
 #undef CLASS
-#define CLASS GetList().conversionsBuffer
+#define CLASS GetList().conversions
 
 UNARY_OP(ocipConvert_V, Convert)
 UNARY_OP(ocipScale_V, Scale)
@@ -335,7 +335,7 @@ ocipError ocip_API ocipSelectChannel_V(ocipBuffer Source, ocipBuffer Dest, int C
 
 
 #undef CLASS
-#define CLASS GetList().arithmeticVector
+#define CLASS GetList().arithmetic
 
 BINARY_OP(ocipAdd_V, Add)
 BINARY_OP(ocipAddSquare_V, AddSquare)
@@ -369,7 +369,7 @@ UNARY_OP(ocipCos_V, Cos)
 
 
 #undef CLASS
-#define CLASS GetList().imageProximityBuffer
+#define CLASS GetList().imageProximity
 
 BINARY_OP(ocipSqrDistance_Norm_B, SqrDistance_Norm)
 BINARY_OP(ocipSqrDistance_B, SqrDistance)
@@ -379,7 +379,7 @@ BINARY_OP(ocipCrossCorr_Norm_B, CrossCorr_Norm)
 
 
 #undef CLASS
-#define CLASS GetList().logicVector
+#define CLASS GetList().logic
 
 BINARY_OP(ocipAnd_V, And)
 BINARY_OP(ocipOr_V, Or)
@@ -393,7 +393,7 @@ UNARY_OP(ocipNot_V, Not)
 
 
 #undef CLASS
-#define CLASS GetList().lutVector
+#define CLASS GetList().lut
 
 ocipError ocip_API ocipLut_V(ocipBuffer Source, ocipBuffer Dest, uint * levels, uint * values, int NbValues)
 {
@@ -418,7 +418,7 @@ ocipError ocip_API ocipLutScale_V(ocipBuffer Source, ocipBuffer Dest, float SrcM
 
 
 #undef CLASS
-#define CLASS GetList().morphologyBuffer
+#define CLASS GetList().morphology
 
 ocipError ocip_API ocipErode_B(ocipBuffer Source, ocipBuffer Dest, int Width)
 {
@@ -451,7 +451,7 @@ MORPHO(ocipBlackHat, BlackHat)
 
 
 #undef CLASS
-#define CLASS GetList().transformBuffer
+#define CLASS GetList().transform
 
 UNARY_OP(ocipMirrorX_V, MirrorX)
 UNARY_OP(ocipMirrorY_V, MirrorY)
@@ -460,12 +460,12 @@ UNARY_OP(ocipTranspose_V, Transpose)
 
 ocipError ocip_API ocipRotate_V(ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation)
 {
-   H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, TransformBuffer::EInterpolationType(Interpolation) ) )
+   H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, Transform::EInterpolationType(Interpolation) ) )
 }
 
 ocipError ocip_API ocipResize_V(ocipBuffer Source, ocipBuffer Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio)
 {
-   H( CLASS.Resize(Buf(Source), Buf(Dest), TransformBuffer::EInterpolationType(Interpolation), KeepRatio != 0) )
+   H( CLASS.Resize(Buf(Source), Buf(Dest), Transform::EInterpolationType(Interpolation), KeepRatio != 0) )
 }
 
 ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
@@ -476,7 +476,7 @@ ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
 
 
 #undef CLASS
-#define CLASS GetList().filtersVector
+#define CLASS GetList().filters
 
 CONSTANT_OP(ocipGaussianBlur_V, GaussianBlur, float)
 CONSTANT_OP(ocipGauss_V, Gauss, int)
@@ -499,7 +499,7 @@ CONSTANT_OP(ocipLaplace_V, Laplace, int)
 
 
 #undef CLASS
-#define CLASS GetList().histogramBuffer
+#define CLASS GetList().histogram
 
 REDUCE_OP(ocipHistogram_1C_B, Histogram1C, uint *)
 REDUCE_OP(ocipHistogram_4C_B, Histogram4C, uint *)
@@ -513,7 +513,7 @@ REDUCE_RETURN_OP(ocipOtsuThreshold_B, OtsuThreshold, uint)
 #define PROGRAM_ARG ocipProgram Program, 
 
 #undef CLASS
-#define CLASS (*(StatisticsVector*)Program)
+#define CLASS (*(Statistics*)Program)
 
 REDUCE_ARG_OP(   ocipMin_V,            Min,           double)
 REDUCE_ARG_OP(   ocipMax_V,            Max,           double)
@@ -537,13 +537,13 @@ ocipError ocip_API ocipMean_StdDev_V(PROGRAM_ARG IMAGE_ARG Source, double * Mean
 
 
 #undef CLASS
-#define CLASS (*(IntegralBuffer*)Program)
+#define CLASS (*(Integral*)Program)
 
 UNARY_OP(ocipIntegral_B, IntegralSum)
 UNARY_OP(ocipSqrIntegral_B, SqrIntegral)
 
 #undef CLASS
-#define CLASS GetList().thresholdingVector
+#define CLASS GetList().thresholding
 
 
 ocipError ocip_API ocipThresholdGTLT_V(ocipBuffer Source, ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
@@ -553,22 +553,22 @@ ocipError ocip_API ocipThresholdGTLT_V(ocipBuffer Source, ocipBuffer Dest, float
 
 ocipError ocip_API ocipThreshold_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float value, ECompareOperation Op)
 {
-   H( CLASS.Threshold(Buf(Source), Buf(Dest), Thresh, value, (ThresholdingVector::ECompareOperation) Op) )
+   H( CLASS.Threshold(Buf(Source), Buf(Dest), Thresh, value, (Thresholding::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipThreshold_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
 {
-   H( CLASS.Threshold(Buf(Source1), Buf(Source2), Buf(Dest), (ThresholdingVector::ECompareOperation) Op) )
+   H( CLASS.Threshold(Buf(Source1), Buf(Source2), Buf(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipCompare_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
 {
-   H( CLASS.Compare(Buf(Source1), Buf(Source2), Buf(Dest), (ThresholdingVector::ECompareOperation) Op) )
+   H( CLASS.Compare(Buf(Source1), Buf(Source2), Buf(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
 ocipError ocip_API ocipCompareC_V(ocipBuffer Source, ocipBuffer Dest, float Value, ECompareOperation Op)
 {
-   H( CLASS.Compare(Buf(Source), Buf(Dest), Value, (ThresholdingVector::ECompareOperation) Op) )
+   H( CLASS.Compare(Buf(Source), Buf(Dest), Value, (Thresholding::ECompareOperation) Op) )
 }
 
 

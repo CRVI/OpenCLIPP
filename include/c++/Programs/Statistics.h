@@ -30,10 +30,10 @@ namespace OpenCLIPP
 {
 
 /// A program that does statistical reductions
-class CL_API StatisticsVector : public ImageBufferProgram
+class CL_API Statistics : public ImageBufferProgram
 {
 public:
-   StatisticsVector(COpenCL& CL)
+   Statistics(COpenCL& CL)
    :  ImageBufferProgram(CL, "Statistics.cl"),
       m_ResultBuffer(*m_CL, m_Result, 4)
    { }
@@ -83,7 +83,7 @@ protected:
    void Init(ImageBuffer& Source);
    void InitAbs(ImageBuffer& Source);
 
-   StatisticsVector& operator = (StatisticsVector&);   // Not a copyable object
+   Statistics& operator = (Statistics&);   // Not a copyable object
 };
 
 }

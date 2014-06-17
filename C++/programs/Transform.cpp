@@ -43,31 +43,31 @@ static const double Pi = atan(1) * 4;
 namespace OpenCLIPP
 {
 
-void TransformBuffer::MirrorX(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::MirrorX(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(mirror_x, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void TransformBuffer::MirrorY(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::MirrorY(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(mirror_y, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void TransformBuffer::Flip(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::Flip(ImageBuffer& Source, ImageBuffer& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(flip, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void TransformBuffer::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
 {
    if (Dest.Width() < Source.Height() || Dest.Height() < Source.Width())
-      throw cl::Error(CL_INVALID_IMAGE_SIZE, "Destination image too small to receive TransformBuffer::Transpose");
+      throw cl::Error(CL_INVALID_IMAGE_SIZE, "Destination image too small to receive Transform::Transpose");
 
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
@@ -83,7 +83,7 @@ void TransformBuffer::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
 
 }
 
-void TransformBuffer::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
+void Transform::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
       double Angle, double XShift, double YShift, EInterpolationType Interpolation)
 {
    if (!SameType(Source, Dest))
@@ -137,7 +137,7 @@ int find_lanczos_buffer_size(int length)
    return size;
 }
 
-void TransformBuffer::ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl::NDRange Range)
+void Transform::ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl::NDRange Range)
 {
    float RatioX = Source.Width() * 1.f / Dest.Width();
    float RatioY = Source.Height() * 1.f / Dest.Height();
@@ -171,7 +171,7 @@ void TransformBuffer::ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int 
 
 }
 
-void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationType Interpolation, bool KeepRatio)
+void Transform::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationType Interpolation, bool KeepRatio)
 {
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
@@ -237,7 +237,7 @@ void TransformBuffer::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolat
 
 }
 
-void TransformBuffer::SetAll(ImageBuffer& Dest, float Value)
+void Transform::SetAll(ImageBuffer& Dest, float Value)
 {
    Kernel(set_all, In(Dest), Out(), Dest.Step(), Value);
 }

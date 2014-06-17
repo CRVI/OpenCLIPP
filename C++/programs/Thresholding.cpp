@@ -32,10 +32,10 @@
 namespace OpenCLIPP
 {
 
-std::string SelectName(const char * name, ThresholdingVector::ECompareOperation Op);
+std::string SelectName(const char * name, Thresholding::ECompareOperation Op);
 
 
-void ThresholdingVector::ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
+void Thresholding::ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
    CheckCompatibility(Source, Dest);
 
@@ -46,14 +46,14 @@ void ThresholdingVector::ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, f
 #undef SELECT_NAME
 #define SELECT_NAME(name, src_img) SelectName( #name , Op)
 
-void ThresholdingVector::Threshold(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float value, ECompareOperation Op)
+void Thresholding::Threshold(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float value, ECompareOperation Op)
 {
    CheckCompatibility(Source, Dest);
 
    Kernel(threshold, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), Thresh, value);
 }
 
-void ThresholdingVector::Threshold(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op)
+void Thresholding::Threshold(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op)
 {
    CheckCompatibility(Source1, Source2);
    CheckCompatibility(Source1, Dest);
@@ -61,7 +61,7 @@ void ThresholdingVector::Threshold(ImageBuffer& Source1, ImageBuffer& Source2, I
    Kernel(img_thresh, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void ThresholdingVector::Compare(ImageBuffer& Source, ImageBuffer& Dest, float Value, ECompareOperation Op)
+void Thresholding::Compare(ImageBuffer& Source, ImageBuffer& Dest, float Value, ECompareOperation Op)
 {
    CheckSameSize(Source, Dest);
 
@@ -71,7 +71,7 @@ void ThresholdingVector::Compare(ImageBuffer& Source, ImageBuffer& Dest, float V
    Kernel(compare, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), Value);
 }
 
-void ThresholdingVector::Compare(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op)
+void Thresholding::Compare(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op)
 {
    CheckSameSize(Source1, Source2);
    CheckSameSize(Source1, Dest);
@@ -82,25 +82,25 @@ void ThresholdingVector::Compare(ImageBuffer& Source1, ImageBuffer& Source2, Ima
    Kernel(img_compare, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-std::string SelectName(const char * name, ThresholdingVector::ECompareOperation Op)
+std::string SelectName(const char * name, Thresholding::ECompareOperation Op)
 {
    std::string str = name;
 
    switch (Op)
    {
-   case ThresholdingVector::LT:
+   case Thresholding::LT:
       str += "_LT";
       break;
-   case ThresholdingVector::LQ:
+   case Thresholding::LQ:
       str += "_LQ";
       break;
-   case ThresholdingVector::EQ:
+   case Thresholding::EQ:
       str += "_EQ";
       break;
-   case ThresholdingVector::GQ:
+   case Thresholding::GQ:
       str += "_GQ";
       break;
-   case ThresholdingVector::GT:
+   case Thresholding::GT:
       str += "_GT";
       break;
    }
