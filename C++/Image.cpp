@@ -33,8 +33,8 @@ SImage TempSImage(SSize Size, SImage::EDataType Type, uint NbChannels = 1);   //
 
 
 // ImageBase
-ImageBase::ImageBase(const SImage& Image)
-:  m_Img(Image)
+ImageBase::ImageBase(const SImage& Img)
+:  m_Img(Img)
 { }
 
 cl::NDRange ImageBase::FullRange() const
@@ -148,21 +148,21 @@ ImageBase::operator const SImage& () const
 }
 
 
-// ImageBuffer
-ImageBuffer::ImageBuffer(COpenCL& CL, const SImage& Image, void * ImageData, cl_mem_flags flags)
-:  Buffer(CL, (char *) ImageData, Image.Height * Image.Step, flags),
-   ImageBase(Image)
+// Image
+Image::Image(COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags)
+:  Buffer(CL, (char *) ImageData, Img.Height * Img.Step, flags),
+   ImageBase(Img)
 { }
 
 
-// TempImageBuffer
-TempImageBuffer::TempImageBuffer(COpenCL& CL, const SImage& Image, cl_mem_flags flags)
-:  ImageBuffer(CL, Image, nullptr, flags)
+// TempImage
+TempImage::TempImage(COpenCL& CL, const SImage& Img, cl_mem_flags flags)
+:  Image(CL, Img, nullptr, flags)
 { }
 
-TempImageBuffer::TempImageBuffer(COpenCL& CL, SSize Size, SImage::EDataType Type,
+TempImage::TempImage(COpenCL& CL, SSize Size, SImage::EDataType Type,
                                      uint NbChannels, cl_mem_flags flags)
-:  ImageBuffer(CL, TempSImage(Size, Type, NbChannels), nullptr, flags)
+:  Image(CL, TempSImage(Size, Type, NbChannels), nullptr, flags)
 { }
 
 
@@ -192,8 +192,8 @@ uint DepthOfType(SImage::EDataType Type)
 
 SImage TempSImage(SSize Size, SImage::EDataType Type, uint NbChannels)
 {
-   SImage Image = {Size.Width, Size.Height, DepthOfType(Type) * NbChannels * Size.Width / 8, NbChannels, Type};
-   return Image;
+   SImage Img = {Size.Width, Size.Height, DepthOfType(Type) * NbChannels * Size.Width / 8, NbChannels, Type};
+   return Img;
 }
 
 }

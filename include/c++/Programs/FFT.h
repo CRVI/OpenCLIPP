@@ -47,14 +47,14 @@ public:
    /// \param ComplexDest : Output image, must be 2 channels F32.
    ///                      Channel 1 is the real component and channel 2 is the imaginary component.
    ///                      Width must be >=RealSource.Width()/2+1
-   void Forward(ImageBuffer& RealSource, ImageBuffer& ComplexDest);
+   void Forward(Image& RealSource, Image& ComplexDest);
 
    /// Performs an inverse (backward) Fast Fourrier Transform.
    /// \param ComplexSource : Input image, must be 2 channels F32.
    ///                        Channel 1 is the real component and channel 2 is the imaginary component.
    ///                        Width must be >=RealDest.Width()/2+1
    /// \param RealDest : Output image, must be 1 channel F32. Only real data, no imaginary component.
-   void Inverse(ImageBuffer& ComplexSource, ImageBuffer& RealDest);
+   void Inverse(Image& ComplexSource, Image& RealDest);
 
    bool IsSupportedLength(uint Length) const;
 

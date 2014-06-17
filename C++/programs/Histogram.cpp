@@ -31,7 +31,7 @@ namespace OpenCLIPP
 
 
 // Histogram must be an array of at least 256 elements
-void Histogram::Histogram1C(ImageBuffer& Source, uint * Histogram)
+void Histogram::Histogram1C(Image& Source, uint * Histogram)
 {
    const static int Length = 256;
 
@@ -47,7 +47,7 @@ void Histogram::Histogram1C(ImageBuffer& Source, uint * Histogram)
 }
 
 // Histogram must be an array of at least 1024 elements
-void Histogram::Histogram4C(ImageBuffer& Source, uint * Histogram)
+void Histogram::Histogram4C(Image& Source, uint * Histogram)
 {
    const static int Length = 256 * 4;
 
@@ -103,7 +103,7 @@ uint Histogram::OtsuThreshold(uint Histogram[256], uint NbPixels)
    return threshold;
 }
 
-uint Histogram::OtsuThreshold(ImageBuffer& Source)
+uint Histogram::OtsuThreshold(Image& Source)
 {
    uint Histogram[256];
    Histogram1C(Source, Histogram);

@@ -29,12 +29,12 @@
 namespace OpenCLIPP
 {
 
-double GetTypeRange(const ImageBuffer& Img);
-double GetTypeMin(const ImageBuffer& Img);
+double GetTypeRange(const Image& Img);
+double GetTypeMin(const Image& Img);
 
 // Copy & Convert
 
-void Conversions::Convert(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::Convert(Image& Source, Image& Dest)
 {
    CheckSameSize(Source, Dest);
 
@@ -77,7 +77,7 @@ void Conversions::Convert(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void Conversions::Scale(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::Scale(Image& Source, Image& Dest)
 {
    CheckSameSize(Source, Dest);
 
@@ -99,7 +99,7 @@ void Conversions::Scale(ImageBuffer& Source, ImageBuffer& Dest)
    Scale(Source, Dest, Offset, Ratio);
 }
 
-void Conversions::Scale(ImageBuffer& Source, ImageBuffer& Dest, int Offset, float Ratio)
+void Conversions::Scale(Image& Source, Image& Dest, int Offset, float Ratio)
 {
    CheckSameSize(Source, Dest);
 
@@ -136,7 +136,7 @@ void Conversions::Scale(ImageBuffer& Source, ImageBuffer& Dest, int Offset, floa
 
 }
 
-void Conversions::Copy(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::Copy(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
@@ -154,7 +154,7 @@ void Conversions::Copy(ImageBuffer& Source, ImageBuffer& Dest)
    Kernel(copy, Source, Dest, Source.Step(), Dest.Step());
 }
 
-void Conversions::ToGray(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::ToGray(Image& Source, Image& Dest)
 {
    CheckSizeAndType(Source, Dest);
    Check1Channel(Dest);
@@ -162,7 +162,7 @@ void Conversions::ToGray(ImageBuffer& Source, ImageBuffer& Dest)
    Kernel(to_gray, Source, Dest);
 }
 
-void Conversions::SelectChannel(ImageBuffer& Source, ImageBuffer& Dest, int ChannelNo)
+void Conversions::SelectChannel(Image& Source, Image& Dest, int ChannelNo)
 {
    CheckSizeAndType(Source, Dest);
    Check1Channel(Dest);
@@ -187,7 +187,7 @@ void Conversions::SelectChannel(ImageBuffer& Source, ImageBuffer& Dest, int Chan
    
 }
 
-void Conversions::ToColor(ImageBuffer& Source, ImageBuffer& Dest)
+void Conversions::ToColor(Image& Source, Image& Dest)
 {
    CheckSizeAndType(Source, Dest);
    Check1Channel(Source);
@@ -217,7 +217,7 @@ void Conversions::ToColor(ImageBuffer& Source, ImageBuffer& Dest)
 
 // Helpers
 
-double GetTypeRange(const ImageBuffer& Img)
+double GetTypeRange(const Image& Img)
 {
    switch (Img.Depth())
    {
@@ -237,7 +237,7 @@ double GetTypeRange(const ImageBuffer& Img)
 
 }
 
-double GetTypeMin(const ImageBuffer& Img)
+double GetTypeMin(const Image& Img)
 {
    if (Img.IsUnsigned())
       return 0;

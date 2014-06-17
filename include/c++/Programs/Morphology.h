@@ -2,7 +2,7 @@
 //! @file	: Morphology.h
 //! @date   : Jul 2013
 //!
-//! @brief  : Morphological operations on image buffers
+//! @brief  : Morphological operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -39,18 +39,18 @@ public:
    { }
 
    // 1 iteration
-   void Erode(ImageBuffer& Source, ImageBuffer& Dest, int Width = 3);   ///< 1 Iteration
-   void Dilate(ImageBuffer& Source, ImageBuffer& Dest, int Width = 3);  ///< 1 Iteration
+   void Erode(Image& Source, Image& Dest, int Width = 3);   ///< 1 Iteration
+   void Dilate(Image& Source, Image& Dest, int Width = 3);  ///< 1 Iteration
 
    // Multiple iterations
-   void Erode(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Iterations, int Width = 3);
-   void Dilate(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Iterations, int Width = 3);
+   void Erode(Image& Source, Image& Dest, Image& Temp, int Iterations, int Width = 3);
+   void Dilate(Image& Source, Image& Dest, Image& Temp, int Iterations, int Width = 3);
 
-   void Open(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth = 1, int Width = 3);      ///< Erode then dilate
-   void Close(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth = 1, int Width = 3);     ///< Dilate then erode
-   void TopHat(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth = 1, int Width = 3);    ///< Source - Open
-   void BlackHat(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth = 1, int Width = 3);  ///< Close - Source
-   void Gradient(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Width = 3);                 ///< Dilate - Erode
+   void Open(Image& Source, Image& Dest, Image& Temp, int Depth = 1, int Width = 3);      ///< Erode then dilate
+   void Close(Image& Source, Image& Dest, Image& Temp, int Depth = 1, int Width = 3);     ///< Dilate then erode
+   void TopHat(Image& Source, Image& Dest, Image& Temp, int Depth = 1, int Width = 3);    ///< Source - Open
+   void BlackHat(Image& Source, Image& Dest, Image& Temp, int Depth = 1, int Width = 3);  ///< Close - Source
+   void Gradient(Image& Source, Image& Dest, Image& Temp, int Width = 3);                 ///< Dilate - Erode
 
 private:
    Arithmetic m_Arithmetic;

@@ -87,8 +87,8 @@ SET_CL_TYPE(IBuffer,     cl::Buffer)
 SET_CL_TYPE(Buffer,      cl::Buffer)
 SET_CL_TYPE(ReadBuffer,  cl::Buffer)
 SET_CL_TYPE(TempBuffer,  cl::Buffer)
-SET_CL_TYPE(ImageBuffer, cl::Buffer)
-SET_CL_TYPE(TempImageBuffer, cl::Buffer)
+SET_CL_TYPE(Image,       cl::Buffer)
+SET_CL_TYPE(TempImage,   cl::Buffer)
 
 
 #define CL_TYPE(arg) SelectClType<decltype(arg)>::Type

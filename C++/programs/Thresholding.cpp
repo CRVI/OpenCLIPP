@@ -2,7 +2,7 @@
 //! @file	: Thresholding.cpp
 //! @date   : Jul 2013
 //!
-//! @brief  : Thresholding operations on image buffer
+//! @brief  : Thresholding operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -35,7 +35,7 @@ namespace OpenCLIPP
 std::string SelectName(const char * name, Thresholding::ECompareOperation Op);
 
 
-void Thresholding::ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
+void Thresholding::ThresholdGTLT(Image& Source, Image& Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
    CheckCompatibility(Source, Dest);
 
@@ -46,14 +46,14 @@ void Thresholding::ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float t
 #undef SELECT_NAME
 #define SELECT_NAME(name, src_img) SelectName( #name , Op)
 
-void Thresholding::Threshold(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float value, ECompareOperation Op)
+void Thresholding::Threshold(Image& Source, Image& Dest, float Thresh, float value, ECompareOperation Op)
 {
    CheckCompatibility(Source, Dest);
 
    Kernel(threshold, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), Thresh, value);
 }
 
-void Thresholding::Threshold(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op)
+void Thresholding::Threshold(Image& Source1, Image& Source2, Image& Dest, ECompareOperation Op)
 {
    CheckCompatibility(Source1, Source2);
    CheckCompatibility(Source1, Dest);
@@ -61,7 +61,7 @@ void Thresholding::Threshold(ImageBuffer& Source1, ImageBuffer& Source2, ImageBu
    Kernel(img_thresh, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Thresholding::Compare(ImageBuffer& Source, ImageBuffer& Dest, float Value, ECompareOperation Op)
+void Thresholding::Compare(Image& Source, Image& Dest, float Value, ECompareOperation Op)
 {
    CheckSameSize(Source, Dest);
 
@@ -71,7 +71,7 @@ void Thresholding::Compare(ImageBuffer& Source, ImageBuffer& Dest, float Value, 
    Kernel(compare, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), Value);
 }
 
-void Thresholding::Compare(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op)
+void Thresholding::Compare(Image& Source1, Image& Source2, Image& Dest, ECompareOperation Op)
 {
    CheckSameSize(Source1, Source2);
    CheckSameSize(Source1, Dest);

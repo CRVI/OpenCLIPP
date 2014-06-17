@@ -2,7 +2,7 @@
 //! @file	: ImageProximity.h
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching on image buffers
+//! @brief  : Image comparisons for pattern matching
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -42,19 +42,19 @@ public:
    // For faster image proximity operations with big template image, use ImageProximityFFT
 
    //Computes the Euclidean distance between an image and a tamplate
-   void SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void SqrDistance(Image& Source, Image& Template, Image& Dest);
 
    //Computes the normalized Euclidean distance between an image and a tamplate
-   void SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void SqrDistance_Norm(Image& Source, Image& Template, Image& Dest);
 
    //Computes the sum of the absolute difference between an image and a tamplate
-   void AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void AbsDistance(Image& Source, Image& Template, Image& Dest);
 
    //Computes normalized cross-correlation between an image and a template.
-   void CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void CrossCorr(Image& Source, Image& Template, Image& Dest);
 
    //Computes normalized the cross-correlation between an image and a tamplate
-   void CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);  
+   void CrossCorr_Norm(Image& Source, Image& Template, Image& Dest);  
 };
 
 }

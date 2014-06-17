@@ -25,23 +25,8 @@
 /// These classes are used to represent images that are in the computing device
 /// They allow sending images to the device and reading images from the device
 /// Some classes represent temporary objects that reside only in the device memory
-/// They can all contain signed or unsigned 8, 16 or 32 bit integer as well as 32 bit float
-/// They can have 1 or 4 channels
-/// 3 channel images can be represented by ColorImage
-
-/// Differences between a Buffer, an Image and an ImageBuffer :
-///   A Buffer is a memory region on the device, it is used to store an array.
-///   The device does not 'know' the type of data inside the buffer, it know only the number of bytes it has.
-///   -
-///   An ImageBuffer is a buffer that contains image data
-///   The device sees the ImageBuffer as a simple Buffer :
-///      It does not know what is in the buffer
-///   Operations on ImageBuffers can be faster than operations on Images because the kernels can do vector processing
-///   -
-///   An Image uses the 'texture' hardware of the device (if available).
-///   The device knows the pixel type, the step between lines and other information about the image.
-///   Some operations are faster on images because they benefit from the intelligent cache for texture that is present on GPUs.
-///   Kernel implementation of image processing is simpler on Images
+/// They can all contain signed or unsigned 8, 16 or 32 bit integer as well as 32 bit float and 64 bit float
+/// They can have 1 to 4 channels
 
 
 #pragma once
@@ -84,7 +69,7 @@ public:
    operator const SImage& () const;   ///< Returns a SImage that represents this image
 
 protected:
-   ImageBase(const SImage& Image);  ///< Constructor - only accessible to derived classes
+   ImageBase(const SImage& Img);  ///< Constructor - only accessible to derived classes
 
    SImage m_Img;  ///< The encapsulated structure
 };
@@ -92,30 +77,30 @@ protected:
 
 
 /// Represents an image that is sent to the device as a cl::Buffer
-class CL_API ImageBuffer : public Buffer, public ImageBase
+class CL_API Image : public Buffer, public ImageBase
 {
 public:
    /// Constructor.
    /// Allocates a buffer in the device memory that can store the image
    /// The data pointer in image is saved for later Send and Read operations
    /// \param CL : A COpenCL instance
-   /// \param Image : A SImage representing the host image
+   /// \param Img : A SImage representing the host image
    /// \param ImageData : A pointer to where the image data is located
    /// \param flags : Type of OpenCL memory to use, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
-   ImageBuffer(COpenCL& CL, const SImage& Image, void * ImageData, cl_mem_flags flags = CL_MEM_READ_WRITE);
+   Image(COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags = CL_MEM_READ_WRITE);
 };
 
 
 /// Represents an in-device only buffer that contains an image
-class CL_API TempImageBuffer : public ImageBuffer
+class CL_API TempImage : public Image
 {
 public:
    /// Constructor.
    /// Allocates a buffer in the device memory that can store the image
    /// \param CL : A COpenCL instance
-   /// \param Image : A SImage representing the host image
+   /// \param Img : A SImage representing the host image
    /// \param flags : Type of OpenCL memory to create, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
-   TempImageBuffer(COpenCL& CL, const SImage& Image, cl_mem_flags flags = CL_MEM_READ_WRITE);
+   TempImage(COpenCL& CL, const SImage& Img, cl_mem_flags flags = CL_MEM_READ_WRITE);
 
    /// Constructor.
    /// Allocates a buffer in the device memory that can store the image
@@ -124,7 +109,7 @@ public:
    /// \param Type : Datatype of the image
    /// \param NbChannels : Desired number of channels
    /// \param flags : Type of OpenCL memory to create, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
-   TempImageBuffer(COpenCL& CL, SSize Size, SImage::EDataType Type, uint NbChannels = 1, cl_mem_flags flags = CL_MEM_READ_WRITE);
+   TempImage(COpenCL& CL, SSize Size, SImage::EDataType Type, uint NbChannels = 1, cl_mem_flags flags = CL_MEM_READ_WRITE);
 
    virtual void SendIfNeeded() { }  ///< Does nothing - it is in-device only and can't be sent
 

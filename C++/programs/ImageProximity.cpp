@@ -2,7 +2,7 @@
 //! @file	: ImageProximity.cpp
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching on image buffers
+//! @brief  : Image comparisons for pattern matching
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -31,7 +31,7 @@
 namespace OpenCLIPP
 {
 
-void ImageProximity::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximity::SqrDistance(Image& Source, Image& Template, Image& Dest)
 {
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -58,7 +58,7 @@ void ImageProximity::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, Ima
 
 }
 
-void ImageProximity::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximity::SqrDistance_Norm(Image& Source, Image& Template, Image& Dest)
 {
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -84,7 +84,7 @@ void ImageProximity::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template
    }
 }
 
-void ImageProximity::AbsDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximity::AbsDistance(Image& Source, Image& Template, Image& Dest)
 {
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -110,7 +110,7 @@ void ImageProximity::AbsDistance(ImageBuffer& Source, ImageBuffer& Template, Ima
    }
 }
 
-void ImageProximity::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximity::CrossCorr(Image& Source, Image& Template, Image& Dest)
 {
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");
@@ -136,7 +136,7 @@ void ImageProximity::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, Image
    }
 }
 
-void ImageProximity::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximity::CrossCorr_Norm(Image& Source, Image& Template, Image& Dest)
 {
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_INVALID_VALUE, "Template image must be smaller than the source image.");

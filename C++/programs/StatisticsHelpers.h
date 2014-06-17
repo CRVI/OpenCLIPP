@@ -45,7 +45,7 @@
 namespace OpenCLIPP
 {
 
-std::string SelectName(const char * name, const ImageBase& Image);    // Selects the faster flush kernel if image is flush
+std::string SelectName(const char * name, const ImageBase& Img);    // Selects the faster flush kernel if image is flush
 
 // CPU side final reduction - done in double for higher precision
 double ReduceSum(std::vector<float>& buffer);

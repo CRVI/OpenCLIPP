@@ -22,8 +22,8 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Programs operate either on Image objects or on ImageBuffer objects
-/// Some programs are available in both standard (Image) and Vector (ImageBuffer) versions.
+/// Programs operate either on Image objects or on Image objects
+/// Some programs are available in both standard (Image) and Vector (Image) versions.
 /// For those programs, the Vector version is usually substantially faster as it will use vector processing
 
 #pragma once
@@ -169,8 +169,8 @@ private:
 };
 
 
-/// A program that operates on ImageBuffers.
-/// Contains a program version for each data type : S8, U8, S16, U16, S32, U32, F32
+/// A program that can operate on all supported data types.
+/// Contains a version of the program for each data type : S8, U8, S16, U16, S32, U32, F32, F64
 class CL_API ImageBufferProgram : public MultiProgram
 {
 public:
@@ -211,8 +211,8 @@ private:
 };
 
 
-/// A program that operates on ImageBuffers using vector operations.
-/// Contains three program versions for each data type : S8, U8, S16, U16, S32, U32, F32
+/// A program that uses vector operations for more troughput.
+/// Contains three versions of the program for each data type : S8, U8, S16, U16, S32, U32, F32, F64
 /// And one fast version that can operate on "flush" images with no padding and a width that is a multiple of the vector width
 /// One standard version that can operate on images of any sizes and on images with padding, but with a step that is a multiple of the vector width
 /// And one slower unaligned version that operates on any images.
@@ -296,7 +296,6 @@ void CheckSameSize(const ImageBase& Img1, const ImageBase& Img2);    ///< Checks
 
 /// Checks sizes + float/signed/unsigned, throws a cl::Error if not.
 /// Checks that both images are of the same size and same type (float/signed/unsigned)
-/// Useful for kernels that work with cl::Image2D
 void CheckCompatibility(const ImageBase& Img1, const ImageBase& Img2);
 
 /// Checks sizes + float/signed/unsigned + depth, throws a cl::Error if not.
@@ -306,7 +305,6 @@ void CheckSizeAndType(const ImageBase& Img1, const ImageBase& Img2);
 
 /// Checks sizes + float/signed/unsigned + depth + nb channels, throws a cl::Error if not.
 /// Checks that both images are of the same size and same type (float/signed/unsigned & depth) and have the same number of channels
-/// Useful for cl::Buffer based kernels
 void CheckSimilarity(const ImageBase& Img1, const ImageBase& Img2);
 
 /// Checks nb channels, throws a cl::Error if not.

@@ -2,7 +2,7 @@
 //! @file	: Arithmetic.cpp
 //! @date   : Jul 2013
 //!
-//! @brief  : Arithmetic operations on image buffers
+//! @brief  : Arithmetic operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -34,7 +34,7 @@ namespace OpenCLIPP
 
 
 // Between two images
-void Arithmetic::Add(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Add(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -42,7 +42,7 @@ void Arithmetic::Add(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& De
    Kernel(add_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::AddSquare(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::AddSquare(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -50,7 +50,7 @@ void Arithmetic::AddSquare(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuff
    Kernel(add_square_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Sub(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Sub(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -58,7 +58,7 @@ void Arithmetic::Sub(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& De
    Kernel(sub_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::AbsDiff(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::AbsDiff(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -66,7 +66,7 @@ void Arithmetic::AbsDiff(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer
    Kernel(abs_diff_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Mul(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Mul(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -74,7 +74,7 @@ void Arithmetic::Mul(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& De
    Kernel(mul_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Div(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Div(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -82,7 +82,7 @@ void Arithmetic::Div(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& De
    Kernel(div_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Min(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Min(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -90,7 +90,7 @@ void Arithmetic::Min(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& De
    Kernel(min_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Max(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Max(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -98,7 +98,7 @@ void Arithmetic::Max(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& De
    Kernel(max_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Mean(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Mean(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -106,7 +106,7 @@ void Arithmetic::Mean(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& D
    Kernel(mean_images, In(Source1, Source2), Out(Dest), Source1.Step(), Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Arithmetic::Combine(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest)
+void Arithmetic::Combine(Image& Source1, Image& Source2, Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -117,63 +117,63 @@ void Arithmetic::Combine(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer
 
 // Image and value
 
-void Arithmetic::Add(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Add(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(add_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::Sub(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Sub(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(sub_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::AbsDiff(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::AbsDiff(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(abs_diff_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::Mul(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Mul(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(mul_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::Div(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Div(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(div_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::RevDiv(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::RevDiv(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(reversed_div, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::Min(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Min(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(min_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::Max(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Max(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(max_constant, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels(), value);
 }
 
-void Arithmetic::Mean(ImageBuffer& Source, ImageBuffer& Dest, float value)
+void Arithmetic::Mean(Image& Source, Image& Dest, float value)
 {
    CheckSimilarity(Source, Dest);
 
@@ -183,21 +183,21 @@ void Arithmetic::Mean(ImageBuffer& Source, ImageBuffer& Dest, float value)
 
 // Calculation on one image
 
-void Arithmetic::Abs(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Abs(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(abs_image, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels());
 }
 
-void Arithmetic::Invert(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Invert(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(invert_image, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels());
 }
 
-void Arithmetic::Sqr(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Sqr(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
@@ -207,35 +207,35 @@ void Arithmetic::Sqr(ImageBuffer& Source, ImageBuffer& Dest)
 
 // Calculation on one image - float required
 
-void Arithmetic::Exp(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Exp(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(exp_image, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels());
 }
 
-void Arithmetic::Log(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Log(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(log_image, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels());
 }
 
-void Arithmetic::Sqrt(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Sqrt(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(sqrt_image, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels());
 }
 
-void Arithmetic::Sin(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Sin(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(sin_image, In(Source), Out(Dest), Source.Step(), Dest.Step(), Source.Width() * Source.NbChannels());
 }
 
-void Arithmetic::Cos(ImageBuffer& Source, ImageBuffer& Dest)
+void Arithmetic::Cos(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 

@@ -2,7 +2,7 @@
 //! @file	: Logic.cl
 //! @date   : Jul 2013
 //!
-//! @brief  : Logic (bitwise) operations on image buffers
+//! @brief  : Logic (bitwise) operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!

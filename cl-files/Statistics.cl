@@ -2,7 +2,7 @@
 //! @file	: Statistics.cl
 //! @date   : Jul 2013
 //!
-//! @brief  : Statistical reductions on image buffers
+//! @brief  : Statistical reductions
 //! 
 //! Copyright (C) 2013 - CRVI
 //!

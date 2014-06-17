@@ -2,7 +2,7 @@
 //! @file	: Transform.cpp
 //! @date   : Apr 2014
 //!
-//! @brief  : Simple image transformation on image buffers
+//! @brief  : Simple image transformations
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -43,28 +43,28 @@ static const double Pi = atan(1) * 4;
 namespace OpenCLIPP
 {
 
-void Transform::MirrorX(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::MirrorX(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(mirror_x, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void Transform::MirrorY(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::MirrorY(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(mirror_y, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void Transform::Flip(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::Flip(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
 
    Kernel(flip, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void Transform::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
+void Transform::Transpose(Image& Source, Image& Dest)
 {
    if (Dest.Width() < Source.Height() || Dest.Height() < Source.Width())
       throw cl::Error(CL_INVALID_IMAGE_SIZE, "Destination image too small to receive Transform::Transpose");
@@ -83,7 +83,7 @@ void Transform::Transpose(ImageBuffer& Source, ImageBuffer& Dest)
 
 }
 
-void Transform::Rotate(ImageBuffer& Source, ImageBuffer& Dest,
+void Transform::Rotate(Image& Source, Image& Dest,
       double Angle, double XShift, double YShift, EInterpolationType Interpolation)
 {
    if (!SameType(Source, Dest))
@@ -137,7 +137,7 @@ int find_lanczos_buffer_size(int length)
    return size;
 }
 
-void Transform::ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl::NDRange Range)
+void Transform::ResizeLanczos(Image& Source, Image& Dest, int a, cl::NDRange Range)
 {
    float RatioX = Source.Width() * 1.f / Dest.Width();
    float RatioY = Source.Height() * 1.f / Dest.Height();
@@ -171,7 +171,7 @@ void Transform::ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl:
 
 }
 
-void Transform::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationType Interpolation, bool KeepRatio)
+void Transform::Resize(Image& Source, Image& Dest, EInterpolationType Interpolation, bool KeepRatio)
 {
    if (!SameType(Source, Dest))
       throw cl::Error(CL_INVALID_VALUE, "Different image types used");
@@ -237,7 +237,7 @@ void Transform::Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationTyp
 
 }
 
-void Transform::SetAll(ImageBuffer& Dest, float Value)
+void Transform::SetAll(Image& Dest, float Value)
 {
    Kernel(set_all, In(Dest), Out(), Dest.Step(), Value);
 }

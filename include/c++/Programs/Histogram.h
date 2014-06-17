@@ -39,17 +39,17 @@ public:
 
    /// Calculates the Histogram of the first channel of the image
    /// \param Histogram : Array of 256 elements that will receive the histogram values
-   void Histogram1C(ImageBuffer& Source, uint * Histogram);
+   void Histogram1C(Image& Source, uint * Histogram);
 
    /// Calculates the Histogram of all channels of the image
    /// \param Histogram : Array of 1024 elements that will receive the histogram values
-   void Histogram4C(ImageBuffer& Source, uint * Histogram);
+   void Histogram4C(Image& Source, uint * Histogram);
 
    /// Calculates the Otsu threshold given an histogram
    static uint OtsuThreshold(uint Histogram[256], uint NbPixels);
 
    /// Calculates the Otsu threshold for the image
-   uint OtsuThreshold(ImageBuffer& Source);
+   uint OtsuThreshold(Image& Source);
 };
 
 }

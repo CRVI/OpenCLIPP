@@ -2,7 +2,7 @@
 //! @file	: Statistics.cpp
 //! @date   : Jul 2013
 //!
-//! @brief  : Statistical reductions on image buffers
+//! @brief  : Statistical reductions
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -43,9 +43,9 @@ namespace OpenCLIPP
 
 
 // Statistics
-void Statistics::PrepareBuffer(const ImageBase& Image)
+void Statistics::PrepareBuffer(const ImageBase& Source)
 {
-   size_t NbGroups = (size_t) GetNbGroups(Image);
+   size_t NbGroups = (size_t) GetNbGroups(Source);
 
    // We need space for 4 channels + another space for the number of pixels
    size_t BufferSize = NbGroups * (4 + 1);
@@ -63,11 +63,11 @@ void Statistics::PrepareBuffer(const ImageBase& Image)
    m_PartialResultBuffer = make_shared<Buffer>(*m_CL, m_PartialResult.data(), BufferSize);
 }
 
-void Statistics::PrepareCoords(const ImageBase& Image)
+void Statistics::PrepareCoords(const ImageBase& Source)
 {
-   PrepareBuffer(Image);
+   PrepareBuffer(Source);
 
-   size_t NbGroups = (size_t) GetNbGroups(Image);
+   size_t NbGroups = (size_t) GetNbGroups(Source);
 
    // We are storing X and Y 
    size_t BufferSize = NbGroups * 2;
@@ -87,7 +87,7 @@ void Statistics::PrepareCoords(const ImageBase& Image)
 
 
 // Init
-void Statistics::Init(ImageBuffer& Source)
+void Statistics::Init(Image& Source)
 {
    Source.SendIfNeeded();
 
@@ -95,7 +95,7 @@ void Statistics::Init(ImageBuffer& Source)
       (cl::EnqueueArgs(*m_CL, cl::NDRange(1, 1, 1)), Source, m_ResultBuffer);
 }
 
-void Statistics::InitAbs(ImageBuffer& Source)
+void Statistics::InitAbs(Image& Source)
 {
    Source.SendIfNeeded();
 
@@ -105,7 +105,7 @@ void Statistics::InitAbs(ImageBuffer& Source)
 
 
 // Reductions
-double Statistics::Min(ImageBuffer& Source)
+double Statistics::Min(Image& Source)
 {
    Check1Channel(Source);
 
@@ -118,7 +118,7 @@ double Statistics::Min(ImageBuffer& Source)
    return m_Result[0];
 }
 
-double Statistics::Max(ImageBuffer& Source)
+double Statistics::Max(Image& Source)
 {
    Check1Channel(Source);
 
@@ -131,7 +131,7 @@ double Statistics::Max(ImageBuffer& Source)
    return m_Result[0];
 }
 
-double Statistics::MinAbs(ImageBuffer& Source)
+double Statistics::MinAbs(Image& Source)
 {
    Check1Channel(Source);
 
@@ -144,7 +144,7 @@ double Statistics::MinAbs(ImageBuffer& Source)
    return m_Result[0];
 }
 
-double Statistics::MaxAbs(ImageBuffer& Source)
+double Statistics::MaxAbs(Image& Source)
 {
    Check1Channel(Source);
 
@@ -157,7 +157,7 @@ double Statistics::MaxAbs(ImageBuffer& Source)
    return m_Result[0];
 }
 
-double Statistics::Sum(ImageBuffer& Source)
+double Statistics::Sum(Image& Source)
 {
    Check1Channel(Source);
 
@@ -170,7 +170,7 @@ double Statistics::Sum(ImageBuffer& Source)
    return ReduceSum(m_PartialResult);
 }
 
-double Statistics::SumSqr(ImageBuffer& Source)
+double Statistics::SumSqr(Image& Source)
 {
    Check1Channel(Source);
 
@@ -183,7 +183,7 @@ double Statistics::SumSqr(ImageBuffer& Source)
    return ReduceSum(m_PartialResult);
 }
 
-uint Statistics::CountNonZero(ImageBuffer& Source)
+uint Statistics::CountNonZero(Image& Source)
 {
    Check1Channel(Source);
 
@@ -196,7 +196,7 @@ uint Statistics::CountNonZero(ImageBuffer& Source)
    return (uint) ReduceSum(m_PartialResult);
 }
 
-double Statistics::Mean(ImageBuffer& Source)
+double Statistics::Mean(Image& Source)
 {
    Check1Channel(Source);
 
@@ -209,7 +209,7 @@ double Statistics::Mean(ImageBuffer& Source)
    return ReduceMean(m_PartialResult);
 }
 
-double Statistics::MeanSqr(ImageBuffer& Source)
+double Statistics::MeanSqr(Image& Source)
 {
    Check1Channel(Source);
 
@@ -222,13 +222,13 @@ double Statistics::MeanSqr(ImageBuffer& Source)
    return ReduceMean(m_PartialResult);
 }
 
-double Statistics::StdDev(ImageBuffer& Source)
+double Statistics::StdDev(Image& Source)
 {
    double mean;
    return StdDev(Source, mean);
 }
 
-double Statistics::StdDev(ImageBuffer& Source, double& mean)
+double Statistics::StdDev(Image& Source, double& mean)
 {
    mean = Mean(Source);
 
@@ -241,7 +241,7 @@ double Statistics::StdDev(ImageBuffer& Source, double& mean)
 
 
 // Reductions that also find the coordinate
-double Statistics::Min(ImageBuffer& Source, int& outX, int& outY)
+double Statistics::Min(Image& Source, int& outX, int& outY)
 {
    Check1Channel(Source);
 
@@ -255,7 +255,7 @@ double Statistics::Min(ImageBuffer& Source, int& outX, int& outY)
    return ReduceMin(m_PartialResult, m_PartialCoord, outX, outY);
 }
 
-double Statistics::Max(ImageBuffer& Source, int& outX, int& outY)
+double Statistics::Max(Image& Source, int& outX, int& outY)
 {
    Check1Channel(Source);
 
@@ -269,7 +269,7 @@ double Statistics::Max(ImageBuffer& Source, int& outX, int& outY)
    return ReduceMax(m_PartialResult, m_PartialCoord, outX, outY);
 }
 
-double Statistics::MinAbs(ImageBuffer& Source, int& outX, int& outY)
+double Statistics::MinAbs(Image& Source, int& outX, int& outY)
 {
    Check1Channel(Source);
 
@@ -283,7 +283,7 @@ double Statistics::MinAbs(ImageBuffer& Source, int& outX, int& outY)
    return ReduceMin(m_PartialResult, m_PartialCoord, outX, outY);
 }
 
-double Statistics::MaxAbs(ImageBuffer& Source, int& outX, int& outY)
+double Statistics::MaxAbs(Image& Source, int& outX, int& outY)
 {
    Check1Channel(Source);
 
@@ -299,7 +299,7 @@ double Statistics::MaxAbs(ImageBuffer& Source, int& outX, int& outY)
 
 
 // For images with multiple channels
-void Statistics::Min(ImageBuffer& Source, double outVal[4])
+void Statistics::Min(Image& Source, double outVal[4])
 {
    Init(Source);
 
@@ -311,7 +311,7 @@ void Statistics::Min(ImageBuffer& Source, double outVal[4])
       outVal[i] = m_Result[i];
 }
 
-void Statistics::Max(ImageBuffer& Source, double outVal[4])
+void Statistics::Max(Image& Source, double outVal[4])
 {
    Init(Source);
 
@@ -323,7 +323,7 @@ void Statistics::Max(ImageBuffer& Source, double outVal[4])
       outVal[i] = m_Result[i];
 }
 
-void Statistics::MinAbs(ImageBuffer& Source, double outVal[4])
+void Statistics::MinAbs(Image& Source, double outVal[4])
 {
    InitAbs(Source);
 
@@ -335,7 +335,7 @@ void Statistics::MinAbs(ImageBuffer& Source, double outVal[4])
       outVal[i] = m_Result[i];
 }
 
-void Statistics::MaxAbs(ImageBuffer& Source, double outVal[4])
+void Statistics::MaxAbs(Image& Source, double outVal[4])
 {
    InitAbs(Source);
 
@@ -347,7 +347,7 @@ void Statistics::MaxAbs(ImageBuffer& Source, double outVal[4])
       outVal[i] = m_Result[i];
 }
 
-void Statistics::Sum(ImageBuffer& Source, double outVal[4])
+void Statistics::Sum(Image& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
@@ -358,7 +358,7 @@ void Statistics::Sum(ImageBuffer& Source, double outVal[4])
    ReduceSum(m_PartialResult, Source.NbChannels(), outVal);
 }
 
-void Statistics::SumSqr(ImageBuffer& Source, double outVal[4])
+void Statistics::SumSqr(Image& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
@@ -369,7 +369,7 @@ void Statistics::SumSqr(ImageBuffer& Source, double outVal[4])
    ReduceSum(m_PartialResult, Source.NbChannels(), outVal);
 }
 
-void Statistics::Mean(ImageBuffer& Source, double outVal[4])
+void Statistics::Mean(Image& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
@@ -380,7 +380,7 @@ void Statistics::Mean(ImageBuffer& Source, double outVal[4])
    ReduceMean(m_PartialResult, Source.NbChannels(),outVal);
 }
 
-void Statistics::MeanSqr(ImageBuffer& Source, double outVal[4])
+void Statistics::MeanSqr(Image& Source, double outVal[4])
 {
    PrepareBuffer(Source);
 
@@ -391,14 +391,14 @@ void Statistics::MeanSqr(ImageBuffer& Source, double outVal[4])
    ReduceMean(m_PartialResult, Source.NbChannels(), outVal);
 }
 
-void Statistics::StdDev(ImageBuffer& Source, double outVal[4])
+void Statistics::StdDev(Image& Source, double outVal[4])
 {
    double means[4] = {0};
 
    StdDev(Source, outVal, means);
 }
 
-void Statistics::StdDev(ImageBuffer& Source, double outVal[4], double outMean[4])
+void Statistics::StdDev(Image& Source, double outVal[4], double outMean[4])
 {
    Mean(Source, outMean);
 

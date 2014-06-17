@@ -2,7 +2,7 @@
 //! @file	: Logic.cpp
 //! @date   : Jul 2013
 //!
-//! @brief  : Logic (bitwise) operations on image buffers
+//! @brief  : Logic (bitwise) operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -36,8 +36,8 @@ namespace OpenCLIPP
 
 // Bitwise operations - float images not allowed
 
-void Logic::And(ImageBuffer& Source1, ImageBuffer& Source2,
-                             ImageBuffer& Dest)
+void Logic::And(Image& Source1, Image& Source2,
+                             Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -47,8 +47,8 @@ void Logic::And(ImageBuffer& Source1, ImageBuffer& Source2,
       Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Logic::Or(ImageBuffer& Source1, ImageBuffer& Source2,
-                            ImageBuffer& Dest)
+void Logic::Or(Image& Source1, Image& Source2,
+                            Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -58,8 +58,8 @@ void Logic::Or(ImageBuffer& Source1, ImageBuffer& Source2,
       Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Logic::Xor(ImageBuffer& Source1, ImageBuffer& Source2,
-                             ImageBuffer& Dest)
+void Logic::Xor(Image& Source1, Image& Source2,
+                             Image& Dest)
 {
    CheckSimilarity(Source1, Source2);
    CheckSimilarity(Source1, Dest);
@@ -69,7 +69,7 @@ void Logic::Xor(ImageBuffer& Source1, ImageBuffer& Source2,
       Source2.Step(), Dest.Step(), Source1.Width() * Source1.NbChannels());
 }
 
-void Logic::And(ImageBuffer& Source, ImageBuffer& Dest, uint value)
+void Logic::And(Image& Source, Image& Dest, uint value)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);
@@ -78,7 +78,7 @@ void Logic::And(ImageBuffer& Source, ImageBuffer& Dest, uint value)
       Source.Width() * Source.NbChannels(), value);
 }
 
-void Logic::Or(ImageBuffer& Source, ImageBuffer& Dest, uint value)
+void Logic::Or(Image& Source, Image& Dest, uint value)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);
@@ -87,7 +87,7 @@ void Logic::Or(ImageBuffer& Source, ImageBuffer& Dest, uint value)
       Source.Width() * Source.NbChannels(), value);
 }
 
-void Logic::Xor(ImageBuffer& Source, ImageBuffer& Dest, uint value)
+void Logic::Xor(Image& Source, Image& Dest, uint value)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);
@@ -96,7 +96,7 @@ void Logic::Xor(ImageBuffer& Source, ImageBuffer& Dest, uint value)
       Source.Width() * Source.NbChannels(), value);
 }
 
-void Logic::Not(ImageBuffer& Source, ImageBuffer& Dest)
+void Logic::Not(Image& Source, Image& Dest)
 {
    CheckSimilarity(Source, Dest);
    CheckNotFloat(Source);

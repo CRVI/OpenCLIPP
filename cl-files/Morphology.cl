@@ -2,7 +2,7 @@
 //! @file	: Morphology.cl
 //! @date   : Jan 2014
 //!
-//! @brief  : Morphological operations on image buffers
+//! @brief  : Morphological operations
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

@@ -82,7 +82,7 @@ SProgramList& GetList();
 #define H(code) try { code ; } catch (cl::Error e) { return e.err(); } return CL_SUCCESS;
 
 #define Img(i) (*((IImage*) i))
-#define Buf(b) (*((ImageBuffer*) b))
+#define Buf(b) (*((Image*) b))
 
 
 // Outputs a concatenation of the two given arguments : CONCATENATE(ab, cd) -> abcd
@@ -183,13 +183,13 @@ ocipError ocip_API ocipCreateImageBuffer(ocipBuffer * BufferPtr, SImage image, v
    if (CL == nullptr)
       return CL_INVALID_CONTEXT;
 
-   H( *BufferPtr = (ocipBuffer) new ImageBuffer(*CL, image, ImageData, flags) )
+   H( *BufferPtr = (ocipBuffer) new Image(*CL, image, ImageData, flags) )
 }
 
 ocipError ocip_API ocipSendImageBuffer(ocipBuffer Buffer)
 {
    IBuffer * Ptr = (IBuffer *) Buffer;
-   ImageBuffer * Buf = dynamic_cast<ImageBuffer *>(Ptr);
+   Image * Buf = dynamic_cast<Image *>(Ptr);
    if (Buf == nullptr)
       return CL_INVALID_MEM_OBJECT;
 
@@ -199,7 +199,7 @@ ocipError ocip_API ocipSendImageBuffer(ocipBuffer Buffer)
 ocipError ocip_API ocipReadImageBuffer(ocipBuffer Buffer)
 {
    IBuffer * Ptr = (IBuffer *) Buffer;
-   ImageBuffer * Buf = dynamic_cast<ImageBuffer *>(Ptr);
+   Image * Buf = dynamic_cast<Image *>(Ptr);
    if (Buf == nullptr)
       return CL_INVALID_MEM_OBJECT;
 
@@ -224,23 +224,23 @@ ocipError ocip_API ocipReleaseProgram(ocipProgram Program)
 
 // For implementing standard ocipPrepare* functions
 #define PREPARE(fun, Class) \
-ocipError ocip_API fun(IMAGE_ARG Image)\
+ocipError ocip_API fun(IMAGE_ARG Img)\
 {\
-   H( GetList().Class.PrepareFor(CONV(Image)) );\
+   H( GetList().Class.PrepareFor(CONV(Img)) );\
 }
 
 
 // For implementing ocipPrepare* functions that return a program
 #define PREPARE2(name, Class) \
-ocipError ocip_API name(ocipProgram * ProgramPtr, IMAGE_ARG Image)\
+ocipError ocip_API name(ocipProgram * ProgramPtr, IMAGE_ARG Img)\
 {\
    H(\
       if (g_CurrentContext == nullptr)\
          return CL_INVALID_CONTEXT;\
       Class * Ptr = new Class(*g_CurrentContext);\
       *ProgramPtr = (ocipProgram) Ptr;\
-      if (Image != nullptr)\
-         Ptr->PrepareFor(CONV(Image));\
+      if (Img != nullptr)\
+         Ptr->PrepareFor(CONV(Img));\
    )\
 }
 
@@ -615,15 +615,15 @@ ocipBool  ocip_API ocipIsFFTAvailable()
 #undef CLASS
 #define CLASS (*(ImageProximityFFT*)Program)
 
-ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipBuffer Image, ocipBuffer Template)
+ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipBuffer Img, ocipBuffer Template)
 {
    H(
       if (g_CurrentContext == nullptr)
          return CL_INVALID_CONTEXT;
       ImageProximityFFT * Ptr = new ImageProximityFFT(*g_CurrentContext);
       *ProgramPtr = (ocipProgram) Ptr;
-      if (Image != nullptr)
-         Ptr->PrepareFor(CONV(Image), CONV(Template));
+      if (Img != nullptr)
+         Ptr->PrepareFor(CONV(Img), CONV(Template));
    )
 }
 

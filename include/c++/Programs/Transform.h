@@ -2,7 +2,7 @@
 //! @file	: Transform.h
 //! @date   : Apr 2014
 //!
-//! @brief  : Simple image transformation on image buffers
+//! @brief  : Simple image transformations
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -51,20 +51,20 @@ public:
 
    /// Mirrors the image along X.
    /// D(x,y) = D(width - x - 1, y)
-   void MirrorX(ImageBuffer& Source, ImageBuffer& Dest);
+   void MirrorX(Image& Source, Image& Dest);
 
    /// Mirrors the image along Y.
    /// D(x,y) = D(x, height - y - 1)
-   void MirrorY(ImageBuffer& Source, ImageBuffer& Dest);
+   void MirrorY(Image& Source, Image& Dest);
 
    /// Flip : Mirrors the image along X and Y.
    /// D(x,y) = D(width - x - 1, height - y - 1)
-   void Flip(ImageBuffer& Source, ImageBuffer& Dest);
+   void Flip(Image& Source, Image& Dest);
 
    /// Transposes the image.
    /// Dest must have a width >= as Source's height and a height >= as Source's width
    /// D(x,y) = D(y, x)
-   void Transpose(ImageBuffer& Source, ImageBuffer& Dest);
+   void Transpose(Image& Source, Image& Dest);
 
    /// Rotates the source image aroud the origin (0,0) and then shifts it.
    /// \param Source : Source image
@@ -75,7 +75,7 @@ public:
    /// \param Interpolation : Type of interpolation to use.
    ///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
    ///      BestQuality will use Cubic.
-   void Rotate(ImageBuffer& Source, ImageBuffer& Dest,
+   void Rotate(Image& Source, Image& Dest,
       double Angle, double XShift, double YShift, EInterpolationType Interpolation = BestQuality);
 
    /// Resizes the image.
@@ -86,13 +86,13 @@ public:
    /// \param KeepRatio : If false, Dest will be filled with the image from source, potentially changing
    ///      the aspect ratio of the image. If true, the aspect ratio of the image will be kept, potentially
    ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
-   void Resize(ImageBuffer& Source, ImageBuffer& Dest, EInterpolationType Interpolation = BestQuality, bool KeepRatio = false);
+   void Resize(Image& Source, Image& Dest, EInterpolationType Interpolation = BestQuality, bool KeepRatio = false);
 
    /// Sets all values of Dest to value
-   void SetAll(ImageBuffer& Dest, float Value);
+   void SetAll(Image& Dest, float Value);
 
 protected:
-   void ResizeLanczos(ImageBuffer& Source, ImageBuffer& Dest, int a, cl::NDRange Range);
+   void ResizeLanczos(Image& Source, Image& Dest, int a, cl::NDRange Range);
 };
 
 }

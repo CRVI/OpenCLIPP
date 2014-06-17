@@ -45,10 +45,10 @@ void Blob::SBlobInfo::Init(int connectType)
 void Blob::PrepareFor(ImageBase& Source)
 {
    if (m_TempBuffer == nullptr || Source.Width() > m_TempBuffer->Width() || Source.Height() > m_TempBuffer->Height())
-      m_TempBuffer = std::make_shared<TempImageBuffer>(*m_CL, Source.Size(), SImage::S32);
+      m_TempBuffer = std::make_shared<TempImage>(*m_CL, Source.Size(), SImage::S32);
 }
 
-void Blob::ComputeLabels(ImageBuffer& Source, ImageBuffer& Labels, int ConnectType)
+void Blob::ComputeLabels(Image& Source, Image& Labels, int ConnectType)
 {
    if (ConnectType != 4 && ConnectType != 8)
       throw cl::Error(CL_INVALID_VALUE, "Wrong connect type in Blob::ComputeLabels");
@@ -83,7 +83,7 @@ void Blob::ComputeLabels(ImageBuffer& Source, ImageBuffer& Labels, int ConnectTy
 
 }
 
-void Blob::RenameLabels(ImageBuffer& Labels)
+void Blob::RenameLabels(Image& Labels)
 {
    if (Labels.Depth() != 32 || Labels.IsFloat())
       throw cl::Error(CL_INVALID_VALUE, "Wrong Labels image type in Blob::RenameLabels - Labels must be 32 bit integer");

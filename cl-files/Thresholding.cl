@@ -2,7 +2,7 @@
 //! @file	: Thresholding.cl
 //! @date   : Mar 2014
 //!
-//! @brief  : Thresholding operations on image buffers
+//! @brief  : Thresholding operations
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

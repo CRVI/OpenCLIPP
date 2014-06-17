@@ -2,7 +2,7 @@
 //! @file	: Filters.cl
 //! @date   : Jan 2014
 //!
-//! @brief  : Convolution-style filters on image buffers
+//! @brief  : Convolution-style filters
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

@@ -2,7 +2,7 @@
 //! @file	: Logic.h
 //! @date   : Jul 2013
 //!
-//! @brief  : Logic (bitwise) operations on image buffers
+//! @brief  : Logic (bitwise) operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -29,7 +29,7 @@
 namespace OpenCLIPP
 {
 
-/// A program that does logic (bitwise) operations on image buffers
+/// A program that does logic (bitwise) operations
 class CL_API Logic : public VectorProgram
 {
 public:
@@ -38,13 +38,13 @@ public:
    { }
 
    // Bitwise operations - float images not allowed
-   void And(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest);   ///< D = S1 & S2
-   void Or(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest);    ///< D = S1 | S2
-   void Xor(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest);   ///< D = S1 ^ S2
-   void And(ImageBuffer& Source, ImageBuffer& Dest, uint value);              ///< D = S & v
-   void Or(ImageBuffer& Source, ImageBuffer& Dest, uint value);               ///< D = S | v
-   void Xor(ImageBuffer& Source, ImageBuffer& Dest, uint value);              ///< D = S ^ v
-   void Not(ImageBuffer& Source, ImageBuffer& Dest);                          ///< D = ~S
+   void And(Image& Source1, Image& Source2, Image& Dest);   ///< D = S1 & S2
+   void Or(Image& Source1, Image& Source2, Image& Dest);    ///< D = S1 | S2
+   void Xor(Image& Source1, Image& Source2, Image& Dest);   ///< D = S1 ^ S2
+   void And(Image& Source, Image& Dest, uint value);              ///< D = S & v
+   void Or(Image& Source, Image& Dest, uint value);               ///< D = S | v
+   void Xor(Image& Source, Image& Dest, uint value);              ///< D = S ^ v
+   void Not(Image& Source, Image& Dest);                          ///< D = ~S
 
 };
 

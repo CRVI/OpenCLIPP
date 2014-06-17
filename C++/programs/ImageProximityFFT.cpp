@@ -2,7 +2,7 @@
 //! @file	: ImageProximityFFT.cpp
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching on image buffers
+//! @brief  : Image comparisons for pattern matching accelerated using FFT
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -35,7 +35,7 @@ namespace OpenCLIPP
 {
 #ifdef USE_CLFFT
 
-void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
+void ImageProximityFFT::PrepareFor(ImageBase& Source, Image& Template)
 {
    SSize size;
 
@@ -43,7 +43,7 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    size.Height = Source.Height();
 
    if (m_image_sqsums == nullptr || m_image_sqsums->Width() < size.Width || m_image_sqsums->Height() < size.Height)
-      m_image_sqsums = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 1);
+      m_image_sqsums = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 1);
 
 
    // Size of the FFT input and output
@@ -58,10 +58,10 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
       size.Height++;
 
    if (m_bigger_source == nullptr || m_bigger_source->Width() != size.Width || m_bigger_source->Height() != size.Height)
-      m_bigger_source = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 1);
+      m_bigger_source = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 1);
 
    if (m_bigger_template == nullptr || m_bigger_template->Width() < size.Width || m_bigger_template->Height() < size.Height)
-      m_bigger_template = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 1);
+      m_bigger_template = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 1);
 
 
 
@@ -69,13 +69,13 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    size.Width = size.Width / 2 + 1;
 
    if (m_templ_spect == nullptr || m_templ_spect->Width() < size.Width || m_templ_spect->Height() < size.Height)
-      m_templ_spect = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 2);
+      m_templ_spect = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 2);
 
    if (m_source_spect == nullptr || m_source_spect->Width() != size.Width || m_source_spect->Height() != size.Height)
-      m_source_spect = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 2);
+      m_source_spect = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 2);
 
    if (m_result_spect == nullptr || m_result_spect->Width() < size.Width || m_result_spect->Height() < size.Height)
-      m_result_spect = std::make_shared<TempImageBuffer>(*m_CL, size, SImage::F32, 2);
+      m_result_spect = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 2);
 
    m_integral.PrepareFor(Source);
    m_statistics.PrepareFor(Template);
@@ -83,25 +83,25 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, ImageBuffer& Template)
    m_fft.PrepareFor(*m_bigger_source, *m_source_spect);
 }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest)
+void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int width, int hight, Image& Source, float templ_sqsum, Image& Dest)
 {
    Check1Channel(Dest);
    Kernel(matchTemplatePreparedSQDIFF,  In(Source), Out(Dest), width, hight, templ_sqsum, Source.Step(), Dest.Step(), Dest.Width(), Dest.Height());
 }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF_NORM(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest)
+void ImageProximityFFT::MatchTemplatePrepared_SQDIFF_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest)
 {
    Check1Channel(Dest);
    Kernel(matchTemplatePreparedSQDIFF_NORM,  In(Source), Out(Dest), width, hight, templ_sqsum, Source.Step(), Dest.Step(), Dest.Width(), Dest.Height());
 }
 
-void ImageProximityFFT::MatchTemplatePrepared_CCORR_NORM(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest)
+void ImageProximityFFT::MatchTemplatePrepared_CCORR_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest)
 {
    Check1Channel(Dest);
    Kernel(matchTemplatePreparedCCORR_NORM,  In(Source), Out(Dest), width, hight, templ_sqsum, Source.Step(), Dest.Step(), Dest.Width(), Dest.Height());
 }
 
-void ImageProximityFFT::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximityFFT::CrossCorr(Image& Source, Image& Template, Image& Dest)
 {
    CheckSameSize(Source, Dest);
    Check1Channel(Source);
@@ -114,7 +114,7 @@ void ImageProximityFFT::CrossCorr(ImageBuffer& Source, ImageBuffer& Template, Im
    Convolve(Source, Template, Dest);
 }
 
-void ImageProximityFFT::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximityFFT::CrossCorr_Norm(Image& Source, Image& Template, Image& Dest)
 {
    CheckSameSize(Source, Dest);
    Check1Channel(Source);
@@ -135,7 +135,7 @@ void ImageProximityFFT::CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Templat
    MatchTemplatePrepared_CCORR_NORM(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
 }
 
-void ImageProximityFFT::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximityFFT::SqrDistance(Image& Source, Image& Template, Image& Dest)
 {
    // Verify image size
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
@@ -160,7 +160,7 @@ void ImageProximityFFT::SqrDistance(ImageBuffer& Source, ImageBuffer& Template, 
    MatchTemplatePrepared_SQDIFF(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
 }
 
-void ImageProximityFFT::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximityFFT::SqrDistance_Norm(Image& Source, Image& Template, Image& Dest)
 {
    // Verify image size
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
@@ -184,7 +184,7 @@ void ImageProximityFFT::SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Templ
    MatchTemplatePrepared_SQDIFF_NORM(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
 }
 
-void ImageProximityFFT::MulAndScaleSpectrums(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest, float scale)
+void ImageProximityFFT::MulAndScaleSpectrums(Image& Source, Image& Template, Image& Dest, float scale)
 {
    CheckSameSize(Source, Template);
    CheckSameSize(Source, Dest);
@@ -200,7 +200,7 @@ void ImageProximityFFT::MulAndScaleSpectrums(ImageBuffer& Source, ImageBuffer& T
    Kernel(mulAndScaleSpectrums, Source, Template, Dest, Source.Step(), Template.Step(), Dest.Step(), Source.Width(), Source.Height(), scale);
 }
 
-void ImageProximityFFT::Convolve(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest)
+void ImageProximityFFT::Convolve(Image& Source, Image& Template, Image& Dest)
 {
    CheckSameSize(Source, Dest);
 
@@ -241,34 +241,34 @@ void ImageProximityFFT::Convolve(ImageBuffer& Source, ImageBuffer& Template, Ima
 
 #else   // USE_CLFFT
 
-void ImageProximityFFT::PrepareFor(ImageBase& , ImageBuffer& )
+void ImageProximityFFT::PrepareFor(ImageBase& , Image& )
 { }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int , int , ImageBuffer& , float , ImageBuffer& )
+void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int , int , Image& , float , Image& )
 { }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF_NORM(int , int , ImageBuffer& , float , ImageBuffer& )
+void ImageProximityFFT::MatchTemplatePrepared_SQDIFF_NORM(int , int , Image& , float , Image& )
 { }
 
-void ImageProximityFFT::MatchTemplatePrepared_CCORR_NORM(int , int , ImageBuffer& , float , ImageBuffer& )
+void ImageProximityFFT::MatchTemplatePrepared_CCORR_NORM(int , int , Image& , float , Image& )
 { }
 
-void ImageProximityFFT::CrossCorr(ImageBuffer& , ImageBuffer& , ImageBuffer& )
+void ImageProximityFFT::CrossCorr(Image& , Image& , Image& )
 { }
 
-void ImageProximityFFT::CrossCorr_Norm(ImageBuffer& , ImageBuffer& , ImageBuffer& )
+void ImageProximityFFT::CrossCorr_Norm(Image& , Image& , Image& )
 { }
 
-void ImageProximityFFT::SqrDistance(ImageBuffer& , ImageBuffer& , ImageBuffer& )
+void ImageProximityFFT::SqrDistance(Image& , Image& , Image& )
 { }
 
-void ImageProximityFFT::SqrDistance_Norm(ImageBuffer& , ImageBuffer& , ImageBuffer& )
+void ImageProximityFFT::SqrDistance_Norm(Image& , Image& , Image& )
 { }
 
-void ImageProximityFFT::MulAndScaleSpectrums(ImageBuffer& , ImageBuffer& , ImageBuffer& , float )
+void ImageProximityFFT::MulAndScaleSpectrums(Image& , Image& , Image& , float )
 { }
 
-void ImageProximityFFT::Convolve(ImageBuffer& , ImageBuffer& , ImageBuffer& )
+void ImageProximityFFT::Convolve(Image& , Image& , Image& )
 { }
 
 #endif   // USE_CLFFT

@@ -2,7 +2,7 @@
 //! @file	: Integral.h
 //! @date   : Mar 2014
 //!
-//! @brief  : Calculates the square integral sum scan of an image buffer
+//! @brief  : Calculates the square integral sum scan of an image
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -37,25 +37,25 @@ public:
    { }
 
    /// Scans the image and generates the Integral sum into Dest - Dest must be F32 or F64
-   void IntegralSum(ImageBuffer& Source, ImageBuffer& Dest);
+   void IntegralSum(Image& Source, Image& Dest);
 
    /// Scans the image and generates the Square Integral sum into Dest - Dest must be F32 or F64
-   void SqrIntegral(ImageBuffer& Source, ImageBuffer& Dest);
+   void SqrIntegral(Image& Source, Image& Dest);
 
    /// Allocates internal temporary buffers and builds the program
    void PrepareFor(ImageBase& Source);
 
 protected:
 
-   void Integral_F32(ImageBuffer& Source, ImageBuffer& Dest);
-   void Integral_F64(ImageBuffer& Source, ImageBuffer& Dest);
-   void SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest);
-   void SqrIntegral_F64(ImageBuffer& Source, ImageBuffer& Dest);
+   void Integral_F32(Image& Source, Image& Dest);
+   void Integral_F64(Image& Source, Image& Dest);
+   void SqrIntegral_F32(Image& Source, Image& Dest);
+   void SqrIntegral_F64(Image& Source, Image& Dest);
 
-   std::shared_ptr<TempImageBuffer> m_VerticalJunctions_F32;
-   std::shared_ptr<TempImageBuffer> m_HorizontalJunctions_F32;
-   std::shared_ptr<TempImageBuffer> m_VerticalJunctions_F64;
-   std::shared_ptr<TempImageBuffer> m_HorizontalJunctions_F64;
+   std::shared_ptr<TempImage> m_VerticalJunctions_F32;
+   std::shared_ptr<TempImage> m_HorizontalJunctions_F32;
+   std::shared_ptr<TempImage> m_VerticalJunctions_F64;
+   std::shared_ptr<TempImage> m_HorizontalJunctions_F64;
 };
 
 }

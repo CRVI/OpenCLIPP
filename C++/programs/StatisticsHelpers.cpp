@@ -39,11 +39,11 @@
 namespace OpenCLIPP
 {
 
-std::string SelectName(const char * name, const ImageBase& Image)
+std::string SelectName(const char * name, const ImageBase& Img)
 {
    std::string Name = name;
 
-   if (IsFlushImage(Image))
+   if (IsFlushImage(Img))
       Name += "_flush";       // Use faster version
 
    return Name;

@@ -2,7 +2,7 @@
 //! @file	: Integral.cpp
 //! @date   : Mar 2014
 //!
-//! @brief  : Calculates the square integral sum scan of an image buffer
+//! @brief  : Calculates the square integral sum scan of an image
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -65,8 +65,8 @@ void Integral::PrepareFor(ImageBase& Source)
    }
 
    // Create buffers for temporary results
-   m_VerticalJunctions_F32 = std::make_shared<TempImageBuffer>(*m_CL, VerticalImgSize_F32, SImage::F32);
-   m_HorizontalJunctions_F32 = std::make_shared<TempImageBuffer>(*m_CL, HorizontalImgSize_F32, SImage::F32);
+   m_VerticalJunctions_F32 = std::make_shared<TempImage>(*m_CL, VerticalImgSize_F32, SImage::F32);
+   m_HorizontalJunctions_F32 = std::make_shared<TempImage>(*m_CL, HorizontalImgSize_F32, SImage::F32);
 
    //-------------------------------------------------------------------------------------
    SSize VerticalImgSize_F64 = {GetNbGroupsW(Source) - 1, Source.Height()};
@@ -91,11 +91,11 @@ void Integral::PrepareFor(ImageBase& Source)
    }
 
    // Create buffers for temporary results
-   m_VerticalJunctions_F64 = std::make_shared<TempImageBuffer>(*m_CL, VerticalImgSize_F64, SImage::F64);
-   m_HorizontalJunctions_F64 = std::make_shared<TempImageBuffer>(*m_CL, HorizontalImgSize_F64, SImage::F64);
+   m_VerticalJunctions_F64 = std::make_shared<TempImage>(*m_CL, VerticalImgSize_F64, SImage::F64);
+   m_HorizontalJunctions_F64 = std::make_shared<TempImage>(*m_CL, HorizontalImgSize_F64, SImage::F64);
 }
 
-void Integral::IntegralSum(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::IntegralSum(Image& Source, Image& Dest)
 {
    switch (Dest.DataType())
    {
@@ -118,7 +118,7 @@ void Integral::IntegralSum(ImageBuffer& Source, ImageBuffer& Dest)
 
 }
 
-void Integral::SqrIntegral(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::SqrIntegral(Image& Source, Image& Dest)
 {
    switch (Dest.DataType())
    {
@@ -141,7 +141,7 @@ void Integral::SqrIntegral(ImageBuffer& Source, ImageBuffer& Dest)
 
 }
 
-void Integral::Integral_F32(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::Integral_F32(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
@@ -167,7 +167,7 @@ void Integral::Integral_F32(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void Integral::SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::SqrIntegral_F32(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
@@ -193,7 +193,7 @@ void Integral::SqrIntegral_F32(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void Integral::Integral_F64(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::Integral_F64(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
@@ -219,7 +219,7 @@ void Integral::Integral_F64(ImageBuffer& Source, ImageBuffer& Dest)
    
 }
 
-void Integral::SqrIntegral_F64(ImageBuffer& Source, ImageBuffer& Dest)
+void Integral::SqrIntegral_F64(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);

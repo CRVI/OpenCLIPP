@@ -2,7 +2,7 @@
 //! @file	: Morphology.cpp
 //! @date   : Jul 2013
 //!
-//! @brief  : Morphological operations on image buffers
+//! @brief  : Morphological operations
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -55,7 +55,7 @@ static std::string SelectName(const char * Name, int Width)  // Selects the prop
 }
 
 
-void Morphology::Erode(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Morphology::Erode(Image& Source, Image& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -68,7 +68,7 @@ void Morphology::Erode(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    Kernel(erode, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void Morphology::Dilate(ImageBuffer& Source, ImageBuffer& Dest, int Width)
+void Morphology::Dilate(Image& Source, Image& Dest, int Width)
 {
    CheckCompatibility(Source, Dest);
 
@@ -81,7 +81,7 @@ void Morphology::Dilate(ImageBuffer& Source, ImageBuffer& Dest, int Width)
    Kernel(dilate, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 }
 
-void Morphology::Erode(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Iterations, int Width)
+void Morphology::Erode(Image& Source, Image& Dest, Image& Temp, int Iterations, int Width)
 {
    if (Iterations <= 0)
       return;
@@ -104,7 +104,7 @@ void Morphology::Erode(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp
 
 }
 
-void Morphology::Dilate(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Iterations, int Width)
+void Morphology::Dilate(Image& Source, Image& Dest, Image& Temp, int Iterations, int Width)
 {
    if (Iterations <= 0)
       return;
@@ -127,31 +127,31 @@ void Morphology::Dilate(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Tem
 
 }
 
-void Morphology::Open(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth, int Width)
+void Morphology::Open(Image& Source, Image& Dest, Image& Temp, int Depth, int Width)
 {
    Erode(Source, Temp, Dest, Depth, Width);
    Dilate(Temp, Dest, Temp, Depth, Width);
 }
 
-void Morphology::Close(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth, int Width)
+void Morphology::Close(Image& Source, Image& Dest, Image& Temp, int Depth, int Width)
 {
    Dilate(Source, Temp, Dest, Depth, Width);
    Erode(Temp, Dest, Temp, Depth, Width);
 }
 
-void Morphology::TopHat(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth, int Width)
+void Morphology::TopHat(Image& Source, Image& Dest, Image& Temp, int Depth, int Width)
 {
    Open(Source, Temp, Dest, Depth, Width);
    m_Arithmetic.Sub(Source, Temp, Dest);     // Source - Open
 }
 
-void Morphology::BlackHat(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Depth, int Width)
+void Morphology::BlackHat(Image& Source, Image& Dest, Image& Temp, int Depth, int Width)
 {
    Close(Source, Temp, Dest, Depth, Width);
    m_Arithmetic.Sub(Temp, Source, Dest);     // Close - Source
 }
 
-void Morphology::Gradient(ImageBuffer& Source, ImageBuffer& Dest, ImageBuffer& Temp, int Width)
+void Morphology::Gradient(Image& Source, Image& Dest, Image& Temp, int Width)
 {
    Erode(Source, Temp, Width);
    Dilate(Source, Dest, Width);

@@ -38,30 +38,30 @@ public:
    { }
 
    /// From any image type to any image type - no value scaling
-   void Convert(ImageBuffer& Source, ImageBuffer& Dest);
+   void Convert(Image& Source, Image& Dest);
 
    /// From any image type to any image type - automatic value scaling.
    /// Scales the input values by the ration of : output range/input range
    /// The range is 0,255 for 8u, -128,127 for 8s, ...
    /// The range is 0,1 for float
-   void Scale(ImageBuffer& Source, ImageBuffer& Dest);
+   void Scale(Image& Source, Image& Dest);
 
    /// From any image type to any image type with given scaling.
    /// Does the conversion Dest = (Source * Ratio) + Offset
-   void Scale(ImageBuffer& Source, ImageBuffer& Dest, int Offset, float Ratio = 0);
+   void Scale(Image& Source, Image& Dest, int Offset, float Ratio = 0);
 
    /// Copies an image.
    /// Both images must be of the same type and have the same size
-   void Copy(ImageBuffer& Source, ImageBuffer& Dest);
+   void Copy(Image& Source, Image& Dest);
 
    /// Converts a color (4 channel) image to a 1 channel image by averaging the first 3 channels
-   void ToGray(ImageBuffer& Source, ImageBuffer& Dest);
+   void ToGray(Image& Source, Image& Dest);
 
    /// Selects 1 channel from a 4 channel image to a 1 channel image - ChannelNo can be from 1 to 4
-   void SelectChannel(ImageBuffer& Source, ImageBuffer& Dest, int ChannelNo);
+   void SelectChannel(Image& Source, Image& Dest, int ChannelNo);
 
    /// Converts a 1 channel image to a 4 channel image - first 3 channels of Dest will be set to the value of the first channel of Source
-   void ToColor(ImageBuffer& Source, ImageBuffer& Dest);
+   void ToColor(Image& Source, Image& Dest);
 };
 
 }

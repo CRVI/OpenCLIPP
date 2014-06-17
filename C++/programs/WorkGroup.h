@@ -68,20 +68,20 @@ const static int PixelsPerWorkerV = PIXELS_PER_WORKITEM_V;        // Number of p
 const static int GroupPxWidth = GroupWidth * PixelsPerWorkerH;    // Number of pixels that 1 workgroup will process one 1 row
 const static int GroupPxHeight = GroupHeight * PixelsPerWorkerV;  // Number of pixels that 1 workgroup will process one 1 column
 
-static bool FlushWidth(const ImageBase& Image);      // Is Width a multiple of GroupWidth*PixelsPerWorker
-static bool FlushHeight(const ImageBase& Image);     // Is Height a multiple of GroupHeight
-static bool IsFlushImage(const ImageBase& Image);    // Are both Width and Height flush
+static bool FlushWidth(const ImageBase& Img);      // Is Width a multiple of GroupWidth*PixelsPerWorker
+static bool FlushHeight(const ImageBase& Img);     // Is Height a multiple of GroupHeight
+static bool IsFlushImage(const ImageBase& Img);    // Are both Width and Height flush
 
-static uint GetNbWorkersW(const ImageBase& Image);   // Number of work items to be launched for each row of the image, including inactive work items
-static uint GetNbWorkersH(const ImageBase& Image);   // Number of work items to be launched for each column of the image, including inactive work items
+static uint GetNbWorkersW(const ImageBase& Img);   // Number of work items to be launched for each row of the image, including inactive work items
+static uint GetNbWorkersH(const ImageBase& Img);   // Number of work items to be launched for each column of the image, including inactive work items
 
-static uint GetNbGroupsW(const ImageBase& Image);    // Number of work groups along X
-static uint GetNbGroupsH(const ImageBase& Image);    // Number of work groups along Y
+static uint GetNbGroupsW(const ImageBase& Img);    // Number of work groups along X
+static uint GetNbGroupsH(const ImageBase& Img);    // Number of work groups along Y
 
-static cl::NDRange GetRange(const ImageBase& Image, bool UseLocalSize = true);   // Global range for the image - GetNbWorkersW() * GetNbWorkersH()
+static cl::NDRange GetRange(const ImageBase& Img, bool UseLocalSize = true);   // Global range for the image - GetNbWorkersW() * GetNbWorkersH()
 static cl::NDRange GetLocalRange(bool UseLocalSize = true);                      // Local range - GroupWidth * GroupHeight
 
-static uint GetNbGroups(const ImageBase& Image);     // Number of work groups for the image - GetNbGroupsW() * GetNbGroupsH()
+static uint GetNbGroups(const ImageBase& Img);     // Number of work groups for the image - GetNbGroupsW() * GetNbGroupsH()
 
 // Equivalent of the Kernel() macro but using the 
 #define Kernel_Local(name, in, out, ...) \
@@ -90,61 +90,61 @@ static uint GetNbGroups(const ImageBase& Image);     // Number of work groups fo
       In(in), Out(out), __VA_ARGS__ )
 
 
-static bool FlushWidth(const ImageBase& Image)
+static bool FlushWidth(const ImageBase& Img)
 {
-   if (Image.Width() % GroupPxWidth > 0)
+   if (Img.Width() % GroupPxWidth > 0)
       return false;
 
    return true;
 }
 
-static bool FlushHeight(const ImageBase& Image)
+static bool FlushHeight(const ImageBase& Img)
 {
-   if (Image.Height() % GroupPxHeight > 0)
+   if (Img.Height() % GroupPxHeight > 0)
       return false;
 
    return true;
 }
 
-static bool IsFlushImage(const ImageBase& Image)
+static bool IsFlushImage(const ImageBase& Img)
 {
-   return FlushWidth(Image) && FlushHeight(Image);
+   return FlushWidth(Img) && FlushHeight(Img);
 }
 
-static uint GetNbWorkersW(const ImageBase& Image)
+static uint GetNbWorkersW(const ImageBase& Img)
 {
-   uint Nb = Image.Width() / GroupPxWidth * GroupWidth;
-   if (!FlushWidth(Image))
+   uint Nb = Img.Width() / GroupPxWidth * GroupWidth;
+   if (!FlushWidth(Img))
       Nb += GroupWidth;
 
    return Nb;
 }
 
-static uint GetNbWorkersH(const ImageBase& Image)
+static uint GetNbWorkersH(const ImageBase& Img)
 {
-   uint Nb = Image.Height() / GroupPxHeight * GroupHeight;
-   if (!FlushHeight(Image))
+   uint Nb = Img.Height() / GroupPxHeight * GroupHeight;
+   if (!FlushHeight(Img))
       Nb += GroupHeight;
 
    return Nb;
 }
 
-static uint GetNbGroupsW(const ImageBase& Image)
+static uint GetNbGroupsW(const ImageBase& Img)
 {
-   return GetNbWorkersW(Image) / GroupWidth;
+   return GetNbWorkersW(Img) / GroupWidth;
 }
 
-static uint GetNbGroupsH(const ImageBase& Image)
+static uint GetNbGroupsH(const ImageBase& Img)
 {
-   return GetNbWorkersH(Image) / GroupHeight;
+   return GetNbWorkersH(Img) / GroupHeight;
 }
 
-static cl::NDRange GetRange(const ImageBase& Image, bool UseLocalSize)
+static cl::NDRange GetRange(const ImageBase& Img, bool UseLocalSize)
 {
    if (UseLocalSize)
-      return cl::NDRange(GetNbWorkersW(Image), GetNbWorkersH(Image), 1);
+      return cl::NDRange(GetNbWorkersW(Img), GetNbWorkersH(Img), 1);
 
-   return cl::NDRange(Image.Width() / PixelsPerWorkerH, Image.Height() / PixelsPerWorkerV, 1);
+   return cl::NDRange(Img.Width() / PixelsPerWorkerH, Img.Height() / PixelsPerWorkerV, 1);
 }
 
 static cl::NDRange GetLocalRange(bool UseLocalSize)
@@ -155,9 +155,9 @@ static cl::NDRange GetLocalRange(bool UseLocalSize)
    return cl::NullRange;
 }
 
-static uint GetNbGroups(const ImageBase& Image)
+static uint GetNbGroups(const ImageBase& Img)
 {
-   return GetNbGroupsW(Image) * GetNbGroupsH(Image);
+   return GetNbGroupsW(Img) * GetNbGroupsH(Img);
 }
 
 }

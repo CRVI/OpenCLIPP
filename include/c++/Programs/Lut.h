@@ -2,7 +2,7 @@
 //! @file	: Lut.h
 //! @date   : Jul 2013
 //!
-//! @brief  : LUT transformation of image buffers
+//! @brief  : LUT transformation of images
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
@@ -29,7 +29,7 @@
 namespace OpenCLIPP
 {
 
-/// A program that does LUT (Look Up Table) transformation of image buffers
+/// A program that does LUT (Look Up Table) transformation of images
 class CL_API Lut : public ImageBufferProgram
 {
 public:
@@ -44,7 +44,7 @@ public:
    /// D = values[v]
    /// \param levels : Contains NbValues describing the levels to look at in Source
    /// \param values : Contains NbValues describing the values to use for those levels
-   void LUT(ImageBuffer& Source, ImageBuffer& Dest, uint * levels, uint * values, uint NbValues);
+   void LUT(Image& Source, Image& Dest, uint * levels, uint * values, uint NbValues);
 
    /// Performs a linear LUT operation.
    /// levels and values must be arrays of NbValues elements
@@ -54,14 +54,14 @@ public:
    /// D = values[v] + (values[v + 1] - values[v]) * ratio
    /// \param levels : Contains NbValues describing the levels to look at in Source
    /// \param values : Contains NbValues describing the values to use for those levels
-   void LUTLinear(ImageBuffer& Source, ImageBuffer& Dest, float * levels, float * values, uint NbValues);
+   void LUTLinear(Image& Source, Image& Dest, float * levels, float * values, uint NbValues);
 
    /// Performs a LUT on 8 bit unsigned images.
    /// D = values[S]
-   void BasicLut(ImageBuffer& Source, ImageBuffer& Dest, unsigned char * values);
+   void BasicLut(Image& Source, Image& Dest, unsigned char * values);
 
    /// Scales values of Source image according to the given input and output ranges
-   void Scale(ImageBuffer& Source, ImageBuffer& Dest, float SrcMin, float SrcMax, float DstMin, float DstMax);
+   void Scale(Image& Source, Image& Dest, float SrcMin, float SrcMax, float DstMin, float DstMax);
 };
 
 }

@@ -2,7 +2,7 @@
 //! @file	: ImageProximity.cl
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching on image buffers
+//! @brief  : Image comparisons for pattern matching
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

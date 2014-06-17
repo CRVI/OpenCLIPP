@@ -2,7 +2,7 @@
 //! @file	: Transform.cl
 //! @date   : Apr 2014
 //!
-//! @brief  : Simple image transformation on image buffers
+//! @brief  : Simple image transformation
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

@@ -52,17 +52,17 @@ public:
    /// After calling, Labels image buffer will contain the label values for each pixel,
    /// and -1 (or 0xffffffff) for pixels that were 0
    /// \param Source : The image to analyze
-   /// \param Labels : must be a 32b integer image buffer
+   /// \param Labels : must be a 32b integer image
    /// \param ConnectType : Type of pixel connectivity, can be 4 or 8
-   void ComputeLabels(ImageBuffer& Source, ImageBuffer& Labels, int ConnectType = 4);
+   void ComputeLabels(Image& Source, Image& Labels, int ConnectType = 4);
 
    /// Renames the labels to be from 0 to NbLabels-1.
    /// \param Labels : must be an image resulting from a previous call to ComputeLabels()
-   void RenameLabels(ImageBuffer& Labels);
+   void RenameLabels(Image& Labels);
 
 protected:
 
-   std::shared_ptr<TempImageBuffer> m_TempBuffer;
+   std::shared_ptr<TempImage> m_TempBuffer;
 
    SBlobInfo m_BlobInfo;
    Buffer m_InfoBuffer;

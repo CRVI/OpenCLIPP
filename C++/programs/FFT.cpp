@@ -241,7 +241,7 @@ void FFT::PrepareFor(const ImageBase& Real, const ImageBase& Complex)
       m_BackwardTempBuffer = make_shared<TempBuffer>(*m_CL, TempBufferSize);
 }
 
-void FFT::Forward(ImageBuffer& RealSource, ImageBuffer& ComplexDest)
+void FFT::Forward(Image& RealSource, Image& ComplexDest)
 {
    PrepareFor(RealSource, ComplexDest);
 
@@ -259,7 +259,7 @@ void FFT::Forward(ImageBuffer& RealSource, ImageBuffer& ComplexDest)
    ComplexDest.SetInDevice();
 }
 
-void FFT::Inverse(ImageBuffer& ComplexSource, ImageBuffer& RealDest)
+void FFT::Inverse(Image& ComplexSource, Image& RealDest)
 {
    PrepareFor(RealDest, ComplexSource);
 

@@ -2,7 +2,7 @@
 //! @file	: Thresholding.h
 //! @date   : Mar 2014
 //!
-//! @brief  : Thresholding operations on image buffer
+//! @brief  : Thresholding operations
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -47,21 +47,21 @@ public:
    };
 
    /// D = (S Op Thresh ? value : S)
-   void Threshold(ImageBuffer& Source, ImageBuffer& Dest, float Thresh, float value = 255, ECompareOperation Op = GT);
+   void Threshold(Image& Source, Image& Dest, float Thresh, float value = 255, ECompareOperation Op = GT);
 
    /// D = (S > threshGT ? valueHigher : (S < threshLT ? valueLower : S) )
-   void ThresholdGTLT(ImageBuffer& Source, ImageBuffer& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
+   void ThresholdGTLT(Image& Source, Image& Dest, float threshLT, float valueLower, float threshGT, float valueHigher);
 
    /// D = (S1 Op S2 ? S1 : S2)
-   void Threshold(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op = GT);
+   void Threshold(Image& Source1, Image& Source2, Image& Dest, ECompareOperation Op = GT);
 
    /// D = (S Op V)  - D will be 0 or 255
    /// Dest must be a 8U image
-   void Compare(ImageBuffer& Source, ImageBuffer& Dest, float Value, ECompareOperation Op = GT);
+   void Compare(Image& Source, Image& Dest, float Value, ECompareOperation Op = GT);
 
    /// D = (S1 Op S2) - D will be 0 or 255
    /// Dest must be a 8U image
-   void Compare(ImageBuffer& Source1, ImageBuffer& Source2, ImageBuffer& Dest, ECompareOperation Op = GT);
+   void Compare(Image& Source1, Image& Source2, Image& Dest, ECompareOperation Op = GT);
 };
 
 }

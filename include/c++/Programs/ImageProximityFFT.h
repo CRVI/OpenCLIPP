@@ -2,7 +2,7 @@
 //! @file	: ImageProximityFFT.h
 //! @date   : Feb 2014
 //!
-//! @brief  : Pattern Matching woth FFT on image buffers
+//! @brief  : Image comparisons for pattern matching accelerated using FFT
 //! 
 //! Copyright (C) 2014 - CRVI
 //!
@@ -51,60 +51,60 @@ public:
    // FFT operations do not work on images bigger than 16.7Mpixels
 
    ///< Allocate internal temporary buffer and build the program
-   void PrepareFor(ImageBase& Source, ImageBuffer& Template);  
+   void PrepareFor(ImageBase& Source, Image& Template);  
 
    /// cross-correlation template matching
-   void CrossCorr(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void CrossCorr(Image& Source, Image& Template, Image& Dest);
 
    /// cross-correlation template matching
-   void CrossCorr_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void CrossCorr_Norm(Image& Source, Image& Template, Image& Dest);
 
    /// square different template matching
-   void SqrDistance(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void SqrDistance(Image& Source, Image& Template, Image& Dest);
 
    /// Normalized square different template matching
-   void SqrDistance_Norm(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void SqrDistance_Norm(Image& Source, Image& Template, Image& Dest);
 
 protected:
 
-   //Buffer of Template Fourier spectrums
-   std::shared_ptr<TempImageBuffer> m_templ_spect;
+   /// Fourier spectrums of Template 
+   std::shared_ptr<TempImage> m_templ_spect;
 
-   //Buffer of Source Fourier spectrums
-   std::shared_ptr<TempImageBuffer> m_source_spect;
+   /// Fourier spectrums of Source 
+   std::shared_ptr<TempImage> m_source_spect;
 
-   //Buffer of result Fourier spectrums
-   std::shared_ptr<TempImageBuffer> m_result_spect;
+   /// Fourier spectrums of result 
+   std::shared_ptr<TempImage> m_result_spect;
 
-   //Buffer of square integral sum image
-   std::shared_ptr<TempImageBuffer> m_image_sqsums;
+   /// Square integral sum of source image
+   std::shared_ptr<TempImage> m_image_sqsums;
 
-   //Buffer of bigger template used for FFT
-   std::shared_ptr<TempImageBuffer> m_bigger_template;
+   /// Template stored in a bigger image
+   std::shared_ptr<TempImage> m_bigger_template;
 
-   //Buffer of bigger source used for FFT
-   std::shared_ptr<TempImageBuffer> m_bigger_source;
+   /// Source stored in a bigger image
+   std::shared_ptr<TempImage> m_bigger_source;
 
 
    Integral   m_integral;
    Statistics m_statistics;
    Transform  m_transform;
-   FFT              m_fft;
+   FFT        m_fft;
 
    /// prepare for the square different template matching
-   void MatchTemplatePrepared_SQDIFF(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest);
+   void MatchTemplatePrepared_SQDIFF(int width, int hight, Image& Source, float templ_sqsum, Image& Dest);
 
    /// prepare for the normalized square different template matching
-   void MatchTemplatePrepared_SQDIFF_NORM(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest);
+   void MatchTemplatePrepared_SQDIFF_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest);
 
    /// prepare for the normalized cross correlation template matching
-   void MatchTemplatePrepared_CCORR_NORM(int width, int hight, ImageBuffer& Source, float templ_sqsum, ImageBuffer& Dest);
+   void MatchTemplatePrepared_CCORR_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest);
 
    /// Performs a per-element multiplication of two Fourier spectrums and scales the result
-   void MulAndScaleSpectrums(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest, float scale);
+   void MulAndScaleSpectrums(Image& Source, Image& Template, Image& Dest, float scale);
 
    /// Computes a convolution of two images
-   void Convolve(ImageBuffer& Source, ImageBuffer& Template, ImageBuffer& Dest);
+   void Convolve(Image& Source, Image& Template, Image& Dest);
 
    ImageProximityFFT& operator = (ImageProximityFFT&);   // Not a copyable object
 };

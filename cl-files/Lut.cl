@@ -2,7 +2,7 @@
 //! @file	: Lut.cl
 //! @date   : Jul 2013
 //!
-//! @brief  : Lut transformation of image buffers
+//! @brief  : Lut transformation
 //! 
 //! Copyright (C) 2013 - CRVI
 //!
