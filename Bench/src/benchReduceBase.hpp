@@ -76,7 +76,7 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
 
    CV_CODE( m_IndxCV = Point(0, 0); )
 
-   ocipPrepareImageBufferStatistics(&m_Program, m_CLBufferSrc);
+   ocipPrepareStatistics(&m_Program, m_CLBufferSrc);
 
    NPP_CODE(
       int BufferSize = 0;
@@ -90,14 +90,14 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
    if (std::is_same<float, DataType>::value)
    {
       // To prevent float values from overflowing, we divide the values to get them smaller
-      ocipDivC_V(m_CLBufferSrc, m_CLBufferSrc, 1000000);
-      ocipReadImageBuffer(m_CLBufferSrc);      
+      ocipDivC(m_CLBufferSrc, m_CLBufferSrc, 1000000);
+      ocipReadImage(m_CLBufferSrc);      
    }
    else if (std::is_same<unsigned char, DataType>::value)
    {
       // Remove smallest and biggest values
-      ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 253, 250);
-      ocipReadImageBuffer(m_CLBufferSrc);
+      ocipThresholdGTLT(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 253, 250);
+      ocipReadImage(m_CLBufferSrc);
 
       // Place a single high and low pixel at a random location
       CImage<unsigned char>& Img = static_cast<CImage<unsigned char>&>(m_ImgSrc);
@@ -107,8 +107,8 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
    if (std::is_same<unsigned short, DataType>::value)
    {
       // Remove smallest and biggest values
-      ocipThresholdGTLT_V(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 64000, 63200);
-      ocipReadImageBuffer(m_CLBufferSrc);
+      ocipThresholdGTLT(m_CLBufferSrc, m_CLBufferSrc, 2, 3, 64000, 63200);
+      ocipReadImage(m_CLBufferSrc);
 
       // Place a single high and low pixel at a random location
       CImage<unsigned short>& Img = static_cast<CImage<unsigned short>&>(m_ImgSrc);
@@ -117,7 +117,7 @@ void BenchReduceBase<DataType, DstT>::Create(uint Width, uint Height, int NbChan
    }
 
    // Resend the image
-   ocipSendImageBuffer(m_CLBufferSrc);
+   ocipSendImage(m_CLBufferSrc);
 
    NPP_CODE(
       cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,

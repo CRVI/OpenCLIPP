@@ -107,7 +107,7 @@ void LutBench<DataType>::RunIPP()
 template<typename DataType>
 void LutBench<DataType>::RunCL()
 {
-   ocipLut_V(m_CLBufferSrc, m_CLBufferDst, m_Levels.data(), m_Values.data(), Length);
+   ocipLut(m_CLBufferSrc, m_CLBufferDst, m_Levels.data(), m_Values.data(), Length);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

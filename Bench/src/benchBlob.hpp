@@ -49,7 +49,7 @@ protected:
    CSimpleImage m_ImgDstNPP;
    CSimpleImage m_ImgDstCV;
 
-   ocipBuffer m_CLBufferDst;
+   ocipImage m_CLBufferDst;
 
    ocipProgram m_Program;
 
@@ -93,7 +93,7 @@ void BlobBench::Create(uint Width, uint Height)
             *m_ImgSrc.Data(x, y) = 255;
 
    // Send the images to the GPU again
-   ocipSendImageBuffer(m_CLBufferSrc);
+   ocipSendImage(m_CLBufferSrc);
 
    NPP_CODE(
       cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
@@ -115,7 +115,7 @@ void BlobBench::Create(uint Width, uint Height)
       for (uint x = 0; x < Width; x++)
          *m_ImgDstIPP.Data(x, y) = *m_ImgSrc.Data(x, y);
 
-   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipCreateImage(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
 
    // NPP
    NPP_CODE(
@@ -142,7 +142,7 @@ void BlobBench::Free()
 {
    IBench1in0out::Free();
 
-   ocipReleaseImageBuffer(m_CLBufferDst);
+   ocipReleaseImage(m_CLBufferDst);
 
    ocipReleaseProgram(m_Program);
 
@@ -153,8 +153,8 @@ void BlobBench::Free()
 
 bool BlobBench::CompareCL(BlobBench * This)
 {
-   ocipAddC_V(m_CLBufferDst, m_CLBufferDst, 1);
-   ocipReadImageBuffer(m_CLBufferDst);
+   ocipAddC(m_CLBufferDst, m_CLBufferDst, 1);
+   ocipReadImage(m_CLBufferDst);
 
    CSimpleImage DstIPP;
    DstIPP.Create<int>(m_ImgDstIPP.Width, m_ImgDstIPP.Height);

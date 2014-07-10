@@ -182,20 +182,20 @@ void FFTBackwardBench::Create(uint Width, uint Height)
    // Make a forward FFT to m_ImgSrc
    FillRandomImg(m_ImgDstCL);
    ocipFFTForward(m_Program, m_CLBufferDst, m_CLBufferSrc);
-   ocipReadImageBuffer(m_CLBufferSrc);
+   ocipReadImage(m_CLBufferSrc);
 
    bool TestInversion = false;
    if (TestInversion)
    {
       // Test if we can get back the source image with the inverse transformation
       ocipFFTInverse(m_Program, m_CLBufferSrc, m_CLBufferDst);
-      ocipDivC_V(m_CLBufferDst, m_CLBufferDst, float(Width * Height));
-      ocipReadImageBuffer(m_CLBufferDst);
+      ocipDivC(m_CLBufferDst, m_CLBufferDst, float(Width * Height));
+      ocipReadImage(m_CLBufferDst);
       // m_ImgDstCL should be exaclty the same as it was before calling ocipFFTInverse()
    }
 
    // Send m_ImgSrc back to the GPU
-   ocipSendImageBuffer(m_CLBufferSrc);
+   ocipSendImage(m_CLBufferSrc);
 
    CV_CODE(
       m_CVSrc.upload(toMat(m_ImgSrc));

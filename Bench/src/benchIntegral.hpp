@@ -64,9 +64,9 @@ void IntegralBench<DataType>::Create(uint Width, uint Height)
    // Re-allocate with proper size for CL - which require same size images
    m_ImgDstCL.Create<DataType>(Width, Height);
 
-   ocipReleaseImageBuffer(m_CLBufferDst);
-   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-   ocipPrepareImageBufferIntegral(&m_Program, m_CLBufferSrc);
+   ocipReleaseImage(m_CLBufferDst);
+   ocipCreateImage(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipPrepareIntegral(&m_Program, m_CLBufferSrc);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -86,7 +86,7 @@ void IntegralBench<DataType>::RunIPP()
 template<typename DataType>
 void IntegralBench<DataType>::RunCL()
 {
-   ocipIntegral_B(m_Program, m_CLBufferSrc, m_CLBufferDst);
+   ocipIntegral(m_Program, m_CLBufferSrc, m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -104,7 +104,7 @@ void IntegralBench<DataType>::RunNPP()
 template<typename DataType>
 bool IntegralBench<DataType>::CompareCL(IntegralBench * This)
 {
-   ocipReadImageBuffer(m_CLBufferDst);
+   ocipReadImage(m_CLBufferDst);
 
    // IPP results has a 1px added black line on the left and top of the image
    CImageROI ROI(m_ImgDstIPP, 1, 1, m_ImgDstCL.Width, m_ImgDstCL.Height);

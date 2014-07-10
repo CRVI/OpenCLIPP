@@ -73,7 +73,7 @@ protected:
 
    CSimpleImage m_ImgSrc;
 
-   ocipBuffer m_CLBufferSrc;
+   ocipImage m_CLBufferSrc;
 
    void * m_NPPSrc;
    int m_NPPSrcStep;
@@ -107,7 +107,7 @@ protected:
    CSimpleImage m_ImgDstNPP;
    CSimpleImage m_ImgDstCV;
 
-   ocipBuffer m_CLBufferDst;
+   ocipImage m_CLBufferDst;
 
    void * m_NPPDst;
    int m_NPPDstStep;
@@ -130,7 +130,7 @@ public:
 protected:
    CSimpleImage m_ImgSrcB;
 
-   ocipBuffer m_CLBufferSrcB;
+   ocipImage m_CLBufferSrcB;
 
    void * m_NPPSrcB;
    int m_NPPSrcBStep;
@@ -281,16 +281,16 @@ inline void IBench1in0out::Create(uint Width, uint Height, bool AllowNegative, i
    if (!AllowNegative)
    {
       // remove negative values 
-      ocipBuffer Buffer = nullptr;
-      ocipCreateImageBuffer(&Buffer, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
-      ocipAbs_V(Buffer, Buffer);
-      ocipReadImageBuffer(Buffer);
-      ocipReleaseImageBuffer(Buffer);
+      ocipImage Buffer = nullptr;
+      ocipCreateImage(&Buffer, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
+      ocipAbs(Buffer, Buffer);
+      ocipReadImage(Buffer);
+      ocipReleaseImage(Buffer);
    }
 
    // CL
-   ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
-   ocipSendImageBuffer(m_CLBufferSrc);
+   ocipCreateImage(&m_CLBufferSrc, m_ImgSrc, m_ImgSrc.Data(), CL_MEM_READ_WRITE);
+   ocipSendImage(m_CLBufferSrc);
 
    // IPP
    IPP_CODE(
@@ -319,7 +319,7 @@ inline void IBench1in0out::Free()
 {
    NPP_CODE(nppiFree(m_NPPSrc);)
 
-   ocipReleaseImageBuffer(m_CLBufferSrc);
+   ocipReleaseImage(m_CLBufferSrc);
 
    CV_CODE( m_CVSrc.release(); )
 }
@@ -341,7 +341,7 @@ inline void IBench1in1out::Create(uint Width, uint Height, uint DstWidth, uint D
    // CL
    m_ImgDstCL.Create<DstType>(DstWidth, DstHeight, NbChannelsDst);
 
-   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipCreateImage(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
 
    // NPP
    NPP_CODE(
@@ -362,7 +362,7 @@ inline void IBench1in1out::Free()
 
    NPP_CODE(nppiFree(m_NPPDst);)
 
-   ocipReleaseImageBuffer(m_CLBufferDst);
+   ocipReleaseImage(m_CLBufferDst);
 
    CV_CODE( m_CVDst.release(); )
 }
@@ -377,8 +377,8 @@ inline void IBench2in1out::Create(uint Width, uint Height)
    FillRandomImg(m_ImgSrcB, 1);
 
    // CL
-   ocipCreateImageBuffer(&m_CLBufferSrcB, m_ImgSrcB, m_ImgSrcB.Data(), CL_MEM_READ_ONLY);
-   ocipSendImageBuffer(m_CLBufferSrcB);
+   ocipCreateImage(&m_CLBufferSrcB, m_ImgSrcB, m_ImgSrcB.Data(), CL_MEM_READ_ONLY);
+   ocipSendImage(m_CLBufferSrcB);
 
    // NPP
    NPP_CODE(
@@ -400,7 +400,7 @@ inline void IBench2in1out::Free()
 
    NPP_CODE(nppiFree(m_NPPSrcB);)
 
-   ocipReleaseImageBuffer(m_CLBufferSrcB);
+   ocipReleaseImage(m_CLBufferSrcB);
 
    CV_CODE( m_CVSrcB.release(); )
 }
@@ -408,7 +408,7 @@ inline void IBench2in1out::Free()
 template<class T> 
 inline bool IBench1in1out::CompareCL(T * This)
 {
-   ocipReadImageBuffer(m_CLBufferDst);
+   ocipReadImage(m_CLBufferDst);
 
    return CompareImages(m_ImgDstCL, m_ImgDstIPP, m_ImgSrc, *This);
 }

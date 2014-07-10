@@ -56,7 +56,7 @@ void ScaleBench<SrcType, DstType>::Create(uint Width, uint Height)
 template<typename SrcType, typename DstType>
 void ScaleBench<SrcType, DstType>::RunCL()
 {
-   ocipScale_V(m_CLBufferSrc, m_CLBufferDst);
+   ocipScale(m_CLBufferSrc, m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

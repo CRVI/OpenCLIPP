@@ -198,7 +198,7 @@ void ResizeBenchBase<DataType>::Free()
 template<typename DataType>
 void ResizeBenchBase<DataType>::RunCL()
 {
-   ocipResize_V(m_CLBufferSrc, m_CLBufferDst, m_Interpolation, false);
+   ocipResize(m_CLBufferSrc, m_CLBufferDst, m_Interpolation, false);
 }
 
 template<typename DataType>

@@ -58,7 +58,7 @@ void Median5x5Bench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median5x5Bench::RunCL()
 {
-   ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 5);
+   ocipMedian(m_CLBufferSrc, m_CLBufferDst, 5);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median5x5Bench::RunCV()

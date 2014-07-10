@@ -47,7 +47,7 @@ protected:
 
    CSimpleImage m_ImgTemp;
 
-   ocipBuffer m_CLBufferTmp;
+   ocipImage m_CLBufferTmp;
 
    unsigned char * m_NPPTmp;
    int m_NPPTmpStep;
@@ -78,7 +78,7 @@ inline void MorphoBenchBase::Create(uint Width, uint Height)
       )
 
    // CL
-   ocipCreateImageBuffer(&m_CLBufferTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
+   ocipCreateImage(&m_CLBufferTmp, m_ImgSrc.ToSImage(), nullptr, CL_MEM_READ_WRITE);
 
    // NPP
    NPP_CODE(m_NPPTmp = (Npp8u*) NPP_Malloc<unsigned char>(Width, Height, m_NPPTmpStep);)
@@ -88,7 +88,7 @@ inline void MorphoBenchBase::Free()
 {
    IBench1in1out::Free();
 
-   ocipReleaseImageBuffer(m_CLBufferTmp);
+   ocipReleaseImage(m_CLBufferTmp);
 
    NPP_CODE(nppiFree(m_NPPTmp);)
 }

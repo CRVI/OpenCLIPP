@@ -116,7 +116,7 @@ public:
 template<typename DataType>
 void RotateBench<DataType>::RunCL()
 {
-   ocipRotate_V(this->m_CLBufferSrc, this->m_CLBufferDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
+   ocipRotate(this->m_CLBufferSrc, this->m_CLBufferDst, this->m_Angle, this->m_XShift, this->m_YShift, this->m_Interpolation);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

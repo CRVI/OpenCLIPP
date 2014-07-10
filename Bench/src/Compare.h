@@ -62,18 +62,18 @@ bool AbsDiff(const CSimpleImage& Source1, const CSimpleImage& Source2, CSimpleIm
       // IPP does not support AbsDiff for 64b
       // Use OpenCLIPP instead
       {
-         ocipBuffer buf1 = nullptr, buf2 = nullptr, dest = nullptr;
-         ocipCreateImageBuffer(&buf1, Source1, (void *) Source1.Data(), CL_MEM_READ_WRITE);
-         ocipCreateImageBuffer(&buf2, Source2, (void *) Source2.Data(), CL_MEM_READ_WRITE);
-         ocipCreateImageBuffer(&dest, Dest, (void *) Dest.Data(), CL_MEM_READ_WRITE);
+         ocipImage src1 = nullptr, src2 = nullptr, dest = nullptr;
+         ocipCreateImage(&src1, Source1, (void *) Source1.Data(), CL_MEM_READ_WRITE);
+         ocipCreateImage(&src2, Source2, (void *) Source2.Data(), CL_MEM_READ_WRITE);
+         ocipCreateImage(&dest, Dest, (void *) Dest.Data(), CL_MEM_READ_WRITE);
 
-         ocipAbsDiff_V(buf1, buf2, dest);
+         ocipAbsDiff(src1, src2, dest);
 
-         ocipReadImageBuffer(dest);
+         ocipReadImage(dest);
 
-         ocipReleaseImageBuffer(buf1);
-         ocipReleaseImageBuffer(buf2);
-         ocipReleaseImageBuffer(dest);
+         ocipReleaseImage(src1);
+         ocipReleaseImage(src2);
+         ocipReleaseImage(dest);
       }
       break;
    default:
@@ -113,14 +113,14 @@ float FindMax(const CSimpleImage& Source, SPoint Offset, SSize RoiSize, SPoint& 
       // MaxIndx F64 is not supported in IPP
       {
          double res = 0;
-         ocipBuffer buf = nullptr;
+         ocipImage src = nullptr;
          ocipProgram program = nullptr;
-         ocipCreateImageBuffer(&buf, Source, (void *) Source.Data(), CL_MEM_READ_WRITE);
-         ocipPrepareImageBufferStatistics(&program, buf);
-         ocipMaxIndx_V(program, buf, &res, &PosX, &PosY);
+         ocipCreateImage(&src, Source, (void *) Source.Data(), CL_MEM_READ_WRITE);
+         ocipPrepareStatistics(&program, src);
+         ocipMaxIndx(program, src, &res, &PosX, &PosY);
          Result = (float) res;
 
-         ocipReleaseImageBuffer(buf);
+         ocipReleaseImage(src);
          ocipReleaseProgram(program);
       }
       break;

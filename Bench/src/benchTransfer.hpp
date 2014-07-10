@@ -55,8 +55,8 @@ protected:
    int  m_NPPSrcStep;
    int  m_NPPDstStep;
 
-   ocipBuffer m_CLBufferSrc;
-   ocipBuffer m_CLBufferDst;
+   ocipImage m_CLBufferSrc;
+   ocipImage m_CLBufferDst;
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::Create(uint Width, uint Height)
@@ -72,8 +72,8 @@ void TransferBench::Create(uint Width, uint Height)
       )
 
    // CL
-   ocipCreateImageBuffer(&m_CLBufferSrc, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_READ_ONLY);
-   ocipCreateImageBuffer(&m_CLBufferDst, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_WRITE_ONLY);
+   ocipCreateImage(&m_CLBufferSrc, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_READ_ONLY);
+   ocipCreateImage(&m_CLBufferDst, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_WRITE_ONLY);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::Free()
@@ -85,8 +85,8 @@ void TransferBench::Free()
       )
 
    // CL
-   ocipReleaseImageBuffer(m_CLBufferSrc);
-   ocipReleaseImageBuffer(m_CLBufferDst);
+   ocipReleaseImage(m_CLBufferSrc);
+   ocipReleaseImage(m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::RunIPP()
@@ -96,8 +96,8 @@ void TransferBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::RunCL()
 {
-   ocipSendImageBuffer(m_CLBufferSrc);
-   ocipReadImageBuffer(m_CLBufferDst);
+   ocipSendImage(m_CLBufferSrc);
+   ocipReadImage(m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::RunNPP()

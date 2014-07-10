@@ -59,7 +59,7 @@ void ConvertBench<SrcType, DstType>::Create(uint Width, uint Height)
 template<typename SrcType, typename DstType>
 void ConvertBench<SrcType, DstType>::RunCL()
 {
-   ocipConvert_V(m_CLBufferSrc, m_CLBufferDst);
+   ocipConvert(m_CLBufferSrc, m_CLBufferDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename SrcType, typename DstType>

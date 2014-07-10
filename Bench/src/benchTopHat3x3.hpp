@@ -46,7 +46,7 @@ void TopHatBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void TopHatBench::RunCL()
 {
-   ocipTopHat_B(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 1, 3);
+   ocipTopHat(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 1, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TopHatBench::RunNPP()

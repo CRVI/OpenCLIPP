@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
    SImage ImageInfo;
    void * SourceData = NULL;
    void * ResultData = NULL;
-   ocipBuffer Source, Result;
+   ocipImage Source, Result;
 
 
    // Load source image
@@ -90,12 +90,12 @@ int main(int argc, char * argv[])
    printf("Using OpenCL device : %s\n", DeviceName);
 
    // Allocate images on the device
-   Error = ocipCreateImageBuffer(&Source, ImageInfo, SourceData, CL_MEM_READ_ONLY);
-   Error = ocipCreateImageBuffer(&Result, ImageInfo, ResultData, CL_MEM_WRITE_ONLY);
+   Error = ocipCreateImage(&Source, ImageInfo, SourceData, CL_MEM_READ_ONLY);
+   Error = ocipCreateImage(&Result, ImageInfo, ResultData, CL_MEM_WRITE_ONLY);
 
 
    // Prepare to execute a filter
-   Error = ocipPrepareImageBufferFilters(Source);
+   Error = ocipPrepareFilters(Source);
 
    if (Error != CL_SUCCESS)
    {
@@ -103,11 +103,11 @@ int main(int argc, char * argv[])
       return Error;
    }
 
-   Error = ocipGaussianBlur_V(Source, Result, 6);
+   Error = ocipGaussianBlur(Source, Result, 6);
 
 
    // Read Result image from device
-   Error = ocipReadImageBuffer(Result);
+   Error = ocipReadImage(Result);
 
 
    // Save result to a file
@@ -115,8 +115,8 @@ int main(int argc, char * argv[])
 
 
    // Free images on the device
-   Error = ocipReleaseImageBuffer(Source);
-   Error = ocipReleaseImageBuffer(Result);
+   Error = ocipReleaseImage(Source);
+   Error = ocipReleaseImage(Result);
 
 
    // Free images

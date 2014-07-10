@@ -73,7 +73,7 @@ void CONCATENATE(BENCH_NAME, Bench)<float>::RunIPP()
 template<typename DataType>
 void CONCATENATE(BENCH_NAME, Bench)<DataType>::RunCL()
 {
-   CONCATENATE(CONCATENATE(ocip, BENCH_NAME), _V)(this->m_Program, this->m_CLBufferSrc, MIDDLE_PARAM this->m_DstCL CL_ADDITIONAL_PARAMS);
+   CONCATENATE(ocip, BENCH_NAME) (this->m_Program, this->m_CLBufferSrc, MIDDLE_PARAM this->m_DstCL CL_ADDITIONAL_PARAMS);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

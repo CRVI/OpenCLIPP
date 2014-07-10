@@ -88,7 +88,7 @@ void CLASS_NAME<float>::RunIPP()
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   ocipCompare_V(this->m_CLBufferSrc, this->m_CLBufferSrcB, this->m_CLBufferDst, COMPARE_TYPE);
+   ocipCompare(this->m_CLBufferSrc, this->m_CLBufferSrcB, this->m_CLBufferDst, COMPARE_TYPE);
 }
 
 

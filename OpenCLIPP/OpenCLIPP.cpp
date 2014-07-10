@@ -176,17 +176,17 @@ ocipError ocip_API ocipFinish()
 }
 
 
-ocipError ocip_API ocipCreateImageBuffer(ocipBuffer * BufferPtr, SImage image, void * ImageData, cl_mem_flags flags)
+ocipError ocip_API ocipCreateImage(ocipImage * ImagePtr, SImage image, void * ImageData, cl_mem_flags flags)
 {
    COpenCL * CL = g_CurrentContext;
 
    if (CL == nullptr)
       return CL_INVALID_CONTEXT;
 
-   H( *BufferPtr = (ocipBuffer) new Image(*CL, image, ImageData, flags) )
+   H( *ImagePtr = (ocipImage) new Image(*CL, image, ImageData, flags) )
 }
 
-ocipError ocip_API ocipSendImageBuffer(ocipBuffer Buffer)
+ocipError ocip_API ocipSendImage(ocipImage Buffer)
 {
    IBuffer * Ptr = (IBuffer *) Buffer;
    Image * Buf = dynamic_cast<Image *>(Ptr);
@@ -196,7 +196,7 @@ ocipError ocip_API ocipSendImageBuffer(ocipBuffer Buffer)
    H( Buf->Send() )
 }
 
-ocipError ocip_API ocipReadImageBuffer(ocipBuffer Buffer)
+ocipError ocip_API ocipReadImage(ocipImage Buffer)
 {
    IBuffer * Ptr = (IBuffer *) Buffer;
    Image * Buf = dynamic_cast<Image *>(Ptr);
@@ -206,7 +206,7 @@ ocipError ocip_API ocipReadImageBuffer(ocipBuffer Buffer)
    H( Buf->Read(true) )
 }
 
-ocipError ocip_API ocipReleaseImageBuffer(ocipBuffer Buffer)
+ocipError ocip_API ocipReleaseImage(ocipImage Buffer)
 {
    Memory * Mem = (Memory *) Buffer;
    H( delete Mem )
@@ -295,40 +295,40 @@ ocipError ocip_API fun(PROGRAM_ARG IMAGE_ARG Source, type * Result)\
 #define CONV Buf
 
 #undef IMAGE_ARG
-#define IMAGE_ARG ocipBuffer
+#define IMAGE_ARG ocipImage
 
 #undef PROGRAM_ARG
 #define PROGRAM_ARG 
 
-PREPARE(ocipPrepareImageBufferConversion, conversions)
-PREPARE(ocipPrepareImageBufferArithmetic, arithmetic)
-PREPARE(ocipPrepareImageBufferLogic, logic)
-PREPARE(ocipPrepareImageBufferLUT, lut)
-PREPARE(ocipPrepareImageBufferMorphology, morphology)
-PREPARE(ocipPrepareImageBufferFilters, morphology)
-PREPARE(ocipPrepareImageBufferThresholding, thresholding)
-PREPARE(ocipPrepareImageBufferProximity, imageProximity)
+PREPARE(ocipPrepareConversion, conversions)
+PREPARE(ocipPrepareArithmetic, arithmetic)
+PREPARE(ocipPrepareLogic, logic)
+PREPARE(ocipPrepareLUT, lut)
+PREPARE(ocipPrepareMorphology, morphology)
+PREPARE(ocipPrepareFilters, morphology)
+PREPARE(ocipPrepareThresholding, thresholding)
+PREPARE(ocipPrepareProximity, imageProximity)
 
-PREPARE2(ocipPrepareImageBufferStatistics, Statistics)
-PREPARE2(ocipPrepareImageBufferIntegral, Integral)
+PREPARE2(ocipPrepareStatistics, Statistics)
+PREPARE2(ocipPrepareIntegral, Integral)
 PREPARE2(ocipPrepareBlob, Blob)
 
 
 #undef CLASS
 #define CLASS GetList().conversions
 
-UNARY_OP(ocipConvert_V, Convert)
-UNARY_OP(ocipScale_V, Scale)
-UNARY_OP(ocipCopy_V, Copy)
-UNARY_OP(ocipToGray_V, ToGray)
-UNARY_OP(ocipToColor_V, ToColor)
+UNARY_OP(ocipConvert, Convert)
+UNARY_OP(ocipScale, Scale)
+UNARY_OP(ocipCopy, Copy)
+UNARY_OP(ocipToGray, ToGray)
+UNARY_OP(ocipToColor, ToColor)
 
-ocipError ocip_API ocipScale2_V(ocipBuffer Source, ocipBuffer Dest, int Offset, float Ratio)
+ocipError ocip_API ocipScale2(ocipImage Source, ocipImage Dest, int Offset, float Ratio)
 {
    H( CLASS.Scale(Buf(Source), Buf(Dest), Offset, Ratio) )
 }
 
-ocipError ocip_API ocipSelectChannel_V(ocipBuffer Source, ocipBuffer Dest, int ChannelNo)
+ocipError ocip_API ocipSelectChannel(ocipImage Source, ocipImage Dest, int ChannelNo)
 {
    H( CLASS.SelectChannel(Buf(Source), Buf(Dest), ChannelNo) )
 }
@@ -337,80 +337,80 @@ ocipError ocip_API ocipSelectChannel_V(ocipBuffer Source, ocipBuffer Dest, int C
 #undef CLASS
 #define CLASS GetList().arithmetic
 
-BINARY_OP(ocipAdd_V, Add)
-BINARY_OP(ocipAddSquare_V, AddSquare)
-BINARY_OP(ocipSub_V, Sub)
-BINARY_OP(ocipAbsDiff_V, AbsDiff)
-BINARY_OP(ocipMul_V, Mul)
-BINARY_OP(ocipDiv_V, Div)
-BINARY_OP(ocipImgMin_V, Min)
-BINARY_OP(ocipImgMax_V, Max)
-BINARY_OP(ocipImgMean_V, Mean)
-BINARY_OP(ocipCombine_V, Combine)
+BINARY_OP(ocipAdd, Add)
+BINARY_OP(ocipAddSquare, AddSquare)
+BINARY_OP(ocipSub, Sub)
+BINARY_OP(ocipAbsDiff, AbsDiff)
+BINARY_OP(ocipMul, Mul)
+BINARY_OP(ocipDiv, Div)
+BINARY_OP(ocipImgMin, Min)
+BINARY_OP(ocipImgMax, Max)
+BINARY_OP(ocipImgMean, Mean)
+BINARY_OP(ocipCombine, Combine)
 
-CONSTANT_OP(ocipAddC_V, Add, float)
-CONSTANT_OP(ocipSubC_V, Sub, float)
-CONSTANT_OP(ocipAbsDiffC_V, AbsDiff, float)
-CONSTANT_OP(ocipMulC_V, Mul, float)
-CONSTANT_OP(ocipDivC_V, Div, float)
-CONSTANT_OP(ocipRevDivC_V, RevDiv, float)
-CONSTANT_OP(ocipMinC_V, Min, float)
-CONSTANT_OP(ocipMaxC_V, Max, float)
-CONSTANT_OP(ocipMeanC_V, Mean, float)
+CONSTANT_OP(ocipAddC, Add, float)
+CONSTANT_OP(ocipSubC, Sub, float)
+CONSTANT_OP(ocipAbsDiffC, AbsDiff, float)
+CONSTANT_OP(ocipMulC, Mul, float)
+CONSTANT_OP(ocipDivC, Div, float)
+CONSTANT_OP(ocipRevDivC, RevDiv, float)
+CONSTANT_OP(ocipMinC, Min, float)
+CONSTANT_OP(ocipMaxC, Max, float)
+CONSTANT_OP(ocipMeanC, Mean, float)
 
-UNARY_OP(ocipAbs_V, Abs)
-UNARY_OP(ocipInvert_V, Invert)
-UNARY_OP(ocipExp_V, Exp)
-UNARY_OP(ocipLog_V, Log)
-UNARY_OP(ocipSqr_V, Sqr)
-UNARY_OP(ocipSqrt_V, Sqrt)
-UNARY_OP(ocipSin_V, Sin)
-UNARY_OP(ocipCos_V, Cos)
+UNARY_OP(ocipAbs, Abs)
+UNARY_OP(ocipInvert, Invert)
+UNARY_OP(ocipExp, Exp)
+UNARY_OP(ocipLog, Log)
+UNARY_OP(ocipSqr, Sqr)
+UNARY_OP(ocipSqrt, Sqrt)
+UNARY_OP(ocipSin, Sin)
+UNARY_OP(ocipCos, Cos)
 
 
 #undef CLASS
 #define CLASS GetList().imageProximity
 
-BINARY_OP(ocipSqrDistance_Norm_B, SqrDistance_Norm)
-BINARY_OP(ocipSqrDistance_B, SqrDistance)
-BINARY_OP(ocipAbsDistance_B, AbsDistance)
-BINARY_OP(ocipCrossCorr_B, CrossCorr)
-BINARY_OP(ocipCrossCorr_Norm_B, CrossCorr_Norm)
+BINARY_OP(ocipSqrDistance_Norm, SqrDistance_Norm)
+BINARY_OP(ocipSqrDistance, SqrDistance)
+BINARY_OP(ocipAbsDistance, AbsDistance)
+BINARY_OP(ocipCrossCorr, CrossCorr)
+BINARY_OP(ocipCrossCorr_Norm, CrossCorr_Norm)
 
 
 #undef CLASS
 #define CLASS GetList().logic
 
-BINARY_OP(ocipAnd_V, And)
-BINARY_OP(ocipOr_V, Or)
-BINARY_OP(ocipXor_V, Xor)
+BINARY_OP(ocipAnd, And)
+BINARY_OP(ocipOr, Or)
+BINARY_OP(ocipXor, Xor)
 
-CONSTANT_OP(ocipAndC_V, And, uint)
-CONSTANT_OP(ocipOrC_V, Or, uint)
-CONSTANT_OP(ocipXorC_V, Xor, uint)
+CONSTANT_OP(ocipAndC, And, uint)
+CONSTANT_OP(ocipOrC, Or, uint)
+CONSTANT_OP(ocipXorC, Xor, uint)
 
-UNARY_OP(ocipNot_V, Not)
+UNARY_OP(ocipNot, Not)
 
 
 #undef CLASS
 #define CLASS GetList().lut
 
-ocipError ocip_API ocipLut_V(ocipBuffer Source, ocipBuffer Dest, uint * levels, uint * values, int NbValues)
+ocipError ocip_API ocipLut(ocipImage Source, ocipImage Dest, uint * levels, uint * values, int NbValues)
 {
    H( CLASS.LUT(Buf(Source), Buf(Dest), levels, values, NbValues) )
 }
 
-ocipError ocip_API ocipLutLinear_V(ocipBuffer Source, ocipBuffer Dest, float * levels, float * values, int NbValues)
+ocipError ocip_API ocipLutLinear(ocipImage Source, ocipImage Dest, float * levels, float * values, int NbValues)
 {
    H( CLASS.LUTLinear(Buf(Source), Buf(Dest), levels, values, NbValues) )
 }
 
-ocipError ocip_API ocipBasicLut_V(ocipBuffer Source, ocipBuffer Dest, unsigned char * values)
+ocipError ocip_API ocipBasicLut(ocipImage Source, ocipImage Dest, unsigned char * values)
 {
    H( CLASS.BasicLut(Buf(Source), Buf(Dest), values) )
 }
 
-ocipError ocip_API ocipLutScale_V(ocipBuffer Source, ocipBuffer Dest, float SrcMin, float SrcMax, float DstMin, float DstMax)
+ocipError ocip_API ocipLutScale(ocipImage Source, ocipImage Dest, float SrcMin, float SrcMax, float DstMin, float DstMax)
 {
    H( CLASS.Scale(Buf(Source), Buf(Dest), SrcMin, SrcMax, DstMin, DstMax) )
 }
@@ -420,23 +420,23 @@ ocipError ocip_API ocipLutScale_V(ocipBuffer Source, ocipBuffer Dest, float SrcM
 #undef CLASS
 #define CLASS GetList().morphology
 
-ocipError ocip_API ocipErode_B(ocipBuffer Source, ocipBuffer Dest, int Width)
+ocipError ocip_API ocipErode(ocipImage Source, ocipImage Dest, int Width)
 {
    H( CLASS.Erode(Buf(Source), Buf(Dest), Width) )
 }
 
-ocipError ocip_API ocipDilate_B(ocipBuffer Source, ocipBuffer Dest, int Width)
+ocipError ocip_API ocipDilate(ocipImage Source, ocipImage Dest, int Width)
 {
    H( CLASS.Dilate(Buf(Source), Buf(Dest), Width) )
 }
 
-ocipError ocip_API ocipGradient_B(ocipBuffer Source, ocipBuffer Dest, ocipBuffer Temp, int Width)
+ocipError ocip_API ocipGradient(ocipImage Source, ocipImage Dest, ocipImage Temp, int Width)
 {
    H( CLASS.Gradient(Buf(Source), Buf(Dest), Buf(Temp), Width) )
 }
 
 #define MORPHO(fun, method) \
-ocipError ocip_API CONCATENATE(fun, _B)(ocipBuffer Source, ocipBuffer Dest, ocipBuffer Temp, int Iterations, int Width)\
+ocipError ocip_API fun(ocipImage Source, ocipImage Dest, ocipImage Temp, int Iterations, int Width)\
 {\
    H( CLASS.method(Buf(Source), Buf(Dest), Buf(Temp), Iterations, Width) )\
 }
@@ -453,22 +453,22 @@ MORPHO(ocipBlackHat, BlackHat)
 #undef CLASS
 #define CLASS GetList().transform
 
-UNARY_OP(ocipMirrorX_V, MirrorX)
-UNARY_OP(ocipMirrorY_V, MirrorY)
-UNARY_OP(ocipFlip_V, Flip)
-UNARY_OP(ocipTranspose_V, Transpose)
+UNARY_OP(ocipMirrorX, MirrorX)
+UNARY_OP(ocipMirrorY, MirrorY)
+UNARY_OP(ocipFlip, Flip)
+UNARY_OP(ocipTranspose, Transpose)
 
-ocipError ocip_API ocipRotate_V(ocipBuffer Source, ocipBuffer Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation)
+ocipError ocip_API ocipRotate(ocipImage Source, ocipImage Dest, double Angle, double XShift, double YShift, enum ocipInterpolationType Interpolation)
 {
    H( CLASS.Rotate(Buf(Source), Buf(Dest), Angle, XShift, YShift, Transform::EInterpolationType(Interpolation) ) )
 }
 
-ocipError ocip_API ocipResize_V(ocipBuffer Source, ocipBuffer Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio)
+ocipError ocip_API ocipResize(ocipImage Source, ocipImage Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio)
 {
    H( CLASS.Resize(Buf(Source), Buf(Dest), Transform::EInterpolationType(Interpolation), KeepRatio != 0) )
 }
 
-ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
+ocipError ocip_API ocipSet(ocipImage Dest, float Value)
 {
    H( CLASS.SetAll(Buf(Dest), Value) )
 }
@@ -478,32 +478,32 @@ ocipError ocip_API ocipSet_V(ocipBuffer Dest, float Value)
 #undef CLASS
 #define CLASS GetList().filters
 
-CONSTANT_OP(ocipGaussianBlur_V, GaussianBlur, float)
-CONSTANT_OP(ocipGauss_V, Gauss, int)
-CONSTANT_OP(ocipSharpen_V, Sharpen, int)
-CONSTANT_OP(ocipSmooth_V, Smooth, int)
-CONSTANT_OP(ocipMedian_V, Median, int)
-CONSTANT_OP(ocipSobelVert_V, SobelVert, int)
-CONSTANT_OP(ocipSobelHoriz_V, SobelHoriz, int)
-CONSTANT_OP(ocipSobelCross_V, SobelCross, int)
-CONSTANT_OP(ocipSobel_V, Sobel, int)
-CONSTANT_OP(ocipPrewittVert_V, PrewittVert, int)
-CONSTANT_OP(ocipPrewittHoriz_V, PrewittHoriz, int)
-CONSTANT_OP(ocipPrewitt_V, Prewitt, int)
-CONSTANT_OP(ocipScharrVert_V, ScharrVert, int)
-CONSTANT_OP(ocipScharrHoriz_V, ScharrHoriz, int)
-CONSTANT_OP(ocipScharr_V, Scharr, int)
-CONSTANT_OP(ocipHipass_V, Hipass, int)
-CONSTANT_OP(ocipLaplace_V, Laplace, int)
+CONSTANT_OP(ocipGaussianBlur, GaussianBlur, float)
+CONSTANT_OP(ocipGauss, Gauss, int)
+CONSTANT_OP(ocipSharpen, Sharpen, int)
+CONSTANT_OP(ocipSmooth, Smooth, int)
+CONSTANT_OP(ocipMedian, Median, int)
+CONSTANT_OP(ocipSobelVert, SobelVert, int)
+CONSTANT_OP(ocipSobelHoriz, SobelHoriz, int)
+CONSTANT_OP(ocipSobelCross, SobelCross, int)
+CONSTANT_OP(ocipSobel, Sobel, int)
+CONSTANT_OP(ocipPrewittVert, PrewittVert, int)
+CONSTANT_OP(ocipPrewittHoriz, PrewittHoriz, int)
+CONSTANT_OP(ocipPrewitt, Prewitt, int)
+CONSTANT_OP(ocipScharrVert, ScharrVert, int)
+CONSTANT_OP(ocipScharrHoriz, ScharrHoriz, int)
+CONSTANT_OP(ocipScharr, Scharr, int)
+CONSTANT_OP(ocipHipass, Hipass, int)
+CONSTANT_OP(ocipLaplace, Laplace, int)
 
 
 
 #undef CLASS
 #define CLASS GetList().histogram
 
-REDUCE_OP(ocipHistogram_1C_B, Histogram1C, uint *)
-REDUCE_OP(ocipHistogram_4C_B, Histogram4C, uint *)
-REDUCE_RETURN_OP(ocipOtsuThreshold_B, OtsuThreshold, uint)
+REDUCE_OP(ocipHistogram_1C, Histogram1C, uint *)
+REDUCE_OP(ocipHistogram_4C, Histogram4C, uint *)
+REDUCE_RETURN_OP(ocipOtsuThreshold, OtsuThreshold, uint)
 
 
 
@@ -515,22 +515,22 @@ REDUCE_RETURN_OP(ocipOtsuThreshold_B, OtsuThreshold, uint)
 #undef CLASS
 #define CLASS (*(Statistics*)Program)
 
-REDUCE_ARG_OP(   ocipMin_V,            Min,           double)
-REDUCE_ARG_OP(   ocipMax_V,            Max,           double)
-REDUCE_ARG_OP(   ocipMinAbs_V,         MinAbs,        double)
-REDUCE_ARG_OP(   ocipMaxAbs_V,         MaxAbs,        double)
-REDUCE_ARG_OP(   ocipSum_V,            Sum,           double)
-REDUCE_ARG_OP(   ocipSumSqr_V,         SumSqr,        double)
-REDUCE_ARG_OP(   ocipMean_V,           Mean,          double)
-REDUCE_ARG_OP(   ocipMeanSqr_V,        MeanSqr,       double)
-REDUCE_ARG_OP(   ocipStdDev_V,         StdDev,        double)
-REDUCE_RETURN_OP(ocipCountNonZero_V,   CountNonZero,  uint)
-REDUCE_INDEX_OP( ocipMinIndx_V,        Min,           double)
-REDUCE_INDEX_OP( ocipMaxIndx_V,        Max,           double)
-REDUCE_INDEX_OP( ocipMinAbsIndx_V,     MinAbs,        double)
-REDUCE_INDEX_OP( ocipMaxAbsIndx_V,     MaxAbs,        double)
+REDUCE_ARG_OP(   ocipMin,            Min,           double)
+REDUCE_ARG_OP(   ocipMax,            Max,           double)
+REDUCE_ARG_OP(   ocipMinAbs,         MinAbs,        double)
+REDUCE_ARG_OP(   ocipMaxAbs,         MaxAbs,        double)
+REDUCE_ARG_OP(   ocipSum,            Sum,           double)
+REDUCE_ARG_OP(   ocipSumSqr,         SumSqr,        double)
+REDUCE_ARG_OP(   ocipMean,           Mean,          double)
+REDUCE_ARG_OP(   ocipMeanSqr,        MeanSqr,       double)
+REDUCE_ARG_OP(   ocipStdDev,         StdDev,        double)
+REDUCE_RETURN_OP(ocipCountNonZero,   CountNonZero,  uint)
+REDUCE_INDEX_OP( ocipMinIndx,        Min,           double)
+REDUCE_INDEX_OP( ocipMaxIndx,        Max,           double)
+REDUCE_INDEX_OP( ocipMinAbsIndx,     MinAbs,        double)
+REDUCE_INDEX_OP( ocipMaxAbsIndx,     MaxAbs,        double)
 
-ocipError ocip_API ocipMean_StdDev_V(PROGRAM_ARG IMAGE_ARG Source, double * Mean, double * StdDev)
+ocipError ocip_API ocipMean_StdDev(PROGRAM_ARG IMAGE_ARG Source, double * Mean, double * StdDev)
 {
    H( CLASS.StdDev(CONV(Source), StdDev, Mean) )
 }
@@ -539,34 +539,34 @@ ocipError ocip_API ocipMean_StdDev_V(PROGRAM_ARG IMAGE_ARG Source, double * Mean
 #undef CLASS
 #define CLASS (*(Integral*)Program)
 
-UNARY_OP(ocipIntegral_B, IntegralSum)
-UNARY_OP(ocipSqrIntegral_B, SqrIntegral)
+UNARY_OP(ocipIntegral, IntegralSum)
+UNARY_OP(ocipSqrIntegral, SqrIntegral)
 
 #undef CLASS
 #define CLASS GetList().thresholding
 
 
-ocipError ocip_API ocipThresholdGTLT_V(ocipBuffer Source, ocipBuffer Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
+ocipError ocip_API ocipThresholdGTLT(ocipImage Source, ocipImage Dest, float threshLT, float valueLower, float threshGT, float valueHigher)
 {
    H( CLASS.ThresholdGTLT(Buf(Source), Buf(Dest), threshLT, valueLower, threshGT, valueHigher) )
 }
 
-ocipError ocip_API ocipThreshold_V(ocipBuffer Source, ocipBuffer Dest, float Thresh, float value, ECompareOperation Op)
+ocipError ocip_API ocipThreshold(ocipImage Source, ocipImage Dest, float Thresh, float value, ECompareOperation Op)
 {
    H( CLASS.Threshold(Buf(Source), Buf(Dest), Thresh, value, (Thresholding::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipThreshold_Img_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
+ocipError ocip_API ocipThreshold_Img(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
 {
    H( CLASS.Threshold(Buf(Source1), Buf(Source2), Buf(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipCompare_V(ocipBuffer Source1, ocipBuffer Source2, ocipBuffer Dest, ECompareOperation Op)
+ocipError ocip_API ocipCompare(ocipImage Source1, ocipImage Source2, ocipImage Dest, ECompareOperation Op)
 {
    H( CLASS.Compare(Buf(Source1), Buf(Source2), Buf(Dest), (Thresholding::ECompareOperation) Op) )
 }
 
-ocipError ocip_API ocipCompareC_V(ocipBuffer Source, ocipBuffer Dest, float Value, ECompareOperation Op)
+ocipError ocip_API ocipCompareC(ocipImage Source, ocipImage Dest, float Value, ECompareOperation Op)
 {
    H( CLASS.Compare(Buf(Source), Buf(Dest), Value, (Thresholding::ECompareOperation) Op) )
 }
@@ -575,12 +575,12 @@ ocipError ocip_API ocipCompareC_V(ocipBuffer Source, ocipBuffer Dest, float Valu
 #undef CLASS
 #define CLASS (*(Blob*)Program)
 
-ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipBuffer Source, ocipBuffer Labels, int ConnectType)
+ocipError ocip_API ocipComputeLabels(ocipProgram Program, ocipImage Source, ocipImage Labels, int ConnectType)
 {
    H( CLASS.ComputeLabels(Buf(Source), Buf(Labels), ConnectType) )
 }
 
-ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
+ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipImage Labels)
 {
    H( CLASS.RenameLabels(Buf(Labels)) )
 }
@@ -591,7 +591,7 @@ ocipError ocip_API ocipRenameLabels(ocipProgram Program, ocipBuffer Labels)
 #undef CLASS
 #define CLASS (*(FFT*)Program)
 
-ocipError ocip_API ocipPrepareFFT(ocipProgram * ProgramPtr, ocipBuffer RealImage, ocipBuffer ComplexImage)
+ocipError ocip_API ocipPrepareFFT(ocipProgram * ProgramPtr, ocipImage RealImage, ocipImage ComplexImage)
 {
    H(
       if (g_CurrentContext == nullptr)
@@ -615,7 +615,7 @@ ocipBool  ocip_API ocipIsFFTAvailable()
 #undef CLASS
 #define CLASS (*(ImageProximityFFT*)Program)
 
-ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipBuffer Img, ocipBuffer Template)
+ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipImage Img, ocipImage Template)
 {
    H(
       if (g_CurrentContext == nullptr)
@@ -627,22 +627,22 @@ ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram * ProgramPtr, ocipBu
    )
 }
 
-ocipError ocip_API ocipSqrDistanceFFT(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+ocipError ocip_API ocipSqrDistanceFFT(ocipProgram Program, ocipImage Source, ocipImage Template, ocipImage Dest)
 {
    H( CLASS.SqrDistance(Buf(Source), Buf(Template), Buf(Dest)) )
 }
 
-ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram Program, ocipImage Source, ocipImage Template, ocipImage Dest)
 {
    H( CLASS.SqrDistance_Norm(Buf(Source), Buf(Template), Buf(Dest)) )
 }
 
-ocipError ocip_API ocipCrossCorrFFT(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+ocipError ocip_API ocipCrossCorrFFT(ocipProgram Program, ocipImage Source, ocipImage Template, ocipImage Dest)
 {
    H( CLASS.CrossCorr(Buf(Source), Buf(Template), Buf(Dest)) )
 }
 
-ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram Program, ocipBuffer Source, ocipBuffer Template, ocipBuffer Dest)
+ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram Program, ocipImage Source, ocipImage Template, ocipImage Dest)
 {
    H( CLASS.CrossCorr_Norm(Buf(Source), Buf(Template), Buf(Dest)) )
 }
@@ -659,39 +659,39 @@ ocipBool  ocip_API ocipIsFFTAvailable()
 {
    return 0;
 }
-ocipError ocip_API ocipPrepareFFT(ocipProgram *, ocipBuffer, ocipBuffer)
+ocipError ocip_API ocipPrepareFFT(ocipProgram *, ocipImage, ocipImage)
 {
    return CL_INVALID_OPERATION;
 }
-ocipError ocip_API ocipFFTForward(ocipProgram, ocipBuffer, ocipBuffer)
+ocipError ocip_API ocipFFTForward(ocipProgram, ocipImage, ocipImage)
 {
    return CL_INVALID_OPERATION;
 }
-ocipError ocip_API ocipFFTInverse(ocipProgram, ocipBuffer, ocipBuffer)
-{
-   return CL_INVALID_OPERATION;
-}
-
-
-ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram *, ocipBuffer, ocipBuffer )
+ocipError ocip_API ocipFFTInverse(ocipProgram, ocipImage, ocipImage)
 {
    return CL_INVALID_OPERATION;
 }
 
-ocipError ocip_API ocipSqrDistanceFFT(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+
+ocipError ocip_API ocipPrepareImageProximityFFT(ocipProgram *, ocipImage, ocipImage )
 {
    return CL_INVALID_OPERATION;
 }
 
-ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+ocipError ocip_API ocipSqrDistanceFFT(ocipProgram , ocipImage , ocipImage , ocipImage)
 {
    return CL_INVALID_OPERATION;
 }
-ocipError ocip_API ocipCrossCorrFFT(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+
+ocipError ocip_API ocipSqrDistanceFFT_Norm(ocipProgram , ocipImage , ocipImage , ocipImage)
 {
    return CL_INVALID_OPERATION;
 }
-ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram , ocipBuffer , ocipBuffer , ocipBuffer)
+ocipError ocip_API ocipCrossCorrFFT(ocipProgram , ocipImage , ocipImage , ocipImage)
+{
+   return CL_INVALID_OPERATION;
+}
+ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram , ocipImage , ocipImage , ocipImage)
 {
    return CL_INVALID_OPERATION;
 }

@@ -58,7 +58,7 @@ void Median3x3Bench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median3x3Bench::RunCL()
 {
-   ocipMedian_V(m_CLBufferSrc, m_CLBufferDst, 3);
+   ocipMedian(m_CLBufferSrc, m_CLBufferDst, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void Median3x3Bench::RunCV()
