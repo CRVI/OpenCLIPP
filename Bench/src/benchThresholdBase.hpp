@@ -76,7 +76,7 @@ void CLASS_NAME<DataType>::RunCL()
    float thresh = GetThreshold<DataType>();
    float value = GetThresholdValue<DataType>(THRESHOLD_TYPE);
 
-   CONCATENATE(ocip, BENCH_NAME) (this->m_CLBufferSrc, this->m_CLBufferDst, thresh, value, THRESHOLD_TYPE);
+   CONCATENATE(ocip, BENCH_NAME) (this->m_CLSrc, this->m_CLDst, thresh, value, THRESHOLD_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -30,8 +30,8 @@ public:
    , m_NPPDst(nullptr)
    , m_NPPSrcStep(0)
    , m_NPPDstStep(0)
-   , m_CLBufferSrc(nullptr)
-   , m_CLBufferDst(nullptr)
+   , m_CLSrc(nullptr)
+   , m_CLDst(nullptr)
    { }
 
    void Create(uint Width, uint Height);
@@ -55,8 +55,8 @@ protected:
    int  m_NPPSrcStep;
    int  m_NPPDstStep;
 
-   ocipImage m_CLBufferSrc;
-   ocipImage m_CLBufferDst;
+   ocipImage m_CLSrc;
+   ocipImage m_CLDst;
 };
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::Create(uint Width, uint Height)
@@ -72,8 +72,8 @@ void TransferBench::Create(uint Width, uint Height)
       )
 
    // CL
-   ocipCreateImage(&m_CLBufferSrc, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_READ_ONLY);
-   ocipCreateImage(&m_CLBufferDst, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_WRITE_ONLY);
+   ocipCreateImage(&m_CLSrc, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_READ_ONLY);
+   ocipCreateImage(&m_CLDst, m_ImgSrc.ToSImage(), m_ImgSrc.Data(), CL_MEM_WRITE_ONLY);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::Free()
@@ -85,8 +85,8 @@ void TransferBench::Free()
       )
 
    // CL
-   ocipReleaseImage(m_CLBufferSrc);
-   ocipReleaseImage(m_CLBufferDst);
+   ocipReleaseImage(m_CLSrc);
+   ocipReleaseImage(m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::RunIPP()
@@ -96,8 +96,8 @@ void TransferBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::RunCL()
 {
-   ocipSendImage(m_CLBufferSrc);
-   ocipReadImage(m_CLBufferDst);
+   ocipSendImage(m_CLSrc);
+   ocipReadImage(m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TransferBench::RunNPP()

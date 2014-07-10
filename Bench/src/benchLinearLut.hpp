@@ -107,7 +107,7 @@ void LinearLutBench<float>::RunIPP()
 template<typename DataType>
 void LinearLutBench<DataType>::RunCL()
 {
-   ocipLutLinear(m_CLBufferSrc, m_CLBufferDst, m_Levels.data(), m_Values.data(), Length);
+   ocipLutLinear(m_CLSrc, m_CLDst, m_Levels.data(), m_Values.data(), Length);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

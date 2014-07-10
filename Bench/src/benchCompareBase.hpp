@@ -85,7 +85,7 @@ void CLASS_NAME<DataType>::RunCL()
 	if (is_same<DataType, float>::value)
 		value = FLOAT_VALUE;
 
-   ocipCompareC(this->m_CLBufferSrc, this->m_CLBufferDst, value, COMPARE_TYPE);
+   ocipCompareC(this->m_CLSrc, this->m_CLDst, value, COMPARE_TYPE);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

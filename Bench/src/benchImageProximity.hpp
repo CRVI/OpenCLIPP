@@ -61,7 +61,7 @@ protected:
 
    std::unique_ptr<CImageROI> m_ImgTemplate;
 
-   ocipImage m_CLBufTemplate;
+   ocipImage m_CLTemplate;
 
    void * m_NPPTemplate;
    int m_NPPTemplateStep;
@@ -83,10 +83,10 @@ void CLASS_NAME<DataType>::Create(uint Width, uint Height)
    m_ImgTemplate = std::unique_ptr<CImageROI>(new CImageROI(m_ImgSrc, 10, 10,
       min(TemplateSize, int(m_ImgSrc.Width) - 10), min(TemplateSize, int(m_ImgSrc.Height) - 10)));
 
-   ocipCreateImage(&m_CLBufTemplate, m_ImgTemplate->ToSImage(), m_ImgTemplate->Data(), CL_MEM_READ_WRITE);
+   ocipCreateImage(&m_CLTemplate, m_ImgTemplate->ToSImage(), m_ImgTemplate->Data(), CL_MEM_READ_WRITE);
 
 #ifdef IMG_PROX_FFT
-   ocipPrepareImageProximityFFT(&m_Program, m_CLBufferSrc, m_CLBufTemplate);
+   ocipPrepareImageProximityFFT(&m_Program, m_CLSrc, m_CLTemplate);
 #endif
 
    // IPP
@@ -115,7 +115,7 @@ void CLASS_NAME<DataType>::Free()
 {
    IBench1in1out::Free();
 
-   ocipReleaseImage(m_CLBufTemplate);
+   ocipReleaseImage(m_CLTemplate);
 
    ocipReleaseProgram(m_Program);
    m_Program = nullptr;
@@ -188,9 +188,9 @@ template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
 #ifdef IMG_PROX_FFT
-   CONCATENATE(ocip, BENCH_NAME)(m_Program, m_CLBufferSrc, m_CLBufTemplate, m_CLBufferDst);
+   CONCATENATE(ocip, BENCH_NAME)(m_Program, m_CLSrc, m_CLTemplate, m_CLDst);
 #else
-   CONCATENATE(ocip, BENCH_NAME)(m_CLBufferSrc, m_CLBufTemplate, m_CLBufferDst);
+   CONCATENATE(ocip, BENCH_NAME)(m_CLSrc, m_CLTemplate, m_CLDst);
 #endif
 }
 

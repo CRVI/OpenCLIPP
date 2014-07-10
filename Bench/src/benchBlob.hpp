@@ -26,7 +26,7 @@ class BlobBench : public IBench1in0out
 {
 public:
    BlobBench()
-   :  m_CLBufferDst(nullptr),
+   :  m_CLDst(nullptr),
       m_Program(nullptr)
    { }
 
@@ -49,7 +49,7 @@ protected:
    CSimpleImage m_ImgDstNPP;
    CSimpleImage m_ImgDstCV;
 
-   ocipImage m_CLBufferDst;
+   ocipImage m_CLDst;
 
    ocipProgram m_Program;
 
@@ -93,7 +93,7 @@ void BlobBench::Create(uint Width, uint Height)
             *m_ImgSrc.Data(x, y) = 255;
 
    // Send the images to the GPU again
-   ocipSendImage(m_CLBufferSrc);
+   ocipSendImage(m_CLSrc);
 
    NPP_CODE(
       cudaMemcpy2D(m_NPPSrc, m_NPPSrcStep, m_ImgSrc.Data(), m_ImgSrc.Step,
@@ -115,7 +115,7 @@ void BlobBench::Create(uint Width, uint Height)
       for (uint x = 0; x < Width; x++)
          *m_ImgDstIPP.Data(x, y) = *m_ImgSrc.Data(x, y);
 
-   ocipCreateImage(&m_CLBufferDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipCreateImage(&m_CLDst, m_ImgDstCL, m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
 
    // NPP
    NPP_CODE(
@@ -135,14 +135,14 @@ void BlobBench::Create(uint Width, uint Height)
       m_IPPBuffer.resize(BufSize);
       )
 
-   ocipPrepareBlob(&m_Program, m_CLBufferSrc);
+   ocipPrepareBlob(&m_Program, m_CLSrc);
 }
 
 void BlobBench::Free()
 {
    IBench1in0out::Free();
 
-   ocipReleaseImage(m_CLBufferDst);
+   ocipReleaseImage(m_CLDst);
 
    ocipReleaseProgram(m_Program);
 
@@ -153,8 +153,8 @@ void BlobBench::Free()
 
 bool BlobBench::CompareCL(BlobBench * This)
 {
-   ocipAddC(m_CLBufferDst, m_CLBufferDst, 1);
-   ocipReadImage(m_CLBufferDst);
+   ocipAddC(m_CLDst, m_CLDst, 1);
+   ocipReadImage(m_CLDst);
 
    CSimpleImage DstIPP;
    DstIPP.Create<int>(m_ImgDstIPP.Width, m_ImgDstIPP.Height);
@@ -177,8 +177,8 @@ void BlobBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void BlobBench::RunCL()
 {
-   ocipComputeLabels(m_Program, m_CLBufferSrc, m_CLBufferDst, 4);
-   ocipRenameLabels(m_Program, m_CLBufferDst);
+   ocipComputeLabels(m_Program, m_CLSrc, m_CLDst, 4);
+   ocipRenameLabels(m_Program, m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void BlobBench::RunNPP()

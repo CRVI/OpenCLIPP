@@ -45,7 +45,7 @@ void GradientBench::RunIPP()
 //-----------------------------------------------------------------------------------------------------------------------------
 void GradientBench::RunCL()
 {
-   ocipGradient(m_CLBufferSrc, m_CLBufferDst, m_CLBufferTmp, 3);
+   ocipGradient(m_CLSrc, m_CLDst, m_CLTmp, 3);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void GradientBench::RunNPP()

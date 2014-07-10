@@ -68,7 +68,7 @@ bool CLASS_NAME<float>::CompareTolRelative() const
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   CONCATENATE(ocip, BENCH_NAME) (this->m_CLBufferSrcB, this->m_CLBufferSrc, this->m_CLBufferDst);
+   CONCATENATE(ocip, BENCH_NAME) (this->m_CLSrcB, this->m_CLSrc, this->m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<>

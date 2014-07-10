@@ -104,7 +104,7 @@ void ThresholdGTLTBench<DataType>::RunCL()
       valueLT  = FLOAT_VALUELOWER;
    }
 
-   ocipThresholdGTLT(this->m_CLBufferSrc, this->m_CLBufferDst, threshLT, valueLT, threshGT, valueGT);
+   ocipThresholdGTLT(this->m_CLSrc, this->m_CLDst, threshLT, valueLT, threshGT, valueGT);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -60,7 +60,7 @@ class FILTER_CLASS_NAME(Name, width, nb_channels) : public FilterBenchBase<FILTE
 public:\
    void RunCL()\
    {\
-      CONCATENATE(ocip, Name) (m_CLBufferSrc, m_CLBufferDst, width);\
+      CONCATENATE(ocip, Name) (m_CLSrc, m_CLDst, width);\
    }\
    void RunIPP()\
    {\
@@ -231,7 +231,7 @@ class FILTER_CLASS_NAME(Name, width, nb_channels) : public AdvancedFilter<FILTER
 public:\
    void RunCL()\
    {\
-      CONCATENATE(ocip, Name) (m_CLBufferSrc, m_CLBufferDst, width);\
+      CONCATENATE(ocip, Name) (m_CLSrc, m_CLDst, width);\
    }\
    void RunIPP()\
    {\

@@ -96,7 +96,7 @@ void FFTForwardBench::Create(uint Width, uint Height)
 
 
    // Prepare other resources
-   ocipPrepareFFT(&m_Program, m_CLBufferSrc, m_CLBufferDst);
+   ocipPrepareFFT(&m_Program, m_CLSrc, m_CLDst);
 
    IPP_CODE(
       int OrderX = (int) Log2(Width);
@@ -155,7 +155,7 @@ void FFTBackwardBench::Create(uint Width, uint Height)
 
 
    // Prepare other resources
-   ocipPrepareFFT(&m_Program, m_CLBufferDst, m_CLBufferSrc);
+   ocipPrepareFFT(&m_Program, m_CLDst, m_CLSrc);
 
    IPP_CODE(
       int OrderX = (int) Log2(Width);
@@ -181,21 +181,21 @@ void FFTBackwardBench::Create(uint Width, uint Height)
 
    // Make a forward FFT to m_ImgSrc
    FillRandomImg(m_ImgDstCL);
-   ocipFFTForward(m_Program, m_CLBufferDst, m_CLBufferSrc);
-   ocipReadImage(m_CLBufferSrc);
+   ocipFFTForward(m_Program, m_CLDst, m_CLSrc);
+   ocipReadImage(m_CLSrc);
 
    bool TestInversion = false;
    if (TestInversion)
    {
       // Test if we can get back the source image with the inverse transformation
-      ocipFFTInverse(m_Program, m_CLBufferSrc, m_CLBufferDst);
-      ocipDivC(m_CLBufferDst, m_CLBufferDst, float(Width * Height));
-      ocipReadImage(m_CLBufferDst);
+      ocipFFTInverse(m_Program, m_CLSrc, m_CLDst);
+      ocipDivC(m_CLDst, m_CLDst, float(Width * Height));
+      ocipReadImage(m_CLDst);
       // m_ImgDstCL should be exaclty the same as it was before calling ocipFFTInverse()
    }
 
    // Send m_ImgSrc back to the GPU
-   ocipSendImage(m_CLBufferSrc);
+   ocipSendImage(m_CLSrc);
 
    CV_CODE(
       m_CVSrc.upload(toMat(m_ImgSrc));
@@ -251,7 +251,7 @@ void FFTForwardBench::RunNPP()
 
 void FFTForwardBench::RunCL()
 {
-   ocipFFTForward(m_Program, m_CLBufferSrc, m_CLBufferDst);
+   ocipFFTForward(m_Program, m_CLSrc, m_CLDst);
 }
 
 void FFTForwardBench::RunCV()
@@ -280,7 +280,7 @@ void FFTBackwardBench::RunNPP()
 
 void FFTBackwardBench::RunCL()
 {
-   ocipFFTInverse(m_Program, m_CLBufferSrc, m_CLBufferDst);
+   ocipFFTInverse(m_Program, m_CLSrc, m_CLDst);
 }
 
 void FFTBackwardBench::RunCV()

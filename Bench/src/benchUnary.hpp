@@ -71,7 +71,7 @@ public:
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-   CONCATENATE(ocip, BENCH_NAME) (this->m_CLBufferSrc, this->m_CLBufferDst CONSTANT_MIDDLE CONSTANT_LAST);
+   CONCATENATE(ocip, BENCH_NAME) (this->m_CLSrc, this->m_CLDst CONSTANT_MIDDLE CONSTANT_LAST);
 }
 #ifndef NO_UNSIGNED
 //-----------------------------------------------------------------------------------------------------------------------------

@@ -70,9 +70,9 @@ void SqrIntegralBench<DataType>::Create(uint Width, uint Height)
 
    m_IppIntegral.Create<float>(m_ImgDstIPP.Width, m_ImgDstIPP.Height, m_ImgDstIPP.Channels);
 
-   ocipReleaseImage(m_CLBufferDst);
-   ocipCreateImage(&m_CLBufferDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
-   ocipPrepareIntegral(&m_Program, m_CLBufferSrc);
+   ocipReleaseImage(m_CLDst);
+   ocipCreateImage(&m_CLDst, m_ImgDstCL.ToSImage(), m_ImgDstCL.Data(), CL_MEM_READ_WRITE);
+   ocipPrepareIntegral(&m_Program, m_CLSrc);
    
 }
 
@@ -95,7 +95,7 @@ void SqrIntegralBench<DataType>::RunIPP()
 template<typename DataType>
 void SqrIntegralBench<DataType>::RunCL()
 {
-   ocipSqrIntegral(m_Program, m_CLBufferSrc, m_CLBufferDst);
+   ocipSqrIntegral(m_Program, m_CLSrc, m_CLDst);
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
@@ -110,7 +110,7 @@ void SqrIntegralBench<DataType>::RunCV()
 template<typename DataType>
 bool SqrIntegralBench<DataType>::CompareCL(SqrIntegralBench * This)
 {
-   ocipReadImage(m_CLBufferDst);
+   ocipReadImage(m_CLDst);
 
    // IPP results has a 1px added black line on the left and top of the image
    CImageROI ROI(m_ImgDstIPP, 1, 1, m_ImgDstCL.Width, m_ImgDstCL.Height);
