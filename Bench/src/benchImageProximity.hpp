@@ -41,8 +41,8 @@ public:
 #endif
 
    CLASS_NAME()
-   :  m_Program(nullptr),
-      m_NPPTemplate(nullptr)
+   :  m_NPPTemplate(nullptr),
+      m_Program(nullptr)
    { }
 
    void RunIPP();

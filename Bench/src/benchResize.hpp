@@ -299,7 +299,7 @@ class ResizeBench : public ResizeBenchBase<DataType>
 public:
    ResizeBench()
    {
-      m_Interpolation = ocipInterpolationType(Interpolation);
+      this->m_Interpolation = ocipInterpolationType(Interpolation);
    }
 
    void Create(uint Width, uint Height)

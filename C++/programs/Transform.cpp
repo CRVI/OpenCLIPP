@@ -145,7 +145,7 @@ void Transform::ResizeLanczos(Image& Source, Image& Dest, int a, cl::NDRange Ran
    const SImage& SrcImg = Source;
    const SImage& DstImg = Dest;
 
-   uint length = max(DstImg.Width, DstImg.Height);
+   uint length = std::max(DstImg.Width, DstImg.Height);
    int size = find_lanczos_buffer_size(length);
 
    TempBuffer factors(*m_CL, size * 2 * a * 2 * sizeof(float));   // 2 lists of factors containing 2*a*size items
@@ -183,7 +183,7 @@ void Transform::Resize(Image& Source, Image& Dest, EInterpolationType Interpolat
 
    if (KeepRatio)
    {
-      float Ratio = max(RatioX, RatioY);
+      float Ratio = std::max(RatioX, RatioY);
       RatioX = Ratio;
       RatioY = Ratio;
 
