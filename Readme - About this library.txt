@@ -111,12 +111,31 @@ COpenCL - Takes care of initializing OpenCL
          cl_device_type will be used only if PreferredPlatform is specified
          The default OpenCL platform will be used if no PreferredPlatform is given
          Currently, Only a single device is used and with an in-order command queue
+         
+      static void SetClFilesPath(const char * Path);
+      
+			Tells the library where the .cl files are located.
+			It must be called with the full path of "OpenCLIPP/cl-files/".
+			.cl file location must be specified before creating any program.
+			The path must not contain spaces if using the NVIDIA platform.
 
+		std::string GetDeviceName() const;
+		
+			Returns the name of the OpenCL device
+			
+		cl_device_type GetDeviceType() const;
+		
+			Returns the type of the OpenCL device
+			
+		EPlatformType GetPlatformType() const
+		
+			Returns the OpenCL platform type
+			
       cl::CommandQueue& GetQueue()
       
          Retreives the command queue
          
-      static const char * COpenCL::ErrorName(cl_int status)
+      static const char * ErrorName(cl_int status)
       
          Returns a short textual description of the error code
          
@@ -230,10 +249,10 @@ ImageBase - base class for Images - not useable directly
          Only the size and type are used, the Data field of SImage will be null
 
 
-ImageBuffer : public Buffer, public ImageBase - Represents a buffer in the device that contains an image, the buffer exists both 
+Image : public Buffer, public ImageBase - Represents a buffer in the device that contains an image
 
    members:
-      ImageBuffer(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
+      Image(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
       
          Allocates memory in the device, with enough space to contain the image
          Upon creation, the content of image is not copied and it is not transfered to the device
@@ -249,12 +268,12 @@ ImageBuffer : public Buffer, public ImageBase - Represents a buffer in the devic
    important inherited members:
       void Read(bool blocking = false)
       
-         Reads the data from buffer in the device to the host buffer given to the constructor
+         Reads the data from the image in the device to the host image given to the constructor
             blocking : if true, the method will wait for all device operations to be done, including the reading the data
          
       void Send(bool blocking = false)
       
-         Sends the data from the host buffer to the buffer in the device
+         Sends the data from the host image to the image in the device
             blocking : if true, the method will wait for all device operations to be done
 
       virtual void SendIfNeeded()
@@ -262,11 +281,11 @@ ImageBuffer : public Buffer, public ImageBase - Represents a buffer in the devic
          Calls Send() if IsInDevice() is false
          
          
-TempImageBuffer : public ImageBuffer - Represents a device-only buffer that contains an image
+TempImage : public Image - Represents a device-only buffer that contains an image
 
    members:
    
-      TempImageBuffer(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
+      TempImage(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
       
          Allocates memory in the device, with enough space to contain the image
             CL : The device to use
@@ -277,7 +296,7 @@ TempImageBuffer : public ImageBuffer - Represents a device-only buffer that cont
                   CL_MEM_WRITE_ONLY - kernels can only write values
                   CL_MEM_READ_ONLY  - kernels can only read values
 
-      TempImageBuffer(COpenCL& CL, const SImage& image, size_t Depth, size_t Channels, bool isFloat = false)
+      TempImage(COpenCL& CL, const SImage& image, size_t Depth, size_t Channels, bool isFloat = false)
       
          Allocates memory in the device, with enough space to contain an image that has the same dimentions as image but with a different data type
             CL : The device to use
@@ -289,99 +308,6 @@ TempImageBuffer : public ImageBuffer - Represents a device-only buffer that cont
       virtual void SendIfNeeded()
       
          Does nothing (resides only in the device and can't be sent)
-
-
-IImage : public ImageBase, public Memory - base class for Images containing a cl::Image2D - not useable directly
-
-
-TempImage : public IImage - Represents an image that is only in the device
-
-   members:
-      
-      TempImage(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
-      
-         Allocates an image in the device with the same dimention and type as the given image
-            CL : The device to use
-            image : Information about an image, image must have 1 or 4 channels
-            flags : Type of device memory to allocate
-               Allowed values :
-                  CL_MEM_READ_WRITE - kernels can read & write values
-                  CL_MEM_WRITE_ONLY - kernels can only write values
-                  CL_MEM_READ_ONLY  - kernels can only read values
-            
-      TempImage(COpenCL& CL, const SImage& image, size_t Depth, size_t Channels, bool isFloat = false)
-
-         Allocates memory in the device, with enough space to contain an image that has the same dimentions as image but with a different data type
-            CL : The device to use
-            image : Information about an image
-            Depth : number of bits per channel
-            Channels : number of channels per pixel
-            isFloat : true if we desire a float image
-
-
-Image : public IImage - Represents an image that is both in the host and in the device
-
-   members:
-   
-      Image(COpenCL& CL, SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
-      
-         Allocates an image in the device with the same dimention and type as the given image
-         Upon creation, the content of image is not copied and it is not transfered to the device
-            CL : The device to use
-            image : Information about an image - pointer image.Data must remain valid as long as Read() and Send() may be done on this object
-                    image must have 1 or 4 channels
-            flags : Type of device memory to allocate
-               Allowed values :
-                  CL_MEM_READ_WRITE - kernels can read & write values
-                  CL_MEM_WRITE_ONLY - kernels can only write values
-                  CL_MEM_READ_ONLY  - kernels can only read values
-
-      void Read(bool blocking = false)
-      
-         Reads the data from the image in the device to the pointer inside the Image structure given to the constructor
-            blocking : if true, the method will wait for all device operations to be done, including the reading the data
-
-      void Send(bool blocking = false)
-      
-         Sends the data from the host image to the image in the device
-            blocking : if true, the method will wait for all device operations to be done
-
-      virtual void SendIfNeeded()
-      
-         Calls Send() if IsInDevice() is false
-         
-         
-ColorImage : public TempImage - Represents a 3 channel image on the host and a 4 channel image on the device
-
-   members:
-   
-      ColorImage(COpenCL& CL, SImage& image)
-      
-         Allocates an image in the device with the same dimention the given image and the same type except that it will have 4 channels
-         Also allocate a buffer in the device able to contain the 3 channel image
-         Upon creation, the content of image is not copied and it is not transfered to the device
-            CL : The device to use
-            image : Information about an image - pointer image.Data must remain valid as long as Read() and Send() may be done on this object
-                    image must have 3 channels
-            flags : Type of device memory to allocate
-               Allowed values :
-                  CL_MEM_READ_WRITE - kernels can read & write values
-                  CL_MEM_WRITE_ONLY - kernels can only write values
-                  CL_MEM_READ_ONLY  - kernels can only read values
-
-      void Read(bool blocking = false)
-      
-         Converts the 4 Channel image into a 3 channel buffer and reads the buffer into the host image
-            blocking : if true, the method will wait for all device operations to be done
-
-      void Send()
-      
-         Sends the 3 channel data to a buffer in the device and converts the buffer in a 4 channel image
-            blocking : if true, the method will wait for all device operations to be done
-
-      virtual void SendIfNeeded()
-      
-         Calls Send() if IsInDevice() is false
 
 
 Program - Represents an OpenCL C program
@@ -408,36 +334,14 @@ Program - Represents an OpenCL C program
          
          
 MultiProgram - Holder of multiple version of an OpenCL program with different compiler options - not useable directly
-
-
-ImageProgram : public MultiProgram - Contains three versions of one program, for each three versions of image types :
-   Signed integer, Unsigned integer and Floating point
-   
-   members:
-   
-      ImageProgram(COpenCL& CL, const char * Path)
-       
-         Prepares a program with the .cl file at the given path
-
-      ImageProgram(COpenCL& CL, bool fromSource, const char * Source)
-       
-         Prepares a program with the given Source
-         
-      void PrepareFor(ImageBase& Source)
-      
-         Builds the proper version of the program for the given image
-         
-      Program& SelectProgram(ImageBase& Source)
-      
-         Builds and returns the proper version of the program for the given image
          
          
-ImageBufferProgram : public MultiProgram - Contains multiple versions of one program, a version for each supported data type :
+ImageProgram : public MultiProgram - Contains multiple versions of one program, a version for each supported data type :
    S8, U8, S16, U16, S32, U32, F32
    
    members:
    
-      ImageBufferProgram(COpenCL& CL, const char * Path)
+      ImageProgram(COpenCL& CL, const char * Path)
       
          Prepares a program with the .cl file at the given path
          
@@ -449,4 +353,20 @@ ImageBufferProgram : public MultiProgram - Contains multiple versions of one pro
       
          Builds and returns the proper version of the program for the given image
 
+VectorProgram : public MultiProgram - Contains multiple versions of one program, three versions for each supported data type :
+   S8, U8, S16, U16, S32, U32, F32
+   
+   members:
+   
+      VectorProgram(COpenCL& CL, const char * Path)
+      
+         Prepares a program with the .cl file at the given path
+         
+      void PrepareFor(ImageBase& Source)
+      
+         Builds the proper version of the program for the given image
+         
+      Program& SelectProgram(ImageBase& Source)
+      
+         Builds and returns the proper version of the program for the given image
 

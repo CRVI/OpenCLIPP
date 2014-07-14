@@ -5,12 +5,11 @@ The OpenCLIPP exposes a pure C interface that can be used by C programs or by an
 Concepts
 
 This library deals with image processing. To use the library it is necessary to understand these concepts :
-1 Images and Buffers
+1 Images
    OpenCL can represent images in device memory in two ways : As a Image or as a Buffer
-   Some operations are faster when using an Image (like filters and morphology) while some are faster when using buffers (like arithmetic and reductions).
-   The choice of Image or Buffer will depend on the program used.
-   An Image or a Buffer must be created using a SImage structure to inform the library about the size and type of the image.
-   When creating an Image or a Buffer, the memory space is allocated on the device
+   OpenCLIPP stores images in buffers.
+   An Image must be created using a SImage structure to inform the library about the size and type of the image.
+   When creating an Image, the memory space is allocated on the device
    That memory space will not be initialized.
    Use ocipSend* and ocipRead* to transfer data to and from the device.
 2 Programs
@@ -25,13 +24,11 @@ This library deals with image processing. To use the library it is necessary to 
    These operations can be memory transfers and processing functions
    Asynchronous functions :
       ocipSendImage
-      ocipSendImageBuffer
       Most processing functions
    These functions will return almost immediately.
    The image transfer or image processing will happens asyncrhonously.
    Read functions :
       ocipReadImage
-      ocipReadImageBuffer
    The read functions will issue a reading operation and then wait for all operations to complete.
    So after a read function returns, it is guaranteed to contain the resulting data of the previously issued operations.
 4 Processing functions
@@ -39,7 +36,7 @@ This library deals with image processing. To use the library it is necessary to 
    To use a processing function, a handle to the corresponding program must be used.
    Each of these functions does the following :
       If the program was not built for the image type used, the program is built
-      If the source images/buffers have not been sent to device memory, a Send operation is added to the queue for each source.
+      If the source images have not been sent to device memory, a Send operation is added to the queue for each source.
       The processing operation is added to the queue
    
 
@@ -56,11 +53,9 @@ ocipError      Type returned by all ocip calls to signal errors
 ocipContext    Context returned when ininitizing the library
                All calls to the library are related to the current context
                
-ocipImage      Context to an image on the device
+ocipImage      Handle to an image on the device
 
-ocipBuffer     Context to an image inside a buffer on the device
-
-ocipProgram    Context to a program
+ocipProgram    Handle to a program
                A handle to a program is needed to call most ocip functions
                
 
@@ -71,9 +66,9 @@ Initializes OpenCL, creates an execution context, sets the new context as the cu
 and returns the context handle.
 The handle must be closed by calling ocipUninitialize when the context (or the whole library) is no longer needed.
 ocipInitialize() can be called more than once, in that case, each context must be
-released individually by a call to ocipUninitialize(). Images, Buffers and Programs
+released individually by a call to ocipUninitialize(). Images and Programs
 created from different context can't be mixed (a program can only run
-with images or buffers that have been created from the same context).
+with images that have been created from the same context).
 
 ocipError ocip_API ocipUninitialize(ocipContext Context)
 Releases the context.
@@ -112,29 +107,14 @@ Reads the image from device memory
 ocipError ocip_API ocipReleaseImage(ocipImage Image);
 Releases the image
 
-ocipError ocip_API ocipCreateImageBuffer(ocipBuffer * BufferPtr, SImage image, cl_mem_flags flags);
-Creates a buffer that contains an image
-
-ocipError ocip_API ocipSendImageBuffer(ocipBuffer Buffer);
-Send the image to the buffer in the device
-
-ocipError ocip_API ocipReadImageBuffer(ocipBuffer Buffer);
-Reads the image from the device
-
-ocipError ocip_API ocipReleaseBuffer(ocipBuffer Buffer);
-Releases the buffer
 
 ocipError ocip_API ocipPrepare*(ocipImage Image);
-OR 
-ocipError ocip_API ocipPrepare*(ocipBuffer Image);
 Prepare for executing processing operations.
 These functions prepare the processing for the given image (builds the OpenCL program). 
 If ocipPrepare*() is not called before calling a processing primitive,
 the first call to the primitive for a given image type will take a long time (likely >100ms).
 
 ocipError ocip_API ocipPrepare*(ocipProgram * ProgramPtr, ocipImage Image);
-OR 
-ocipError ocip_API ocipPrepare*(ocipProgram * ProgramPtr, ocipBuffer Image);
 These functions prepare the processing for the given image (builds the OpenCL program) and
 also allocate any temporary buffers. Any calls to processing primitives that need a ocipProgram
 argument must be done with a program handle created with the proper ocipPrepare*() and with the same
