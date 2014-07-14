@@ -121,16 +121,17 @@ Error handling - C
 Most functions of the C interface return a ocipError.
 When no error occured, the value returned will be CL_SUCCESS (0). When an error occurs, a negative value will be returned. The error value can be translated to text using ocipGetErrorName().
 
-Benchmarking with IPP & NPP
+Similarity with IPP & NPP
 -------------------------
 
-The OpenCLIPP library tracks images in the computing device using objects that know size, datatype and number of channels of the image. This leads to simpler function signatures than IPP and NPP (no need for complex suffixes and less arguments).
+OpenCLIPP provides a C interface that can is similar to the popular libraries Intel IPP and NVIDIA NPP.
+Except unlike these libraries, the OpenCLIPP library tracks images in the computing device using objects that know size, datatype and number of channels of the image. This leads to simpler function signatures than IPP and NPP (less arguments and no need for complex suffixes).
 
 Typical primitive signature
 ``` C
 /*IPP*/			IppStatus ippiAbsDiffC_8u_C1R(const Ipp8u* pSrc,  int srcStep,   Ipp8u* pDst, int dstStep,  IppiSize roiSize,  int value);
 /*NPP*/			NppStatus nppiAbsDiffC_8u_C1R(const Npp8u* pSrc1, int nSrc1Step, Npp8u* pDst, int nDstStep, NppiSize oSizeROI, Npp8u nConstant);
-/*OpenCLIPP*/	ocipError ocipAbsDiffC_V(ocipBuffer Source, ocipBuffer Dest, float value);
+/*OpenCLIPP*/	ocipError ocipAbsDiffC(ocipImage Source, ocipImage Dest, float value);
 ```
 
 
@@ -139,9 +140,9 @@ Supported image types
 
 The library supports the following image types:
 
-- 2 dimensions, no size restrictions (size restrictions may be present on some hardware, e.g. < 8192x8192)
+- 2 dimensions, no size restrictions (size restrictions may be present for some primitives, like <16megapixels for FFT)
 - Signed or Unsigned integer of 8, 16 or 32 bits
-- Floating point of 32 bits
+- Floating point 32 and 64 bits
 - 1, 2, 3 or 4 channels (all channels must be the same type)
 	
 Supported platforms
@@ -166,19 +167,23 @@ Currently implemented primitives
 - LUT
 - Morphology
 - Transform (Mirror, Flip & Transpose)
-- Resize
+- Resize and Rotate
 - Datatype conversion & value scaling
 - Treshold
 - Filters (Blur, Sharpen, Sobel, Median, etc.)
 - Histogram
+- Pattern matching
 - Statistical reductions
 - Blob labeling
+- Integral scan
+- FFT (using external library clFFT)
 
 Performance
 -----------
 
 Performance is significantly higher than IPP when operating on big (2048x2048+) images and using a high end GPU (expect 3 to 10x faster for most operations).
 Performance is comparable and often slightly better than NPP on the same GPU (sometimes as much as 2x faster).
+The library has the advantage of being able to run on AMD GPUs that usually provide significantly better OpenCL performance than NVIDIA GPUs.
 No device specific optimization has been done so performance of many primitives can be further improved.
 
 Architecture & Supervision
