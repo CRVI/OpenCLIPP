@@ -36,6 +36,8 @@
 
 #include <cmath>
 
+using namespace std;
+
 
 static const double Pi = atan(1) * 4;
 
@@ -145,13 +147,13 @@ void Transform::ResizeLanczos(Image& Source, Image& Dest, int a, cl::NDRange Ran
    const SImage& SrcImg = Source;
    const SImage& DstImg = Dest;
 
-   uint length = std::max(DstImg.Width, DstImg.Height);
+   uint length = max(DstImg.Width, DstImg.Height);
    int size = find_lanczos_buffer_size(length);
 
    TempBuffer factors(*m_CL, size * 2 * a * 2 * sizeof(float));   // 2 lists of factors containing 2*a*size items
 
    cl::make_kernel<cl::Buffer, float, float, int>
-      ((cl::Program) SelectProgram(Source), "prepare_resize_lanczos" + std::to_string(a))
+      ((cl::Program) SelectProgram(Source), "prepare_resize_lanczos" + to_string(a))
          (cl::EnqueueArgs(*m_CL, cl::NDRange(length, a * 2, 2)),
             factors, RatioX, RatioY, size);
 
@@ -183,7 +185,7 @@ void Transform::Resize(Image& Source, Image& Dest, EInterpolationType Interpolat
 
    if (KeepRatio)
    {
-      float Ratio = std::max(RatioX, RatioY);
+      float Ratio = max(RatioX, RatioY);
       RatioX = Ratio;
       RatioY = Ratio;
 
