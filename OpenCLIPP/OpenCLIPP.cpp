@@ -182,13 +182,18 @@ ocipError ocip_API ocipCreateImage(ocipImage * ImagePtr, SImage image, void * Im
    if (CL == nullptr)
       return CL_INVALID_CONTEXT;
 
-   H( *ImagePtr = (ocipImage) new Image(*CL, image, ImageData, flags) )
+   H( if (image.Channels == 3)
+         *ImagePtr = (ocipImage) new ColorImage(*CL, image, ImageData);
+      else
+         *ImagePtr = (ocipImage) new Image(*CL, image, ImageData, flags);
+       )
 }
 
 ocipError ocip_API ocipSendImage(ocipImage image)
 {
    IBuffer * Ptr = (IBuffer *) image;
    Image * Img = dynamic_cast<Image *>(Ptr);
+
    if (Img == nullptr)
       return CL_INVALID_MEM_OBJECT;
 

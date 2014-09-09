@@ -118,10 +118,10 @@ public:
    Buffer(COpenCL& CL, T * data, size_t length, cl_mem_flags flags = CL_MEM_READ_WRITE);
    
    /// Read the buffer from the device memory
-   void Read(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
+   virtual void Read(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
 
    /// Send the buffer to the device memory
-   void Send(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
+   virtual void Send(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
 
    virtual void SendIfNeeded();  ///< Sends the data to the device if IsInDevice() is false
 

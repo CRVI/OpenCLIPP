@@ -62,6 +62,12 @@ public:
 
    /// Converts a 1 channel image to a 4 channel image - first 3 channels of Dest will be set to the value of the first channel of Source
    void ToColor(Image& Source, Image& Dest);
+
+   /// Copies from a 3 channel image to a 4 channel image, fourth channel will be set to 255
+   void Copy3Cto4C(Image& Source, Image& Dest);
+
+   /// Copies from a 4 channel image to a 3 channel image
+   void Copy4Cto3C(Image& Source, Image& Dest);
 };
 
 }

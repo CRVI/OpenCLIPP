@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Image.h"
+#include "programs/Conversions.h"
 
 namespace OpenCLIPP
 {
@@ -149,10 +150,30 @@ ImageBase::operator const SImage& () const
 
 
 // Image
+
 Image::Image(COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags)
 :  Buffer(CL, (char *) ImageData, Img.Height * Img.Step, flags),
    ImageBase(Img)
-{ }
+{
+   if (Img.Channels < 1 || Img.Channels > 4)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Invalid number of channels");
+
+   if (Img.Channels == 3)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Please use ColorImage for 3 channel images");
+
+   if (Img.Type < 0 || Img.Type >= Img.NbDataTypes)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Invalid data type");
+}
+
+Image::Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags)
+:  Buffer(CL, (char *) ImageData, Img.Height * Img.Step, flags),
+   ImageBase(Img)
+{
+   assert(Is3Channel);
+
+   if (Img.Type < 0 || Img.Type >= Img.NbDataTypes)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Invalid data type");
+}
 
 
 // TempImage
@@ -160,11 +181,47 @@ TempImage::TempImage(COpenCL& CL, const SImage& Img, cl_mem_flags flags)
 :  Image(CL, Img, nullptr, flags)
 { }
 
-TempImage::TempImage(COpenCL& CL, SSize Size, SImage::EDataType Type,
-                                     uint NbChannels, cl_mem_flags flags)
+TempImage::TempImage(COpenCL& CL, SSize Size, SImage::EDataType Type, uint NbChannels, cl_mem_flags flags)
 :  Image(CL, TempSImage(Size, Type, NbChannels), nullptr, flags)
 { }
 
+
+// ColorImage
+SSize SizeOfImage(const SImage& Img)
+{
+   SSize size = {Img.Width, Img.Height};
+   return size;
+}
+
+ColorImage::ColorImage(COpenCL& CL, const SImage& Img, void * ImageData)
+:  TempImage(CL, SizeOfImage(Img), Img.Type, 4, CL_MEM_READ_WRITE),
+   m_3CImage(true, CL, Img, ImageData, CL_MEM_READ_WRITE)
+{
+   if (Img.Channels != 3)
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "ColorImage received an image with a number of channels different than 3");
+}
+
+// Read the image from the device memory
+void ColorImage::Read(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
+{
+   // NOTE : Synchronisation is not good here because conversion will start without waiting on the events
+   m_CL.GetConverter().Copy4Cto3C(*this, m_3CImage);
+   m_3CImage.Read(blocking, events, event);
+
+   m_isInDevice = true;
+}
+
+// Send the image to the device memory
+void ColorImage::Send(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
+{
+   // Sending ColorImages is currently always non-blocking and does not support events
+   assert(!blocking);
+   assert(events == nullptr);
+   assert(event == nullptr);
+
+   m_3CImage.Send();
+   m_CL.GetConverter().Copy3Cto4C(m_3CImage, *this);
+}
 
 
 // Helpers

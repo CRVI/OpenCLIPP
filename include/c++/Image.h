@@ -82,12 +82,16 @@ class CL_API Image : public Buffer, public ImageBase
 public:
    /// Constructor.
    /// Allocates a buffer in the device memory that can store the image
-   /// The data pointer in image is saved for later Send and Read operations
+   /// The data pointer ImageData is saved for later Send and Read operations
    /// \param CL : A COpenCL instance
    /// \param Img : A SImage representing the host image
    /// \param ImageData : A pointer to where the image data is located
    /// \param flags : Type of OpenCL memory to use, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
    Image(COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags = CL_MEM_READ_WRITE);
+
+protected:
+   /// Constructor for a 3 channel image.
+   Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags);
 };
 
 
@@ -114,9 +118,49 @@ public:
    virtual void SendIfNeeded() { }  ///< Does nothing - it is in-device only and can't be sent
 
 private:
-   // This buffer can't be sent or read from the device
+   // Temp images are only inside the device, they can't be sent or read
    void Read(bool = false, std::vector<cl::Event> * = nullptr, cl::Event * = nullptr) { }
    void Send(bool = false, std::vector<cl::Event> * = nullptr, cl::Event * = nullptr) { }
+};
+
+/// Represents a 3 channels color image.
+/// 3 channel memory acceses are problematic in OpenCL
+/// This class serves as 
+/// This class will Convert automatically : 
+///  - from 3 channels to 4 channels when sending the image to the device
+///  - from 4 channels to 3 channels when reading the image from the device
+class CL_API ColorImage : public TempImage
+{
+public:
+   /// Constructor.
+   /// Allocates, in the device memory, an image to store a 4 channel image
+   /// and a buffer to store the 3 channel image.
+   /// The data pointer ImageData is saved for later Send and Read operations
+   /// \param CL : A COpenCL instance
+   /// \param Img : A SImage representing the host image
+   /// \param ImageData : A pointer to where the image data is located
+   ColorImage(COpenCL& CL, const SImage& Img, void * ImageData);
+
+   /// Read the image from the device memory.
+   /// The 4 channel image will be converted to 3 channel and then read to the host.
+   /// If blocking is set to true, the Read operation is added to the queue
+   /// and then the host waits until the device has finished all outstanding operations.
+   /// If blocking is set to false, the Read operation is added to the queue and no wait operation is performed
+   /// So if blocking is set to false, the image will not contain the result of the previous kernel execution
+   /// \param blocking : Blocking operation
+   /// \param events : A list of events that need to be signaled before executing the Read operation
+   /// \param event : An event that can be used to wait for the end of the Read operation
+   void Read(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
+
+   /// Send the image to the device memory.
+   /// The image will be sent to a 3 channel buffer in the device and then
+   /// converted to a 4 channel image.
+   /// Always non-blocking
+   /// Events not currently supported when sending ColorImages
+   void Send(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
+
+protected:
+   Image m_3CImage;   ///< Buffer on the device that contains the 3 channel image
 };
 
 }

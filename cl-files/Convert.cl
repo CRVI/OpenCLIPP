@@ -62,7 +62,7 @@ kernel void select_channel2(INPUT source, global SCALAR * dest, int src_step, in
 #endif   // NBCHAN >= 2
 
 
-#if NBCHAN >= 3
+#if NBCHAN == 4
 
 kernel void to_gray(INPUT source, global SCALAR * dest, int src_step, int dst_step)
 {
@@ -90,10 +90,6 @@ kernel void select_channel3(INPUT source, global SCALAR * dest, int src_step, in
    dest[gy * dst_step + gx] = src.z;
 }
 
-#endif   // NBCHAN >= 3
-
-#if NBCHAN >= 4
-
 kernel void select_channel4(INPUT source, global SCALAR * dest, int src_step, int dst_step)
 {
    BEGIN
@@ -107,7 +103,7 @@ kernel void select_channel4(INPUT source, global SCALAR * dest, int src_step, in
    dest[gy * dst_step + gx] = src.w;
 }
 
-#endif   // NBCHAN >= 4
+#endif   // NBCHAN == 4
 #endif   // NBCHAN
 
 #ifndef NBCHAN
@@ -210,4 +206,40 @@ kernel void copy(INPUT source, global TYPE * dest, int src_step, int dst_step)
    src_step /= sizeof(TYPE);
    dst_step /= sizeof(TYPE);
    dest[gy * dst_step + gx] = source[gy * src_step + gx];
+}
+
+kernel void copy3Cto4C(INPUT_SPACE SCALAR * source, global TYPE4 * dest, int src_step, int dst_step)
+{
+   BEGIN
+
+   src_step /= sizeof(SCALAR);
+   dst_step /= sizeof(TYPE4);
+
+   int source_index = gx * 3 + gy * src_step;
+
+   TYPE4 color;
+   color.x = source[source_index + 0];
+   color.y = source[source_index + 1];
+   color.z = source[source_index + 2];
+   color.w = 255;
+
+   // Write pixel
+   dest[gy * dst_step + gx] = color;
+}
+
+kernel void copy4Cto3C(INPUT_SPACE TYPE4 * source, global SCALAR * dest, int src_step, int dst_step)
+{
+   BEGIN
+
+   src_step /= sizeof(TYPE4);
+   dst_step /= sizeof(SCALAR);
+
+   // Read pixel
+   TYPE4 color = source[gy * src_step + gx];
+
+   // Write pixel
+   int dest_index = gx * 3 + gy * dst_step;
+   dest[dest_index + 0] = color.x;
+   dest[dest_index + 1] = color.y;
+   dest[dest_index + 2] = color.z;
 }

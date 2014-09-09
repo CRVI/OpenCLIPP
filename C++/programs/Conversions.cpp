@@ -214,6 +214,32 @@ void Conversions::ToColor(Image& Source, Image& Dest)
    Kernel(select_channel1, Source, Dest);
 }
 
+void Conversions::Copy3Cto4C(Image& Source, Image& Dest)
+{
+   CheckSizeAndType(Source, Dest);
+
+   if (Source.NbChannels() != 3)
+      throw cl::Error(CL_INVALID_VALUE, "Source image must be 3 channels in Copy3Cto4C");
+
+   if (Dest.NbChannels() != 4)
+      throw cl::Error(CL_INVALID_VALUE, "Dest image must be 4 channels in Copy3Cto4C");
+
+   Kernel(copy3Cto4C, Source, Dest, Source.Step(), Dest.Step());
+}
+
+void Conversions::Copy4Cto3C(Image& Source, Image& Dest)
+{
+   CheckSizeAndType(Source, Dest);
+
+   if (Source.NbChannels() != 4)
+      throw cl::Error(CL_INVALID_VALUE, "Source image must be 4 channels in Copy4Cto3C");
+
+   if (Dest.NbChannels() != 3)
+      throw cl::Error(CL_INVALID_VALUE, "Dest image must be 3 channels in Copy4Cto3C");
+
+   Kernel(copy4Cto3C, Source, Dest, Source.Step(), Dest.Step());
+}
+
 
 // Helpers
 

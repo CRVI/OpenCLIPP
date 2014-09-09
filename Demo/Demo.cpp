@@ -76,8 +76,8 @@ int main(int /*argc*/, char ** /*argv*/)
    printf("Using device : %s\n", Name.c_str());
 
    // Create images in OpenCL device
-   Image SourceImage(CL, ImageInfo, SourceData.data());
-   Image ResultImage(CL, ImageInfo, ResultData.data());
+   ColorImage SourceImage(CL, ImageInfo, SourceData.data());
+   ColorImage ResultImage(CL, ImageInfo, ResultData.data());
 
    SourceImage.Send();   // Optional : Sends image to device memory - would be done automatically
 
