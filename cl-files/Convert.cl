@@ -26,6 +26,11 @@
 
 #define INPUT INPUT_SPACE const TYPE *
 
+#define BEGIN \
+   const int gx = get_global_id(0);\
+   const int gy = get_global_id(1);\
+   const int2 pos = { gx, gy };
+
 #ifdef NBCHAN
 #if NBCHAN >= 2
 kernel void select_channel1(INPUT source, global SCALAR * dest, int src_step, int dst_step)
@@ -89,7 +94,7 @@ kernel void select_channel3(INPUT source, global SCALAR * dest, int src_step, in
 
 #if NBCHAN >= 4
 
-kernel void select_channel4(INPUT source, OUTPUT dest)
+kernel void select_channel4(INPUT source, global SCALAR * dest, int src_step, int dst_step)
 {
    BEGIN
    src_step /= sizeof(TYPE);
@@ -108,11 +113,6 @@ kernel void select_channel4(INPUT source, OUTPUT dest)
 #ifndef NBCHAN
 #define NBCHAN
 #endif
-
-#define BEGIN \
-   const int gx = get_global_id(0);\
-   const int gy = get_global_id(1);\
-   const int2 pos = { gx, gy };
 
 #define CONVERT_KERNEL(name, dest_type) \
    kernel void name(INPUT source, global dest_type * dest, int src_step, int dst_step)\
@@ -141,7 +141,8 @@ kernel void select_channel4(INPUT source, OUTPUT dest)
       src_step /= sizeof(TYPE);\
       dst_step /= sizeof(dest_type);\
       TYPE src = source[gy * src_step + gx];\
-      dest[gy * dst_step + gx] = CONCATENATE(convert_, CONCATENATE(dest_type, _sat)) (src * ratio + offset);\
+      dest[gy * dst_step + gx] = \
+         CONCATENATE(convert_, CONCATENATE(dest_type, _sat)) (CONVERT_REAL(src) * ratio + offset );\
    }
 
 #define SCALE_FLOAT_KERNEL(name, dest_type) \
@@ -151,7 +152,7 @@ kernel void select_channel4(INPUT source, OUTPUT dest)
       src_step /= sizeof(TYPE);\
       dst_step /= sizeof(dest_type);\
       TYPE src = source[gy * src_step + gx];\
-      dest[gy * dst_step + gx] = CONCATENATE(convert_, dest_type) (src * ratio + offset);\
+      dest[gy * dst_step + gx] = CONCATENATE(convert_, dest_type) (CONVERT_REAL(src) * ratio + offset);\
    }
 
 CONVERT_KERNEL(to_uchar,   CONCATENATE(uchar,  NBCHAN))
@@ -175,27 +176,31 @@ SCALE_FLOAT_KERNEL(scale_to_double, CONCATENATE(double, NBCHAN))
 kernel void to_2channels(INPUT_SPACE SCALAR * source, global TYPE2 * dest, int src_step, int dst_step)
 {
    BEGIN
-   src_step /= sizeof(TYPE);
+   src_step /= sizeof(SCALAR);
    dst_step /= sizeof(TYPE2);
-   TYPE src = source[gy * src_step + gx];
+   SCALAR src = source[gy * src_step + gx];
    dest[gy * dst_step + gx] = (TYPE2)(src, src);
 }
 
-kernel void to_3channels(INPUT_SPACE SCALAR * source, global TYPE3 * dest, int src_step, int dst_step)
+kernel void to_3channels(INPUT_SPACE SCALAR * source, global SCALAR * dest, int src_step, int dst_step)
 {
    BEGIN
-   src_step /= sizeof(TYPE);
-   dst_step /= sizeof(TYPE3);
-   TYPE src = source[gy * src_step + gx];
-   dest[gy * dst_step + gx] = (TYPE3)(src, src, src);
+   src_step /= sizeof(SCALAR);
+   dst_step /= (sizeof(SCALAR) * 3);
+   SCALAR src = source[gy * src_step + gx];
+
+   int dest_index = gx * 3 + gy * dst_step;
+   dest[dest_index + 0] = src;
+   dest[dest_index + 1] = src;
+   dest[dest_index + 2] = src;
 }
 
 kernel void to_4channels(INPUT_SPACE SCALAR * source, global TYPE4 * dest, int src_step, int dst_step)
 {
    BEGIN
-   src_step /= sizeof(TYPE);
+   src_step /= sizeof(SCALAR);
    dst_step /= sizeof(TYPE4);
-   TYPE src = source[gy * src_step + gx];
+   SCALAR src = source[gy * src_step + gx];
    dest[gy * dst_step + gx] = (TYPE4)(src, src, src, 255);
 }
 
