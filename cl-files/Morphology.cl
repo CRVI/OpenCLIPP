@@ -59,7 +59,7 @@ kernel void CONCATENATE(name, mask_width) (INPUT source, OUTPUT dest, int src_st
       int py = gy + y;\
       for (int x = -mask_size; x <= mask_size; x++)\
       {\
-         SCALAR Val = source[py * src_step + gx + x];\
+         TYPE Val = source[py * src_step + gx + x];\
          Value = op(Val, Value);\
       }\
       \
