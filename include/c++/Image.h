@@ -38,6 +38,12 @@
 namespace OpenCLIPP
 {
 
+/// Structure containing an X and Y coordinate
+struct CL_API SPoint
+{
+   uint X, Y;
+};
+
 /// Structure containing the size of an image - in pixels
 struct CL_API SSize
 {
@@ -57,7 +63,7 @@ public:
    uint Height() const;       ///< Height of the image, in pixels
    SSize Size() const;        ///< Size of the image, in pixels
    uint Step() const;         ///< Number of bytes between each row
-   uint ElementStep() const;  ///< Number of elemets between each row
+   uint ElementStep() const;  ///< Number of elements between each row
    uint Depth() const;        ///< Number of bits per channel
    uint DepthBytes() const;   ///< Number of bytes per channel
    uint NbChannels() const;   ///< Number of channels in the image, allowed values : 1, 2, 3 or 4
@@ -90,10 +96,38 @@ public:
    Image(COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags = CL_MEM_READ_WRITE);
 
 protected:
+   /// ROI Constructor.
+   Image(Image& Img, const SPoint& Offset, const SSize& Size, cl_mem_flags flags);
+
    /// Constructor for a 3 channel image.
    Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags);
 };
 
+/// Represents a ROI of an image in the device
+class CL_API ImageROI : public Image
+{
+public:
+   /// Constructor.
+   /// Creates a ROI of an existing image
+   /// The object created with this constructor must not outlive Img
+   /// The ROI may be created bigger (start further left) than desired due to memory alignement requirements.
+   /// \param CL : A COpenCL instance
+   /// \param Img : An Image from which the ROI will be. The ROI object must not outlive this Image object.
+   /// \param Offset: Start of the ROI (top-left corner).
+   ///         NOTE : Actual start of the ROI may be earlier than asked due to memory alignment requirements.
+   /// \param Size: Size of the ROI
+   /// \param flags : Type of OpenCL memory to use, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
+   ImageROI(Image& Img, const SPoint& Offset, const SSize& Size, cl_mem_flags flags = CL_MEM_READ_WRITE);
+
+   /// Read the image from the device memory
+   void Read(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
+
+   /// Send the image to the device memory
+   void Send(bool blocking = false, std::vector<cl::Event> * events = nullptr, cl::Event * event = nullptr);
+
+protected:
+   Image& m_Img;
+};
 
 /// Represents an in-device only buffer that contains an image
 class CL_API TempImage : public Image

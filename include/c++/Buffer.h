@@ -47,7 +47,7 @@ public:
 
    /// Sends to the device if needed.
    /// Sends the data to the device if IsInDevice() is false - only useful for objects that have a Send() method
-   virtual void SendIfNeeded() { }           
+   virtual void SendIfNeeded() { }
 
 protected:
    Memory();   ///< Constructor - useable by derived classes only
@@ -89,6 +89,14 @@ protected:
    /// \param copy : If we want a copy of the data currently on the host (will use CL_MEM_COPY_HOST_PTR)
    IBuffer(COpenCL& CL, size_t size, cl_mem_flags flags, void * data = nullptr, bool copy = false);
 
+   /// Constructor for creating a SubBuffer - useable by derived classes only
+   /// \param CL : A COpenCL instance
+   /// \param MainBuffer : Buffer from which the SubBuffer will be created
+   /// \param offset : Offset in bytes from the start of the main buffer
+   /// \param size : Size of the buffer in bytes
+   /// \param flags : Type of OpenCL memory to create, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
+   IBuffer(COpenCL& CL, IBuffer& MainBuffer, size_t& offset, size_t& size, cl_mem_flags flags);
+
    cl::Buffer m_Buffer;    ///< The encapsulated OpenCL buffer object
    size_t m_Size;          ///< The size of the buffer, in bytes
    bool m_HostBuffer;      ///< true when using CL_MEM_USE_HOST_PTR and mapped memory for faster memory transfer
@@ -126,6 +134,16 @@ public:
    virtual void SendIfNeeded();  ///< Sends the data to the device if IsInDevice() is false
 
 protected:
+   /// Constructor for creating a SubBuffer - useable by derived classes only
+   /// \param CL : A COpenCL instance
+   /// \param MainBuffer : Buffer from which the SubBuffer will be created
+   /// \param offset : Offset in bytes from the start of the main buffer
+   /// \param size : Size of the buffer in bytes
+   /// \param flags : Type of OpenCL memory to create, allowed values : CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY
+   /// \param data : Pointer to the array in host memory
+   /// \param copy : If we want a copy of the data currently on the host (will use CL_MEM_COPY_HOST_PTR)
+   Buffer(COpenCL& CL, Buffer& MainBuffer, size_t offset, size_t size, cl_mem_flags flags, size_t& outNewOffset);
+
    COpenCL& m_CL;    ///< The COpenCL instance this image is assotiated to
    void * m_data;    ///< Pointer to the buffer data on the host
 

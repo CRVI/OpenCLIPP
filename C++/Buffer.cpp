@@ -71,6 +71,36 @@ IBuffer::IBuffer(COpenCL& CL, size_t size, cl_mem_flags flags, void * data, bool
 
 }
 
+// ROI constructor
+IBuffer::IBuffer(COpenCL& CL, IBuffer& MainBuffer, size_t& offset, size_t& size, cl_mem_flags flags)
+:  m_Size(size),
+   m_HostBuffer(false)
+{
+
+   {
+      // createSubBuffer accepts only origin values that align with the number of bits specified in value CL_DEVICE_MEM_BASE_ADDR_ALIGN
+      // So we adjust the origin of the buffer to fit the memory alignment
+
+      // Retrieve number of bits
+      const cl::Device& device = CL;
+      uint AlignBits = device.getInfo<CL_DEVICE_MEM_BASE_ADDR_ALIGN>();
+
+      // Calculate difference
+      size_t mod = offset % (AlignBits / 8);
+
+      // Adjust origin and size (ROI will start earlier than what was demanded)
+      offset -= mod;
+      size += mod;
+   }
+
+   struct {
+      size_t origin;
+      size_t size;
+   } cl_buffer_region = {offset, size};
+
+   m_Buffer = MainBuffer.m_Buffer.createSubBuffer(flags, CL_BUFFER_CREATE_TYPE_REGION, &cl_buffer_region);
+}
+
 
 // TempBuffer
 TempBuffer::TempBuffer(COpenCL& CL, size_t size, cl_mem_flags flags)
@@ -80,7 +110,16 @@ TempBuffer::TempBuffer(COpenCL& CL, size_t size, cl_mem_flags flags)
 
 // Buffer
 
-// Read the image from the device memory
+// ROI constructor
+Buffer::Buffer(COpenCL& CL, Buffer& MainBuffer, size_t offset, size_t size, cl_mem_flags flags, size_t& outNewOffset)
+:  IBuffer(CL, MainBuffer, offset, size, flags),
+   m_CL(CL),
+   m_data(((char*)MainBuffer.m_data) + (MainBuffer.m_data ? offset : 0))   // Add offset only if not null
+{
+   outNewOffset = offset;
+}
+
+// Read the buffer from the device memory
 void Buffer::Read(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
 {
    if (m_data == nullptr)
@@ -113,7 +152,7 @@ void Buffer::Read(bool blocking, std::vector<cl::Event> * events, cl::Event * ev
 
 }
 
-// Send the image to the device memory
+// Send the buffer to the device memory
 void Buffer::Send(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
 {
    if (m_data == nullptr)

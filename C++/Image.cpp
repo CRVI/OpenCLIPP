@@ -175,6 +175,52 @@ Image::Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, 
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Invalid data type");
 }
 
+// ROI Constructor
+Image::Image(Image& Img, const SPoint& Offset, const SSize& Size, cl_mem_flags flags)
+:  Buffer(Img.m_CL, Img,
+          Offset.Y * Img.Step() + Offset.X * Img.DepthBytes() * Img.NbChannels(),   // Calculate offset in bytes
+          Size.Height * Img.Step() - (Img.Width() - Size.Width) * Img.DepthBytes() * Img.NbChannels(),   // Calculate size in bytes
+          flags,
+          flags),    // Use flags as temporary variable to receive the actual offset value
+   ImageBase(Img)
+{
+   // Buffer is not always capable of creating a sub-buffer at the offset specified due to memory alignement requirements
+   // So it may create a buffer that starts ealier than the offset we calculated and thus it will have a bigger size
+   // So in order to cover the whole ROI, we need to recalculate the size of the image
+   size_t AskedOffset = Offset.Y * Img.Step() + Offset.X * Img.DepthBytes() * Img.NbChannels();
+   size_t ActualBufferOffset = flags;
+   size_t OffsetDifference = AskedOffset - ActualBufferOffset;
+   size_t OffsetDiffElements = OffsetDifference / (Img.DepthBytes() * Img.NbChannels());
+
+   if (OffsetDiffElements <= Offset.X)
+   {
+      m_Img.Width = Size.Width + uint(OffsetDiffElements);
+      m_Img.Height = Size.Height;
+      return;
+   }
+
+   // Offset difference covers more than one row - this would be difficult to handle
+   throw cl::Error(CL_MISALIGNED_SUB_BUFFER_OFFSET, "Unable to reate ROI due to memory alignement requirements");
+}
+
+// ImageROI
+ImageROI::ImageROI(Image& Img, const SPoint& Offset, const SSize& Size, cl_mem_flags flags)
+:  Image(Img, Offset, Size, flags),
+   m_Img(Img)
+{ }
+
+/// Read the image from the device memory
+void ImageROI::Read(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
+{
+   m_Img.Read(blocking, events, event);
+}
+
+/// Send the image to the device memory
+void ImageROI::Send(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
+{
+   m_Img.Send(blocking, events, event);
+}
+
 
 // TempImage
 TempImage::TempImage(COpenCL& CL, const SImage& Img, cl_mem_flags flags)
