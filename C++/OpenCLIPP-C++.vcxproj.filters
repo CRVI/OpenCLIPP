@@ -76,9 +76,6 @@
     <ClInclude Include="..\cl-files\Vector.h">
       <Filter>OpenCL Files\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\cl-files\Filters.Impl.h">
-      <Filter>OpenCL Files\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\cl-files\Median.h">
       <Filter>OpenCL Files\Headers</Filter>
     </ClInclude>

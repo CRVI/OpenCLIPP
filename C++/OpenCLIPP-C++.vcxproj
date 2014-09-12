@@ -169,7 +169,6 @@
   <ItemGroup>
     <ClInclude Include="..\cl-files\Base.h" />
     <ClInclude Include="..\cl-files\Buffers.h" />
-    <ClInclude Include="..\cl-files\Filters.Impl.h" />
     <ClInclude Include="..\cl-files\Median.h" />
     <ClInclude Include="..\cl-files\Vector.h" />
     <ClInclude Include="..\include\c++\Buffer.h" />
