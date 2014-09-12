@@ -148,10 +148,11 @@ TYPE sample_linear(INPUT source, int src_step, float2 pos, int2 SrcSize)
    if ((int)(pos.y + .5f) == SrcSize.y)
       pos.y = SrcSize.y - 0.5001f;
 
-   if (pos.x <= -1 || pos.x >= SrcSize.x - .5f || pos.y <= -1 || pos.y >= SrcSize.y - .5f)
-      return 0;
-
    pos -= (float2)(0.5f, 0.5f);
+
+   if (pos.x < 0 || pos.x >= SrcSize.x - 1 || pos.y < 0 || pos.y >= SrcSize.y - 1)
+      return 0;
+   
    int x1 = (int)(pos.x);
    float factorx1 = 1 - (pos.x - x1);
    int x2 = (int)(pos.x + 1);
@@ -178,7 +179,13 @@ TYPE sample_bicubic_border(INPUT source, int src_step, float2 pos, int2 SrcSize)
    float dx = pos.x - isrcpos.x;
    float dy = pos.y - isrcpos.y;
 
-   REAL C[4] = {0};
+   REAL C[4] = {0, 0, 0, 0};
+
+   if (isrcpos.x < 0 || isrcpos.x >= SrcSize.x)
+      return 0;
+
+   if (isrcpos.y < 0 || isrcpos.y >= SrcSize.y)
+      return 0;
 
    for (int i = 0; i < 4; i++)
    {
@@ -224,9 +231,9 @@ TYPE sample_bicubic_border(INPUT source, int src_step, float2 pos, int2 SrcSize)
    REAL d2 = C[2] - C[1];
    REAL d3 = C[3] - C[1];
    REAL a0 = C[1];
-   REAL a1 = -1.0 / 3 * d0 + d2 -1.0 / 6 * d3;
-   REAL a2 = 1.0 / 2 * d0 + 1.0 / 2 * d2;
-   REAL a3 = -1.0 / 6 * d0 - 1.0 / 2 * d2 + 1.0 / 6 * d3;
+   REAL a1 = -1.0f / 3 * d0 + d2 -1.0f / 6 * d3;
+   REAL a2 = 1.0f / 2 * d0 + 1.0f / 2 * d2;
+   REAL a3 = -1.0f / 6 * d0 - 1.0f / 2 * d2 + 1.0f / 6 * d3;
    return CONVERT(a0 + a1 * dy + a2 * dy * dy + a3 * dy * dy * dy);
 }
 
@@ -244,7 +251,7 @@ TYPE sample_bicubic(INPUT source, int src_step, float2 pos, int2 SrcSize)
    if (isrcpos.y <= 0 || isrcpos.y >= SrcSize.y - 2)
       return sample_bicubic_border(source, src_step, pos, SrcSize);
 
-   REAL C[4] = {0};
+   REAL C[4] = {0, 0, 0, 0};
 
    for (int i = 0; i < 4; i++)
    {
@@ -264,9 +271,9 @@ TYPE sample_bicubic(INPUT source, int src_step, float2 pos, int2 SrcSize)
    REAL d2 = C[2] - C[1];
    REAL d3 = C[3] - C[1];
    REAL a0 = C[1];
-   REAL a1 = -1.0 / 3 * d0 + d2 -1.0 / 6 * d3;
-   REAL a2 = 1.0 / 2 * d0 + 1.0 / 2 * d2;
-   REAL a3 = -1.0 / 6 * d0 - 1.0 / 2 * d2 + 1.0 / 6 * d3;
+   REAL a1 = -1.0f / 3 * d0 + d2 -1.0f / 6 * d3;
+   REAL a2 = 1.0f / 2 * d0 + 1.0f / 2 * d2;
+   REAL a3 = -1.0f / 6 * d0 - 1.0f / 2 * d2 + 1.0f / 6 * d3;
    return CONVERT(a0 + a1 * dy + a2 * dy * dy + a3 * dy * dy * dy);
 }
 
