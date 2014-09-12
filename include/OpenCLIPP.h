@@ -415,6 +415,18 @@ ocipError ocip_API ocipRotate(    ocipImage Source, ocipImage Dest, double Angle
 ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
 ocipError ocip_API ocipResize(    ocipImage Source, ocipImage Dest, enum ocipInterpolationType Interpolation, ocipBool KeepRatio);
 
+/// Shearing transformation.
+/// \param Source : Source image
+/// \param Dest : Destination image
+/// \param ShearX : X Shearing coefficient.
+/// \param ShearY : Y Shearing coefficient.
+/// \param XShift : Shift along horizonltal axis to do after the shearing.
+/// \param YShift : Shift along vertical axis to do after the shearing.
+/// \param Interpolation : Type of interpolation to use.
+///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+///      BestQuality will use Cubic.
+ocipError ocip_API ocipShear(ocipImage Source, ocipImage Dest, double ShearX, double ShearY, double XShift, double YShift, enum ocipInterpolationType Interpolation);
+
 /// Sets all values of Dest to value
 ocipError ocip_API ocipSet(       ocipImage Dest, float Value);
 

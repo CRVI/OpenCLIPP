@@ -239,6 +239,48 @@ void Transform::Resize(Image& Source, Image& Dest, EInterpolationType Interpolat
 
 }
 
+void Transform::Shear(Image& Source, Image& Dest, double ShearX, double ShearY,
+                      double XShift, double YShift, EInterpolationType Interpolation)
+{
+   if (!SameType(Source, Dest))
+      throw cl::Error(CL_INVALID_VALUE, "Different image types used");
+
+   float shearx = (float) ShearX;
+   float sheary = (float) ShearY;
+   float xshift = (float) XShift;
+   float yshift = (float) YShift;
+   float factor = 1 / (1 - shearx * sheary);
+
+   const SImage& SrcImg = Source;
+   const SImage& DstImg = Dest;
+
+   switch (Interpolation)
+   {
+   case NearestNeighbour:
+      Kernel_(*m_CL, SelectProgram(Source), shear_nn, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, SrcImg, DstImg,
+         shearx, sheary, factor, xshift, yshift);
+      break;
+   case Linear:
+      Kernel_(*m_CL, SelectProgram(Source), shear_linear, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, SrcImg, DstImg,
+         shearx, sheary, factor, xshift, yshift);
+      break;
+   case BestQuality:
+   case Cubic:
+      Kernel_(*m_CL, SelectProgram(Source), shear_cubic, Dest.FullRange(), LOCAL_RANGE,
+         Source, Dest, SrcImg, DstImg,
+         shearx, sheary, factor, xshift, yshift);
+      break;
+   case Lanczos2:
+   case Lanczos3:
+   case SuperSampling:
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
+   }
+
+}
+
 void Transform::SetAll(Image& Dest, float Value)
 {
    Kernel(set_all, In(Dest), Out(), Dest.Step(), Value);

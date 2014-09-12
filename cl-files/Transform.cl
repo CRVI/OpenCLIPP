@@ -314,6 +314,25 @@ TYPE sample_bicubic(INPUT source, int src_step, float2 pos, int2 SrcSize)
       dest[pos.y * dst_step + pos.x] = value;\
    }
 
+#define SHEAR(name, sampling) \
+   kernel void name(INPUT source, OUTPUT dest,\
+      struct SImage src_img, struct SImage dst_img,\
+      float shearx, float sheary, float factor, float xshift, float yshift)\
+   {\
+      BEGIN\
+      int src_step = src_img.Step / sizeof(TYPE);\
+      int dst_step = dst_img.Step / sizeof(TYPE);\
+      if (pos.x >= dst_img.Width || pos.y >= dst_img.Height)\
+         return;\
+      float posx = pos.x - xshift;\
+      float posy = pos.y - yshift;\
+      float2 srcpos = {\
+         (posx - posy * shearx) * factor + .5f,\
+         (posy - posx * sheary) * factor + .5f};\
+      int2 SrcSize = (int2)(src_img.Width, src_img.Height);\
+      TYPE value = sampling (source, src_step, srcpos, SrcSize);\
+      dest[pos.y * dst_step + pos.x] = value;\
+   }
 
 ROTATE(rotate_nn, sample_nn)
 ROTATE(rotate_linear, sample_linear)
@@ -323,6 +342,9 @@ RESIZE(resize_nn, sample_nn)
 RESIZE(resize_linear, sample_linear)
 RESIZE(resize_bicubic, sample_bicubic)
 
+SHEAR(shear_nn, sample_nn)
+SHEAR(shear_linear, sample_linear)
+SHEAR(shear_cubic, sample_bicubic)
 
 
 TYPE lanczos(INPUT source, global const float * factors, int src_step, float2 pos, int2 SrcSize, int a, int size)

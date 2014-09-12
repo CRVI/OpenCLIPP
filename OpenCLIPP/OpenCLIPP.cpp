@@ -467,6 +467,11 @@ ocipError ocip_API ocipResize(ocipImage Source, ocipImage Dest, enum ocipInterpo
    H( CLASS.Resize(Img(Source), Img(Dest), Transform::EInterpolationType(Interpolation), KeepRatio != 0) )
 }
 
+ocipError ocip_API ocipShear(ocipImage Source, ocipImage Dest, double ShearX, double ShearY, double XShift, double YShift, enum ocipInterpolationType Interpolation)
+{
+   H( CLASS.Shear(Img(Source), Img(Dest), ShearX, ShearY, XShift, YShift, Transform::EInterpolationType(Interpolation) ) )
+}
+
 ocipError ocip_API ocipSet(ocipImage Dest, float Value)
 {
    H( CLASS.SetAll(Img(Dest), Value) )

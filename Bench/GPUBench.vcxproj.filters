@@ -163,5 +163,8 @@
     <ClInclude Include="src\benchImageProximityFFTBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\benchShear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

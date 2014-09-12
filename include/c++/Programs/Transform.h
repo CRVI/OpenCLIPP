@@ -88,6 +88,19 @@ public:
    ///      leaving part of Dest with invalid (unchaged) data to the right or to the bottom.
    void Resize(Image& Source, Image& Dest, EInterpolationType Interpolation = BestQuality, bool KeepRatio = false);
 
+   /// Shearing transformation.
+   /// \param Source : Source image
+   /// \param Dest : Destination image
+   /// \param ShearX : X Shearing coefficient.
+   /// \param ShearY : Y Shearing coefficient.
+   /// \param XShift : Shift along horizonltal axis to do after the shearing.
+   /// \param YShift : Shift along vertical axis to do after the shearing.
+   /// \param Interpolation : Type of interpolation to use.
+   ///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+   ///      BestQuality will use Cubic.
+   void Shear(Image& Source, Image& Dest,
+      double ShearX, double ShearY, double XShift, double YShift, EInterpolationType Interpolation = BestQuality);
+
    /// Sets all values of Dest to value
    void SetAll(Image& Dest, float Value);
 
