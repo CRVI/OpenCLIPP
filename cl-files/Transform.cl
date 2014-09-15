@@ -150,7 +150,7 @@ TYPE sample_linear(INPUT source, int src_step, float2 pos, int2 SrcSize)
 
    pos -= (float2)(0.5f, 0.5f);
 
-   if (pos.x < 0 || pos.x >= SrcSize.x - 1 || pos.y < 0 || pos.y >= SrcSize.y - 1)
+   if (pos.x < -0.5f || pos.x >= SrcSize.x - 1 || pos.y < -0.5f || pos.y >= SrcSize.y - 1)
       return 0;
    
    int x1 = (int)(pos.x);
