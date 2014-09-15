@@ -2,7 +2,7 @@
 //! @file	: benchConvert.hpp
 //! @date   : Jul 2013
 //!
-//! @brief  : Benchmark class datatype conversions
+//! @brief  : Benchmark class for datatype conversions
 //! 
 //! Copyright (C) 2013 - CRVI
 //!

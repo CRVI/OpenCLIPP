@@ -2,7 +2,7 @@
 //! @file	: benchCompare.hpp
 //! @date   : Feb 2014
 //!
-//! @brief  : Creates classes for image thresholding
+//! @brief  : Contains tests for image comparisons
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

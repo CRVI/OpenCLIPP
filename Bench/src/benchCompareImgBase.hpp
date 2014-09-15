@@ -2,7 +2,7 @@
 //! @file	: benchThresholdCompareImgBase.hpp
 //! @date   : Feb 2014
 //!
-//! @brief  : Creates classes for an binary image comparing and thresholding 
+//! @brief  : Creates classes for binary image comparisons
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

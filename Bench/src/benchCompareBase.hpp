@@ -2,7 +2,7 @@
 //! @file	: benchCompareBase.hpp
 //! @date   : Feb 2014
 //!
-//! @brief  : Creates classes for an unary image comapring 
+//! @brief  : Creates classes for image comparisons
 //! 
 //! Copyright (C) 2014 - CRVI
 //!

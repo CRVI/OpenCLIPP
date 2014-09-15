@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: benchReduce.hpp
+//! @file	: benchReduce4C.hpp
 //! @date   : Jul 2013
 //!
 //! @brief  : Creates a benchmark class for reduction operations
