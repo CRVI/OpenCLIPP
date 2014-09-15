@@ -281,6 +281,44 @@ void Transform::Shear(Image& Source, Image& Dest, double ShearX, double ShearY,
 
 }
 
+void Transform::Remap(Image& Source, Image& MapX, Image& MapY, Image& Dest, EInterpolationType Interpolation)
+{
+   if (!SameType(Source, Dest))
+      throw cl::Error(CL_INVALID_VALUE, "Different image types used");
+
+   if (MapX.NbChannels() > 1 || MapY.NbChannels() > 1)
+      throw cl::Error(CL_INVALID_VALUE, "Remap can use only images with 1 channel for the map images");
+
+   if (MapX.DataType() != SImage::F32 || MapY.DataType() != SImage::F32)
+      throw cl::Error(CL_INVALID_VALUE, "Remap can use only F32 images for the map images");
+
+   const SImage& SrcImg = Source;
+   const SImage& DstImg = Dest;
+
+   switch (Interpolation)
+   {
+   case NearestNeighbour:
+      Kernel_(*m_CL, SelectProgram(Source), remap_nn, Dest.FullRange(), LOCAL_RANGE,
+         In(Source, MapX, MapY), Dest, MapX.Step(), MapY.Step(), SrcImg, DstImg);
+      break;
+   case Linear:
+      Kernel_(*m_CL, SelectProgram(Source), remap_linear, Dest.FullRange(), LOCAL_RANGE,
+         In(Source, MapX, MapY), Dest, MapX.Step(), MapY.Step(), SrcImg, DstImg);
+      break;
+   case BestQuality:
+   case Cubic:
+      Kernel_(*m_CL, SelectProgram(Source), remap_cubic, Dest.FullRange(), LOCAL_RANGE,
+         In(Source, MapX, MapY), Dest, MapX.Step(), MapY.Step(), SrcImg, DstImg);
+      break;
+   case Lanczos2:
+   case Lanczos3:
+   case SuperSampling:
+   default:
+      throw cl::Error(CL_INVALID_ARG_VALUE, "Unsupported interpolation type in Rotate");
+   }
+
+}
+
 void Transform::SetAll(Image& Dest, float Value)
 {
    Kernel(set_all, In(Dest), Out(), Dest.Step(), Value);

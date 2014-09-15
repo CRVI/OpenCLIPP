@@ -225,6 +225,7 @@
     <ClInclude Include="src\benchImageProximityBase.hpp" />
     <ClInclude Include="src\benchImageProximityFFTBase.hpp" />
     <ClInclude Include="src\benchIntegral.hpp" />
+    <ClInclude Include="src\benchRemap.hpp" />
     <ClInclude Include="src\benchRotate.hpp" />
     <ClInclude Include="src\benchShear.hpp" />
     <ClInclude Include="src\benchSqrIntegral.hpp" />

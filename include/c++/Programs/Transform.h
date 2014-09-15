@@ -101,6 +101,16 @@ public:
    void Shear(Image& Source, Image& Dest,
       double ShearX, double ShearY, double XShift, double YShift, EInterpolationType Interpolation = BestQuality);
 
+   /// Remap
+   /// \param Source : Source image
+   /// \param MapX : X Map image, must be 1 channel, F32
+   /// \param MapY : Y Map image, must be 1 channel, F32
+   /// \param Dest : Destination image
+   /// \param Interpolation : Type of interpolation to use.
+   ///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+   ///      BestQuality will use Cubic.
+   void Remap(Image& Source, Image& MapX, Image& MapY, Image& Dest, EInterpolationType Interpolation = BestQuality);
+
    /// Sets all values of Dest to value
    void SetAll(Image& Dest, float Value);
 

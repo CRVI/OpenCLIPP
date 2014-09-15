@@ -49,6 +49,8 @@
 #include "benchFFT.hpp"
 #include "benchTransform.hpp"
 #include "benchRotate.hpp"
+#include "benchShear.hpp"
+#include "benchRemap.hpp"
 #include "benchBlob.hpp"
 
 void RunBench()
@@ -147,6 +149,15 @@ void RunBench()
    B(ResizeBiggerLinear);
    //B(ResizeBiggerCubic);   // Cubic resizing works well but there are sometimes differences in the top and left lines when comparing with IPP
    B(ResizeBiggerLanczos);
+
+   // Shear - works really well but borders are handled differently in IPP
+   //B(Shear);
+   //B(ShearLinear);
+   //B(ShearCubic);
+
+   B(Remap);
+   B(RemapLinear);
+   B(RemapCubic);
 
    // Filters
    Bench(Sobel3_1Bench);

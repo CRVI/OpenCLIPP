@@ -334,6 +334,21 @@ TYPE sample_bicubic(INPUT source, int src_step, float2 pos, int2 SrcSize)
       dest[pos.y * dst_step + pos.x] = value;\
    }
 
+#define REMAP(name, sampling) \
+   kernel void name(INPUT source, INPUT_SPACE const float * xmap, INPUT_SPACE const float * ymap,\
+      OUTPUT dest, uint xmap_step, uint ymap_step, struct SImage src_img, struct SImage dst_img)\
+   {\
+      BEGIN\
+      int src_step = src_img.Step / sizeof(TYPE);\
+      int dst_step = dst_img.Step / sizeof(TYPE);\
+      xmap_step /= sizeof(float);\
+      ymap_step /= sizeof(float);\
+      float2 srcpos = {xmap[gy * xmap_step + gx] + .5f, ymap[gy * ymap_step + gx] + .5f};\
+      int2 SrcSize = (int2)(src_img.Width, src_img.Height);\
+      TYPE value = sampling (source, src_step, srcpos, SrcSize);\
+      dest[pos.y * dst_step + pos.x] = value;\
+   }
+
 ROTATE(rotate_nn, sample_nn)
 ROTATE(rotate_linear, sample_linear)
 ROTATE(rotate_bicubic, sample_bicubic)
@@ -345,6 +360,10 @@ RESIZE(resize_bicubic, sample_bicubic)
 SHEAR(shear_nn, sample_nn)
 SHEAR(shear_linear, sample_linear)
 SHEAR(shear_cubic, sample_bicubic)
+
+REMAP(remap_nn, sample_nn)
+REMAP(remap_linear, sample_linear)
+REMAP(remap_cubic, sample_bicubic)
 
 
 TYPE lanczos(INPUT source, global const float * factors, int src_step, float2 pos, int2 SrcSize, int a, int size)

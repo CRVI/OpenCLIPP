@@ -427,6 +427,16 @@ ocipError ocip_API ocipResize(    ocipImage Source, ocipImage Dest, enum ocipInt
 ///      BestQuality will use Cubic.
 ocipError ocip_API ocipShear(ocipImage Source, ocipImage Dest, double ShearX, double ShearY, double XShift, double YShift, enum ocipInterpolationType Interpolation);
 
+/// Remap
+/// \param Source : Source image
+/// \param MapX : X Map image, must be 1 channel, F32
+/// \param MapY : Y Map image, must be 1 channel, F32
+/// \param Dest : Destination image
+/// \param Interpolation : Type of interpolation to use.
+///      Available choices are : NearestNeighbour, Linear, Cubic or BestQuality
+///      BestQuality will use Cubic.
+ocipError ocip_API ocipRemap(ocipImage Source, ocipImage MapX, ocipImage MapY, ocipImage Dest, enum ocipInterpolationType Interpolation);
+
 /// Sets all values of Dest to value
 ocipError ocip_API ocipSet(       ocipImage Dest, float Value);
 
