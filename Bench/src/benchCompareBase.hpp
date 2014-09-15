@@ -48,7 +48,7 @@ public:
 template<typename DataType>
 void CLASS_NAME<DataType>::Create(uint Width, uint Height)
 {
-	IBench1in1out::Create<DataType, unsigned char>(Width, Height);
+   IBench1in1out::Create<DataType, unsigned char>(Width, Height);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -56,34 +56,34 @@ template<>
 void CLASS_NAME<unsigned char>::RunIPP()
 {
    IPP_CODE(
-			ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
-		)
+         ippiCompareC_8u_C1R(this->m_ImgSrc.Data(), this->m_ImgSrc.Step, VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+      )
 }
 template<>
 void CLASS_NAME<unsigned short>::RunIPP()
 {
    IPP_CODE(
-			ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
-		)
+         ippiCompareC_16u_C1R((Ipp16u*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, USHORT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+      )
 }
 template<>
 void CLASS_NAME<float>::RunIPP()
 {
    IPP_CODE(
-			ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
-		)
+         ippiCompareC_32f_C1R((Ipp32f*)this->m_ImgSrc.Data(), this->m_ImgSrc.Step, FLOAT_VALUE, this->m_ImgDstIPP.Data(), this->m_ImgDstIPP.Step, this->m_IPPRoi, GetIppCmpOp(COMPARE_TYPE));
+      )
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
 void CLASS_NAME<DataType>::RunCL()
 {
-	float value = VALUE;
-	if (is_same<DataType, unsigned short>::value)
-		value = USHORT_VALUE;
+   float value = VALUE;
+   if (is_same<DataType, unsigned short>::value)
+      value = USHORT_VALUE;
 
-	if (is_same<DataType, float>::value)
-		value = FLOAT_VALUE;
+   if (is_same<DataType, float>::value)
+      value = FLOAT_VALUE;
 
    ocipCompareC(this->m_CLSrc, this->m_CLDst, value, COMPARE_TYPE);
 }
@@ -94,21 +94,21 @@ void CLASS_NAME<unsigned char>::RunNPP()
 {
    NPP_CODE(
       nppiCompareC_8u_C1R((Npp8u*)this->m_NPPSrc, this->m_NPPSrcStep, VALUE, (Npp8u*)this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
-		)
+      )
 }
 template<>
 void CLASS_NAME<unsigned short>::RunNPP()
 {
    NPP_CODE(
       nppiCompareC_16u_C1R((Npp16u*)this->m_NPPSrc, this->m_NPPSrcStep, USHORT_VALUE, (Npp8u*)this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
-		)
+      )
 }
 template<>
 void CLASS_NAME<float>::RunNPP()
 {
    NPP_CODE(
       nppiCompareC_32f_C1R((Npp32f*)this->m_NPPSrc, this->m_NPPSrcStep, FLOAT_VALUE, (Npp8u*)this->m_NPPDst, this->m_NPPDstStep, this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
-		)
+      )
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename DataType>
