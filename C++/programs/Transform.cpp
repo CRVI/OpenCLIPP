@@ -324,4 +324,9 @@ void Transform::SetAll(Image& Dest, float Value)
    Kernel(set_all, In(Dest), Out(), Dest.Step(), Value);
 }
 
+void Transform::SetAll(Image& Dest, uint X, uint Y, uint Width, uint Height, float Value)
+{
+   Kernel(set_all_rect, In(Dest), Out(), Dest.Step(), X, Y, Width, Height, Value);
+}
+
 }

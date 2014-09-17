@@ -114,6 +114,9 @@ public:
    /// Sets all values of Dest to value
    void SetAll(Image& Dest, float Value);
 
+   /// Sets all values inside destination rectangle of Dest to Value
+   void SetAll(Image& Dest, uint X, uint Y, uint Width, uint Height, float Value);
+
 protected:
    void ResizeLanczos(Image& Source, Image& Dest, int a, cl::NDRange Range);
 };

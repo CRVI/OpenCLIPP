@@ -55,6 +55,16 @@ kernel void set_all(OUTPUT dest, int dst_step, float value)
    dest[gy * dst_step + gx] = CONVERT_SCALAR(value);
 }
 
+kernel void set_all_rect(OUTPUT dest, int dst_step, uint X, uint Y, uint Width, uint Height, float value)
+{
+   BEGIN
+   if (gx < X || gy < Y || gx >= X + Width || gy >= Y + Height)
+      return;
+
+   dst_step /= sizeof(TYPE);
+   dest[gy * dst_step + gx] = CONVERT_SCALAR(value);
+}
+
 
 
 // Implementation of fast GPU image transposition
