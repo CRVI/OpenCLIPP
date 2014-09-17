@@ -181,14 +181,14 @@ Image::Image(Image& Img, const SPoint& Offset, const SSize& Size, cl_mem_flags f
           Offset.Y * Img.Step() + Offset.X * Img.DepthBytes() * Img.NbChannels(),   // Calculate offset in bytes
           Size.Height * Img.Step() - (Img.Width() - Size.Width) * Img.DepthBytes() * Img.NbChannels(),   // Calculate size in bytes
           flags,
-          flags),    // Use flags as temporary variable to receive the actual offset value
+          (size_t&) flags),    // Use flags as temporary variable to receive the actual offset value
    ImageBase(Img)
 {
    // Buffer is not always capable of creating a sub-buffer at the offset specified due to memory alignement requirements
    // So it may create a buffer that starts ealier than the offset we calculated and thus it will have a bigger size
    // So in order to cover the whole ROI, we need to recalculate the size of the image
    size_t AskedOffset = Offset.Y * Img.Step() + Offset.X * Img.DepthBytes() * Img.NbChannels();
-   size_t ActualBufferOffset = flags;
+   size_t ActualBufferOffset = size_t(flags);
    size_t OffsetDifference = AskedOffset - ActualBufferOffset;
    size_t OffsetDiffElements = OffsetDifference / (Img.DepthBytes() * Img.NbChannels());
 
