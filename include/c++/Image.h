@@ -61,7 +61,7 @@ public:
 
    uint Width() const;        ///< Width of the image, in pixels
    uint Height() const;       ///< Height of the image, in pixels
-   SSize Size() const;        ///< Size of the image, in pixels
+   SSize ImageSize() const;   ///< Size of the image, in pixels
    uint Step() const;         ///< Number of bytes between each row
    uint ElementStep() const;  ///< Number of elements between each row
    uint Depth() const;        ///< Number of bits per channel

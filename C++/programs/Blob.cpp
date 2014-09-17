@@ -45,7 +45,7 @@ void Blob::SBlobInfo::Init(int connectType)
 void Blob::PrepareFor(ImageBase& Source)
 {
    if (m_TempBuffer == nullptr || Source.Width() > m_TempBuffer->Width() || Source.Height() > m_TempBuffer->Height())
-      m_TempBuffer = std::make_shared<TempImage>(*m_CL, Source.Size(), SImage::S32);
+      m_TempBuffer = std::make_shared<TempImage>(*m_CL, Source.ImageSize(), SImage::S32);
 }
 
 void Blob::ComputeLabels(Image& Source, Image& Labels, int ConnectType)

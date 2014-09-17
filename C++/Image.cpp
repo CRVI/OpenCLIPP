@@ -58,7 +58,7 @@ uint ImageBase::Height() const
    return m_Img.Height;
 }
 
-SSize ImageBase::Size() const
+SSize ImageBase::ImageSize() const
 {
    SSize Size = {m_Img.Width, m_Img.Height};
    return Size;
