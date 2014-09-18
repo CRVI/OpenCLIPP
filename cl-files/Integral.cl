@@ -330,7 +330,7 @@ kernel void scan1_F64(INPUT source, global DOUBLE * dest, int src_step, int dst_
    DOUBLE Sum = 0;
    for (int i = 0; i < WIDTH1; i++)
    {
-      Sum += source[gy * src_step + gx + i];
+      Sum += CONVERT_DOUBLE(source[gy * src_step + gx + i]);
       TmpSumX[buf_index + i] = Sum;
    }
 

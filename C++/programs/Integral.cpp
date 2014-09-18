@@ -57,8 +57,7 @@ void Integral::PrepareFor(ImageBase& Source)
       uint(VerticalImgSize_F32.Width) <= m_VerticalJunctions_F32->Width() &&
       uint(VerticalImgSize_F32.Height) <= m_VerticalJunctions_F32->Height() &&
       uint(HorizontalImgSize_F32.Width) <= m_HorizontalJunctions_F32->Width() &&
-      uint(HorizontalImgSize_F32.Height) <= m_HorizontalJunctions_F32->Height() &&
-      Source.IsFloat() == m_VerticalJunctions_F32->IsFloat())
+      uint(HorizontalImgSize_F32.Height) <= m_HorizontalJunctions_F32->Height())
    {
       // Buffers are good
       return;
@@ -145,7 +144,6 @@ void Integral::Integral_F32(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
-   Check1Channel(Dest);
 
    Kernel_Local(scan1_F32, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
@@ -171,7 +169,6 @@ void Integral::SqrIntegral_F32(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
-   Check1Channel(Dest);
 
    Kernel_Local(sqr_F32, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
@@ -197,7 +194,6 @@ void Integral::Integral_F64(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
-   Check1Channel(Dest);
 
    Kernel_Local(scan1_F64, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
@@ -223,7 +219,6 @@ void Integral::SqrIntegral_F64(Image& Source, Image& Dest)
 {
    PrepareFor(Source);
    CheckSameSize(Source, Dest);
-   Check1Channel(Dest);
 
    Kernel_Local(sqr_F64, Source, Dest, Source.Step(), Dest.Step(), Source.Width(), Source.Height());
 
