@@ -92,13 +92,13 @@ protected:
    FFT        m_fft;
 
    /// prepare for the square different template matching
-   void MatchTemplatePrepared_SQDIFF(int width, int hight, Image& Source, float templ_sqsum, Image& Dest);
+   void MatchSquareDiff(int width, int hight, Image& Source, double * templ_sqsum, Image& Dest);
 
    /// prepare for the normalized square different template matching
-   void MatchTemplatePrepared_SQDIFF_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest);
+   void MatchSquareDiffNorm(int width, int hight, Image& Source, double * templ_sqsum, Image& Dest);
 
    /// prepare for the normalized cross correlation template matching
-   void MatchTemplatePrepared_CCORR_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest);
+   void MatchCrossCorrNorm(int width, int hight, Image& Source, double * templ_sqsum, Image& Dest);
 
    /// Performs a per-element multiplication of two Fourier spectrums and scales the result
    void MulAndScaleSpectrums(Image& Source, Image& Template, Image& Dest, float scale);

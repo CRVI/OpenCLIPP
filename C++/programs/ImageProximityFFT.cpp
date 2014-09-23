@@ -43,7 +43,7 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, Image& Template)
    size.Height = Source.Height();
 
    if (m_image_sqsums == nullptr || m_image_sqsums->Width() < size.Width || m_image_sqsums->Height() < size.Height)
-      m_image_sqsums = std::make_shared<TempImage>(*m_CL, size, SImage::F32, 1);
+      m_image_sqsums = std::make_shared<TempImage>(*m_CL, size, SImage::F32, Source.NbChannels());
 
 
    // Size of the FFT input and output
@@ -81,46 +81,66 @@ void ImageProximityFFT::PrepareFor(ImageBase& Source, Image& Template)
    m_statistics.PrepareFor(Template);
    m_transform.PrepareFor(Source);
    m_fft.PrepareFor(*m_bigger_source, *m_source_spect);
+   SelectProgram(Source).Build();
+   SelectProgram(*m_source_spect).Build();
 }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int width, int hight, Image& Source, float templ_sqsum, Image& Dest)
+void ImageProximityFFT::MatchSquareDiff(int width, int hight, Image& Source, double * templ_sqsum, Image& Dest)
 {
-   Check1Channel(Dest);
-   Kernel(matchTemplatePreparedSQDIFF,  In(Source), Out(Dest), width, hight, templ_sqsum, Source.Step(), Dest.Step(), Dest.Width(), Dest.Height());
+   cl_float4 TemplateSqSum = {float(templ_sqsum[0]), float(templ_sqsum[1]), float(templ_sqsum[2]), float(templ_sqsum[3])};
+
+   Kernel(square_difference,        In(Source), Out(Dest), Source.Step(), Dest.Width(), Dest.Height(), Dest.Step(),
+      width, hight, TemplateSqSum);
 }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest)
+void ImageProximityFFT::MatchSquareDiffNorm(int width, int hight, Image& Source, double * templ_sqsum, Image& Dest)
 {
-   Check1Channel(Dest);
-   Kernel(matchTemplatePreparedSQDIFF_NORM,  In(Source), Out(Dest), width, hight, templ_sqsum, Source.Step(), Dest.Step(), Dest.Width(), Dest.Height());
+   cl_float4 TemplateSqSum = {float(templ_sqsum[0]), float(templ_sqsum[1]), float(templ_sqsum[2]), float(templ_sqsum[3])};
+
+   Kernel(square_difference_norm,   In(Source), Out(Dest), Source.Step(), Dest.Step(), Dest.Width(), Dest.Height(),
+      width, hight, TemplateSqSum);
 }
 
-void ImageProximityFFT::MatchTemplatePrepared_CCORR_NORM(int width, int hight, Image& Source, float templ_sqsum, Image& Dest)
+void ImageProximityFFT::MatchCrossCorrNorm(int width, int hight, Image& Source, double * templ_sqsum, Image& Dest)
 {
-   Check1Channel(Dest);
-   Kernel(matchTemplatePreparedCCORR_NORM,  In(Source), Out(Dest), width, hight, templ_sqsum, Source.Step(), Dest.Step(), Dest.Width(), Dest.Height());
+   cl_float4 TemplateSqSum = {float(templ_sqsum[0]), float(templ_sqsum[1]), float(templ_sqsum[2]), float(templ_sqsum[3])};
+
+   Kernel(crosscorr_norm,           In(Source), Out(Dest), Source.Step(), Dest.Step(), Dest.Width(), Dest.Height(),
+      width, hight, TemplateSqSum);
 }
 
 void ImageProximityFFT::CrossCorr(Image& Source, Image& Template, Image& Dest)
 {
-   CheckSameSize(Source, Dest);
-   Check1Channel(Source);
-   Check1Channel(Template);
    CheckFloat(Dest);
+   CheckSameNbChannels(Source, Template);
+   CheckSameNbChannels(Source, Dest);
+   CheckSameSize(Source, Dest);
 
+   // Verify image size
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "The template image must be smaller than source image.");
+
+   // Verify image types
    if(!SameType(Source, Template))
       throw cl::Error(CL_IMAGE_FORMAT_MISMATCH, "The source image and the template image must be same type.");
 
-   Convolve(Source, Template, Dest);
+   PrepareFor(Source, Template);
+
+   Convolve(Source, Template, Dest);   // Computes the cross correlation using FFT
 }
 
 void ImageProximityFFT::CrossCorr_Norm(Image& Source, Image& Template, Image& Dest)
 {
-   CheckSameSize(Source, Dest);
-   Check1Channel(Source);
-   Check1Channel(Template);
    CheckFloat(Dest);
+   CheckSameNbChannels(Source, Template);
+   CheckSameNbChannels(Source, Dest);
+   CheckSameSize(Source, Dest);
 
+   // Verify image size
+   if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
+      throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "The template image must be smaller than source image.");
+
+   // Verify image types
    if(!SameType(Source, Template))
       throw cl::Error(CL_IMAGE_FORMAT_MISMATCH, "The source image and the template image must be same type.");
 
@@ -128,15 +148,21 @@ void ImageProximityFFT::CrossCorr_Norm(Image& Source, Image& Template, Image& De
 
    m_integral.SqrIntegral(Source, *m_image_sqsums);
 
-   float templ_sqsum =  static_cast<float>(m_statistics.SumSqr(Template));
+   double templ_sqsum[4] = {0};
+   m_statistics.SumSqr(Template, templ_sqsum);
 
-   Convolve(Source, Template, Dest);
+   Convolve(Source, Template, Dest);   // Computes the cross correlation using FFT
 
-   MatchTemplatePrepared_CCORR_NORM(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
+   MatchCrossCorrNorm(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
 }
 
 void ImageProximityFFT::SqrDistance(Image& Source, Image& Template, Image& Dest)
 {
+   CheckFloat(Dest);
+   CheckSameNbChannels(Source, Template);
+   CheckSameNbChannels(Source, Dest);
+   CheckSameSize(Source, Dest);
+
    // Verify image size
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "The template image must be smaller than source image.");
@@ -145,23 +171,25 @@ void ImageProximityFFT::SqrDistance(Image& Source, Image& Template, Image& Dest)
    if(!SameType(Source, Template))
       throw cl::Error(CL_IMAGE_FORMAT_MISMATCH, "The source image and the template image must be same type.");
 
-   Check1Channel(Source);
-   Check1Channel(Template);
-   CheckFloat(Dest);
-
    PrepareFor(Source, Template);
 
    m_integral.SqrIntegral(Source, *m_image_sqsums);
 
-   float templ_sqsum =  static_cast<float>(m_statistics.SumSqr(Template));
+   double templ_sqsum[4] = {0};
+   m_statistics.SumSqr(Template, templ_sqsum);
 
-   CrossCorr(Source, Template, Dest);
+   Convolve(Source, Template, Dest);   // Computes the cross correlation using FFT
 
-   MatchTemplatePrepared_SQDIFF(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
+   MatchSquareDiff(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
 }
 
 void ImageProximityFFT::SqrDistance_Norm(Image& Source, Image& Template, Image& Dest)
 {
+   CheckFloat(Dest);
+   CheckSameNbChannels(Source, Template);
+   CheckSameNbChannels(Source, Dest);
+   CheckSameSize(Source, Dest);
+
    // Verify image size
    if (Template.Width() > Source.Width() || Template.Height() > Source.Height())
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "The template image must be smaller than source image.");
@@ -170,18 +198,15 @@ void ImageProximityFFT::SqrDistance_Norm(Image& Source, Image& Template, Image& 
    if(!SameType(Source, Template))
       throw cl::Error(CL_IMAGE_FORMAT_MISMATCH, "The source image and the template image must be same type.");
 
-   Check1Channel(Source);
-   Check1Channel(Template);
-   CheckFloat(Dest);
-
    PrepareFor(Source, Template);
 
    m_integral.SqrIntegral(Source, *m_image_sqsums);
 
-   float templ_sqsum = static_cast<float>(m_statistics.SumSqr(Template));
+   double templ_sqsum[4] = {0};
+   m_statistics.SumSqr(Template, templ_sqsum);
 
    CrossCorr(Source, Template, Dest);
-   MatchTemplatePrepared_SQDIFF_NORM(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
+   MatchSquareDiffNorm(Template.Width(), Template.Height(), *m_image_sqsums, templ_sqsum, Dest);
 }
 
 void ImageProximityFFT::MulAndScaleSpectrums(Image& Source, Image& Template, Image& Dest, float scale)
@@ -210,33 +235,38 @@ void ImageProximityFFT::Convolve(Image& Source, Image& Template, Image& Dest)
    m_transform.SetAll(*m_bigger_template, 0);
    m_transform.SetAll(*m_bigger_source, 0);
 
-   // Copy the data from Source and Template in images that are F32 and are big enough
-   Kernel(copy_offset, In(Source), Out(*m_bigger_source), Source.Step(), m_bigger_source->Step(),
-      int(Template.Width()) / 2, int(Template.Height()) / 2, m_bigger_source->Width(), m_bigger_source->Height());
+   for (uint i = 1; i <= Source.NbChannels(); i++)
+   {
+      // Copy the data from Source and Template in images that are F32 and are big enough
+      Kernel(copy_offset, In(Source), Out(*m_bigger_source), Source.Step(), m_bigger_source->Step(),
+         int(Template.Width()) / 2, int(Template.Height()) / 2, m_bigger_source->Width(), m_bigger_source->Height(), i);
 
-   Kernel(copy_offset, In(Template), Out(*m_bigger_template), Template.Step(), m_bigger_template->Step(),
-      0, 0, m_bigger_template->Width(), m_bigger_template->Height());
-
-
-   // Forward FFT of Source and Template
-   m_fft.Forward(*m_bigger_source, *m_source_spect);
-   m_fft.Forward(*m_bigger_template, *m_templ_spect);
+      Kernel(copy_offset, In(Template), Out(*m_bigger_template), Template.Step(), m_bigger_template->Step(),
+         0, 0, m_bigger_template->Width(), m_bigger_template->Height(), i);
 
 
-   // We need to divide the values by the FFT area to get the proper 
-   float Area = float(m_bigger_source->Width() * m_bigger_source->Height());
-
-   // Do the convolution using pointwise product of the spectrums
-   // See information here : http://en.wikipedia.org/wiki/Convolution_theorem
-   MulAndScaleSpectrums(*m_source_spect, *m_templ_spect, *m_result_spect, 1 / Area);
+      // Forward FFT of Source and Template
+      m_fft.Forward(*m_bigger_source, *m_source_spect);
+      m_fft.Forward(*m_bigger_template, *m_templ_spect);
 
 
-   // Inverse FFT to get the result of the convolution
-   m_fft.Inverse(*m_result_spect, *m_bigger_source);  // Reuse m_bigger_source image for the convolution result
+      // We need to divide the values by the FFT area to get the proper 
+      float Area = float(m_bigger_source->Width() * m_bigger_source->Height());
+
+      // Do the convolution using pointwise product of the spectrums
+      // See information here : http://en.wikipedia.org/wiki/Convolution_theorem
+      MulAndScaleSpectrums(*m_source_spect, *m_templ_spect, *m_result_spect, 1 / Area);
 
 
-   // Copy the result to Dest
-   Kernel(copy_roi, In((*m_bigger_source)), Out(Dest), m_bigger_source->Step(), Dest.Step(), Dest.Width(), Dest.Height());
+      // Inverse FFT to get the result of the convolution
+      m_fft.Inverse(*m_result_spect, *m_bigger_source);  // Reuse m_bigger_source image for the convolution result
+
+
+      // Copy the result to Dest
+      Kernel_(*m_CL, SelectProgram(Dest), copy_result, m_bigger_source->FullRange(), LOCAL_RANGE,
+         In(*m_bigger_source), Out(Dest), m_bigger_source->Step(), Dest.Step(), Dest.Width(), Dest.Height(), i);
+   }
+
 }
 
 #else   // USE_CLFFT
@@ -244,13 +274,13 @@ void ImageProximityFFT::Convolve(Image& Source, Image& Template, Image& Dest)
 void ImageProximityFFT::PrepareFor(ImageBase& , Image& )
 { }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF(int , int , Image& , float , Image& )
+void ImageProximityFFT::MatchSquareDiff(int , int , Image& , float , Image& )
 { }
 
-void ImageProximityFFT::MatchTemplatePrepared_SQDIFF_NORM(int , int , Image& , float , Image& )
+void ImageProximityFFT::MatchSquareDiffNorm(int , int , Image& , float , Image& )
 { }
 
-void ImageProximityFFT::MatchTemplatePrepared_CCORR_NORM(int , int , Image& , float , Image& )
+void ImageProximityFFT::MatchCrossCorrNorm(int , int , Image& , float , Image& )
 { }
 
 void ImageProximityFFT::CrossCorr(Image& , Image& , Image& )
