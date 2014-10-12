@@ -1,7 +1,7 @@
 OpenCLIPP - OpenCL Integrated Performance Primitives
 =========================================================
 
-OpenCLIPP is a library providing processing primitives (image processing primitives in the first version) implemented with OpenCL for fast execution on dedicated computing devices like GPUs.
+OpenCLIPP is a library providing processing primitives (image processing and computer vision primitives) implemented with OpenCL for fast execution on dedicated computing devices like GPUs.
 
 It was designed to be simple to use and to have low overhead.
 
@@ -11,6 +11,10 @@ Two interfaces are provided :
       
  - C++ Interface
       
+Website
+-------
+
+[OpenCLIPP Website] (http://openclipp.wix.com/openclipp) 
 
 Requirements
 ------------
@@ -177,6 +181,9 @@ Currently implemented primitives
 - Blob labeling
 - Integral scan
 - FFT (using external library clFFT)
+- ...
+
+Check [OpenCLIPP Website] (http://openclipp.wix.com/openclipp) for more details.
 
 Performance
 -----------
@@ -189,17 +196,23 @@ No device specific optimization has been done so performance of many primitives 
 Architecture & Supervision
 --------------------------
 
-- [Moulay Akhloufi](mailto:moulay.akhloufi@crvi.ca)
+- [Moulay Akhloufi] (https://www.linkedin.com/in/akhloufi)
 
-Authors
--------
+Contributors
+------------
 
-- [Antoine W. Campagna](mailto:antoine.campagna@crvi.ca)
+- Antoine W. Campagna 
+- Gao Chen
+
+Call for contributions
+----------------------
+
+Join our team and contribute with your OpenCL code to OpenCLIPP. Check [OpenCLIPP Website] (http://openclipp.wix.com/openclipp) for contribution details or send an email to the OpenCLIPP team (see email below). 
 
 Comments or questions
 ---------------------
 
-- [Computer Vision Team](mailto:vision@crvi.ca)
+- [OpenCLIPP Team](mailto:openclipp@gmail.com)
 
 License
 -------
