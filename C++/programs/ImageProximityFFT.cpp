@@ -274,13 +274,13 @@ void ImageProximityFFT::Convolve(Image& Source, Image& Template, Image& Dest)
 void ImageProximityFFT::PrepareFor(ImageBase& , Image& )
 { }
 
-void ImageProximityFFT::MatchSquareDiff(int , int , Image& , float , Image& )
+void ImageProximityFFT::MatchSquareDiff(int , int , Image& , double * , Image& )
 { }
 
-void ImageProximityFFT::MatchSquareDiffNorm(int , int , Image& , float , Image& )
+void ImageProximityFFT::MatchSquareDiffNorm(int , int , Image& , double * , Image& )
 { }
 
-void ImageProximityFFT::MatchCrossCorrNorm(int , int , Image& , float , Image& )
+void ImageProximityFFT::MatchCrossCorrNorm(int , int , Image& , double * , Image& )
 { }
 
 void ImageProximityFFT::CrossCorr(Image& , Image& , Image& )
