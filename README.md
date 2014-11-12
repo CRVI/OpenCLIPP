@@ -10,11 +10,6 @@ Two interfaces are provided :
  - C Interface similar to the Intel IPP and NVIDIA NPP libraries      
       
  - C++ Interface
-      
-Website
--------
-
-[OpenCLIPP Website] (http://openclipp.wix.com/openclipp) 
 
 Requirements
 ------------
@@ -183,8 +178,6 @@ Currently implemented primitives
 - FFT (using external library clFFT)
 - ...
 
-Check [OpenCLIPP Website] (http://openclipp.wix.com/openclipp) for more details.
-
 Performance
 -----------
 
@@ -193,12 +186,7 @@ Performance is comparable and often slightly better than NPP on the same GPU (so
 The library has the advantage of being able to run on AMD GPUs that usually provide significantly better OpenCL performance than NVIDIA GPUs.
 No device specific optimization has been done so performance of many primitives can be further improved.
 
-Architecture & Supervision
---------------------------
-
-- [Moulay Akhloufi] (https://www.linkedin.com/in/akhloufi)
-
-Contributors
+Authors
 ------------
 
 - Antoine W. Campagna 
@@ -207,12 +195,14 @@ Contributors
 Call for contributions
 ----------------------
 
-Join our team and contribute with your OpenCL code to OpenCLIPP. Check [OpenCLIPP Website] (http://openclipp.wix.com/openclipp) for contribution details or send an email to the OpenCLIPP team (see email below). 
+We will welcome comments and contributions to improve the library.
+Please send us your contributions via pull requests.
+
 
 Comments or questions
 ---------------------
 
-- [OpenCLIPP Team](mailto:openclipp@gmail.com)
+- [Vision team](mailto:vision@crvi.ca)
 
 License
 -------
