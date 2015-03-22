@@ -81,6 +81,7 @@ protected:
 };
 
 
+class CL_API ColorImage;   // Forward declaration
 
 /// Represents an image that is sent to the device as a cl::Buffer
 class CL_API Image : public Buffer, public ImageBase
@@ -101,6 +102,8 @@ protected:
 
    /// Constructor for a 3 channel image.
    Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags);
+
+   friend class ColorImage;   // Some versions of g++ complain that the constructor above is not accessible
 };
 
 /// Represents a ROI of an image in the device
