@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Image.h"
-#include "programs/Conversions.h"
+#include "Programs/Conversions.h"
 
 namespace OpenCLIPP
 {
