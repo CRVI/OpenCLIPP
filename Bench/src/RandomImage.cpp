@@ -45,7 +45,7 @@ void FillRandomImg(CSimpleImage& Image, int ImageNo)
       std::mt19937 Rand;   // Mersenne twister pseudo random number generator
 
       // Uniform distribution that can set all but the leftmost bit
-      std::uniform_int_distribution<unsigned char> Dist(0, 0xFF);
+      std::uniform_int_distribution<int> Dist(0, 0xFF);
 
       SSize Big = GetBiggestImage();
 
