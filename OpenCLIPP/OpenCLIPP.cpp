@@ -661,6 +661,8 @@ ocipError ocip_API ocipCrossCorrFFT_Norm(ocipProgram Program, ocipImage Source, 
 
 #ifndef _MSC_VER  // Visual Studio does not support #warning
 #warning "OpenCLIPP is not being built with clFFT - FFT operations will not be available"
+#else
+#pragma message("OpenCLIPP is not being built with clFFT - FFT operations will not be available")
 #endif
 
 // Library was not built with clFFT, FFT operations will not be supported
