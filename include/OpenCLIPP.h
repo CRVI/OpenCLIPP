@@ -22,6 +22,8 @@
 //! 
 ////////////////////////////////////////////////////////////////////////////////
 
+#define CL_USE_DEPRECATED_OPENCL_2_0_APIS
+
 #include <CL/opencl.h>
 
 // Definition of ocip_API - used by Microsoft compiler to generate a DLL

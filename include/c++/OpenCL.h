@@ -32,6 +32,7 @@
 // NVIDIA does not currently support OpenCL 1.2 in its drivers
 // So we force usage of the OpenCL 1.1 API
 #define CL_USE_DEPRECATED_OPENCL_1_1_APIS
+#define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/opencl.h>
 #undef CL_VERSION_1_2
 
