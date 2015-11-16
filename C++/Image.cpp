@@ -24,6 +24,9 @@
 
 #include "Image.h"
 #include "Programs/Conversions.h"
+#ifdef _MSC_VER
+#define UNREFERENCED_PARAMETER(P)          (P)
+#endif
 
 namespace OpenCLIPP
 {
@@ -169,6 +172,10 @@ Image::Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, 
 :  Buffer(CL, (char *) ImageData, Img.Height * Img.Step, flags),
    ImageBase(Img)
 {
+   #ifdef _MSC_VER
+	UNREFERENCED_PARAMETER(Is3Channel);
+	#endif
+	
    assert(Is3Channel);
 
    if (Img.Type < 0 || Img.Type >= Img.NbDataTypes)
@@ -260,6 +267,12 @@ void ColorImage::Read(bool blocking, std::vector<cl::Event> * events, cl::Event 
 // Send the image to the device memory
 void ColorImage::Send(bool blocking, std::vector<cl::Event> * events, cl::Event * event)
 {
+   #ifdef _MSC_VER
+	UNREFERENCED_PARAMETER(blocking);
+	UNREFERENCED_PARAMETER(events);
+	UNREFERENCED_PARAMETER(event);
+	#endif
+	
    // Sending ColorImages is currently always non-blocking and does not support events
    assert(!blocking);
    assert(events == nullptr);
