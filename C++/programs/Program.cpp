@@ -47,9 +47,11 @@ Program::Program(COpenCL& CL, bool, const char * Source, const char * options)
    m_Built(false)
 { }
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) || !defined(_APISETDEBUG_)
+// Windows API provides the IsDebuggerPresent() function
+// Disable it for other platforms
 #define IsDebuggerPresent() false
-#endif // _MSC_VER
+#endif
 
 bool Program::Build()
 {
