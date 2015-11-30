@@ -173,7 +173,7 @@ TempBuffer : public IBuffer - Represents a buffer that is only in the device
       TempBuffer(COpenCL& CL, size_t size, cl_mem_flags flags = CL_MEM_READ_WRITE)
       
          Allocates memory on the device
-            CL : The device to use
+            CL : A COpenCL instance
             size : Number of bytes to allocate
             flags : Type of device memory to allocate
                Allowed values :
@@ -189,7 +189,7 @@ ReadBuffer : public IBuffer - Represents a read only buffer
       
          Creates a copy of the contents of data then allocates memory on the device
          Useful when using a small temporary buffer as parameter to a kernel that is launched asyncrhonously
-            CL : The device to use
+            CL : A COpenCL instance
             length : Number of elements to allocate
             
 
@@ -201,7 +201,7 @@ Buffer : public IBuffer - Represents a buffer that exist in both the host and th
       
          Allocates memory on the device, stores the address of the data
          Upon creation, the content of data is not copied and it is not transfered to the device
-            CL : The device to use
+            CL : A COpenCL instance
             data : The host buffer - pointer must remain valid as long as Read() and Send() may be done on this object
             length : Number of elements to allocate
             flags : Type of device memory to allocate
@@ -228,37 +228,41 @@ Buffer : public IBuffer - Represents a buffer that exist in both the host and th
 ImageBase - base class for Images - not useable directly
 
    members:
-      cl::NDRange FullRange()
+      cl::NDRange FullRange() const
          returns a global range that will start 1 work-item per pixel of the image
          
-      cl::NDRange VectorRange(int NbElementsPerWorker)
+      cl::NDRange VectorRange(int NbElementsPerWorker) const
          returns a global range that will start multiple work-items per pixel channel of the image
          
-      size_t Width() const;
-      size_t Height() const;
-      size_t Step() const;
-      size_t Depth() const;
-      size_t NbChannels() const;
+      uint Width() const;
+      uint Height() const;
+      SSize ImageSize() const;
+      uint Step() const;
+      uint ElementStep() const;
+      uint Depth() const;
+      uint DepthBytes() const;
+      uint NbChannels() const;
       size_t NbBytes() const;
       bool IsFloat() const;
       bool IsUnsigned() const;
+      EDataType DataType() const
          return information about the image
          
-      SImage ToSImage() const;
-         Creates a SImage that represents the image
-         Only the size and type are used, the Data field of SImage will be null
+      operator const SImage& () const
+         returns a SImage that represents the image
 
 
 Image : public Buffer, public ImageBase - Represents a buffer in the device that contains an image
 
    members:
-      Image(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
+      Image(COpenCL& CL, const SImage& image, void * ImageData, cl_mem_flags flags = CL_MEM_READ_WRITE)
       
          Allocates memory in the device, with enough space to contain the image
          Upon creation, the content of image is not copied and it is not transfered to the device
-            CL : The device to use
+            CL : A COpenCL instance
             image : Information about an image - pointer image.Data must remain valid as long as Read() and Send() may be done on this object
-                    image can have 1, 3 or 4 channels
+                    image can have 1, 2 or 4 channels
+            ImageData : The host buffer - pointer must remain valid as long as Read() and Send() may be done on this object
             flags : Type of device memory to allocate
                Allowed values :
                   CL_MEM_READ_WRITE - kernels can read & write values
@@ -288,7 +292,7 @@ TempImage : public Image - Represents a device-only buffer that contains an imag
       TempImage(COpenCL& CL, const SImage& image, cl_mem_flags flags = CL_MEM_READ_WRITE)
       
          Allocates memory in the device, with enough space to contain the image
-            CL : The device to use
+            CL : A COpenCL instance
             image : Information about an image
             flags : Type of device memory to allocate
                Allowed values :
@@ -299,7 +303,7 @@ TempImage : public Image - Represents a device-only buffer that contains an imag
       TempImage(COpenCL& CL, const SImage& image, size_t Depth, size_t Channels, bool isFloat = false)
       
          Allocates memory in the device, with enough space to contain an image that has the same dimentions as image but with a different data type
-            CL : The device to use
+            CL : A COpenCL instance
             image : Information about an image, image can have 1, 3 or 4 channels
             Depth : number of bits per channel
             Channels : number of channels per pixel
@@ -310,6 +314,27 @@ TempImage : public Image - Represents a device-only buffer that contains an imag
          Does nothing (resides only in the device and can't be sent)
 
 
+ColorImage : public TempImage - Represents a 3 channel color image
+
+   3 channel memory acceses are problematic in OpenCL.
+   The OpenCL operations will actually be done with 4 channel images.
+   This class serves as intermediary buffer for the 3 channel image data.
+   This class will Convert automatically : 
+      - from 3 channels to 4 channels when sending the image to the device
+      - from 4 channels to 3 channels when reading the image from the device
+   
+   members:
+   
+      ColorImage(COpenCL& CL, const SImage& Img, void * ImageData)
+      
+         Allocates, in the device memory, an image to store a 4 channel image
+         and a buffer to store the 3 channel image.
+         The data pointer ImageData is saved for later Send and Read operations
+            CL : A COpenCL instance
+            Img : A SImage representing the host image
+            ImageData : A pointer to where the image data is located
+
+
 Program - Represents an OpenCL C program
 
    members:
@@ -318,7 +343,7 @@ Program - Represents an OpenCL C program
          const char * Path = "", bool build = false)
          
          Saves the given values for later use
-            CL : The device to use
+            CL : A COpenCL instance
             Source : Source code for the program, can be ""
             options : A string listing compiler options
             Path : Complete path to the .cl file to use

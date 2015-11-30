@@ -162,7 +162,8 @@ private:
 
 /// Represents a 3 channels color image.
 /// 3 channel memory acceses are problematic in OpenCL
-/// This class serves as 
+/// This class serves as intermediary buffer for the 3 channel image data.
+/// The actual OpenCL operations will be done on 4 channels.
 /// This class will Convert automatically : 
 ///  - from 3 channels to 4 channels when sending the image to the device
 ///  - from 4 channels to 3 channels when reading the image from the device
