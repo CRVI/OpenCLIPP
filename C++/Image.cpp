@@ -165,13 +165,14 @@ Image::Image(COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flag
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Invalid data type");
 }
 
+// Constructor for a 3 channel image.
 Image::Image(bool Is3Channel, COpenCL& CL, const SImage& Img, void * ImageData, cl_mem_flags flags)
 :  Buffer(CL, (char *) ImageData, Img.Height * Img.Step, flags),
    ImageBase(Img)
 {
-   assert(Is3Channel);
+   assert(Is3Channel);	// This constructor is only for 3 channel images
 
-   if (Img.Type < 0 || Img.Type >= Img.NbDataTypes)
+   if (Img.Type < 0 || Img.Type >= Img.NbDataTypes || !Is3Channel)
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Invalid data type");
 }
 
@@ -264,6 +265,10 @@ void ColorImage::Send(bool blocking, std::vector<cl::Event> * events, cl::Event 
    assert(!blocking);
    assert(events == nullptr);
    assert(event == nullptr);
+
+   if (blocking || event || events)
+	   throw cl::Error(CL_INVALID_EVENT, "ColorImage::Send() is currently always non-blocking and does not support events");
+
 
    m_3CImage.Send();
    m_CL.GetConverter().Copy3Cto4C(m_3CImage, *this);
