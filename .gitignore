@@ -32,3 +32,6 @@
 
 #Merge bakup files
 *.bak
+
+#Build directories
+build/
