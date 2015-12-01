@@ -1,25 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: OpenCL.h 
+//! @file	: OpenCL.h
 //! @date   : Jul 2013
 //!
 //! @brief  : COpenCL object - takes care of initializing OpenCL
-//! 
+//!
 //! Copyright (C) 2013 - CRVI
 //!
 //! This file is part of OpenCLIPP.
-//! 
+//!
 //! OpenCLIPP is free software: you can redistribute it and/or modify
 //! it under the terms of the GNU Lesser General Public License version 3
 //! as published by the Free Software Foundation.
-//! 
+//!
 //! OpenCLIPP is distributed in the hope that it will be useful,
 //! but WITHOUT ANY WARRANTY; without even the implied warranty of
 //! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //! GNU Lesser General Public License for more details.
-//! 
+//!
 //! You should have received a copy of the GNU Lesser General Public License
 //! along with OpenCLIPP.  If not, see <http://www.gnu.org/licenses/>.
-//! 
+//!
 ////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -33,15 +33,23 @@
 // So we force usage of the OpenCL 1.1 API
 #define CL_USE_DEPRECATED_OPENCL_1_1_APIS
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
-#include <CL/opencl.h>
-#undef CL_VERSION_1_2
-
 
 // We are working with exceptions instead of having error checking on every cl api call
 #define __CL_ENABLE_EXCEPTIONS
 
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+// Include C++ interface of OpenCL
+#include <OpenCL/cl.hpp>
+#else
+#include <CL/opencl.h>
 // Include C++ interface of OpenCL
 #include <CL/cl.hpp>
+#endif
+#undef CL_VERSION_1_2
+
+
+
 
 
 #include <memory>

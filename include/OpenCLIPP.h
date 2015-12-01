@@ -1,30 +1,34 @@
 ////////////////////////////////////////////////////////////////////////////////
-//! @file	: OpenCLIPP.h 
+//! @file	: OpenCLIPP.h
 //! @date   : Jul 2013
 //!
 //! @brief  : C Interface for the OpenCLIPP library
-//! 
+//!
 //! Copyright (C) 2013 - CRVI
 //!
 //! This file is part of OpenCLIPP.
-//! 
+//!
 //! OpenCLIPP is free software: you can redistribute it and/or modify
 //! it under the terms of the GNU Lesser General Public License version 3
 //! as published by the Free Software Foundation.
-//! 
+//!
 //! OpenCLIPP is distributed in the hope that it will be useful,
 //! but WITHOUT ANY WARRANTY; without even the implied warranty of
 //! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //! GNU Lesser General Public License for more details.
-//! 
+//!
 //! You should have received a copy of the GNU Lesser General Public License
 //! along with OpenCLIPP.  If not, see <http://www.gnu.org/licenses/>.
-//! 
+//!
 ////////////////////////////////////////////////////////////////////////////////
 
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
 #include <CL/opencl.h>
+#endif
 
 // Definition of ocip_API - used by Microsoft compiler to generate a DLL
 #ifdef _MSC_VER
@@ -228,7 +232,7 @@ ocipError ocip_API ocipReleaseProgram(ocipProgram Program);
 
 
 // Note about processing functions
-// Most processing functions are asyncrhonous (non-blocking), meaning 
+// Most processing functions are asyncrhonous (non-blocking), meaning
 // they will return quickly before any device computation has been done.
 // Many processing functions and Send operations can be issued and then the host
 // is free to do other tasks in parralel to the computation.
