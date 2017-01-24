@@ -31,8 +31,8 @@
 #endif
 
 #ifdef NVIDIA_PLATFORM
-   #define CONST static constant const
-   #define CONST_ARG constant const
+   #define CONST const
+   #define CONST_ARG const
 #else
    #ifdef AMD_PLATFORM
       #define CONST const
