@@ -108,8 +108,8 @@ template<>
 void CLASS_NAME<unsigned short>::RunNPP()
 {
    NPP_CODE(
-         nppiCompare_16u_C1R( (Ipp16u*) this->m_NPPSrc, this->m_NPPSrcStep,
-                         (Ipp16u*) this->m_NPPSrcB, this->m_NPPSrcBStep,
+         nppiCompare_16u_C1R( (Npp16u*) this->m_NPPSrc, this->m_NPPSrcStep,
+                         (Npp16u*) this->m_NPPSrcB, this->m_NPPSrcBStep,
                          (Npp8u*) this->m_NPPDst, this->m_NPPDstStep,
                          this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
       )
@@ -119,8 +119,8 @@ template<>
 void CLASS_NAME<float>::RunNPP()
 {
    NPP_CODE(
-         nppiCompare_32f_C1R( (Ipp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
-                         (Ipp32f*) this->m_NPPSrcB, this->m_NPPSrcBStep,
+         nppiCompare_32f_C1R( (Npp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
+                         (Npp32f*) this->m_NPPSrcB, this->m_NPPSrcBStep,
                          (Npp8u*) this->m_NPPDst, this->m_NPPDstStep,
                          this->m_NPPRoi, GetNppCmpOp(COMPARE_TYPE));
       )

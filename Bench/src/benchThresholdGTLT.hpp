@@ -132,8 +132,8 @@ template<>
 void ThresholdGTLTBench<float>::RunNPP()
 {
    NPP_CODE(
-      nppiThreshold_LTValGTVal_32f_C1R( (Ipp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
-                            (Ipp32f*) this->m_NPPDst, this->m_NPPDstStep,
+      nppiThreshold_LTValGTVal_32f_C1R( (Npp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
+                            (Npp32f*) this->m_NPPDst, this->m_NPPDstStep,
                             this->m_NPPRoi, 
                             FLOAT_THRESHLT, FLOAT_VALUELOWER, FLOAT_THRESHGT, FLOAT_VALUEHIGHER);
    )

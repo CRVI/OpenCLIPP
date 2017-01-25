@@ -95,8 +95,8 @@ template<>
 void CLASS_NAME<unsigned short>::RunNPP()
 {
    NPP_CODE(
-         nppiThreshold_Val_16u_C1R( (Ipp16u*) this->m_NPPSrc, this->m_NPPSrcStep,
-                              (Ipp16u*) this->m_NPPDst, this->m_NPPDstStep,
+         nppiThreshold_Val_16u_C1R( (Npp16u*) this->m_NPPSrc, this->m_NPPSrcStep,
+                              (Npp16u*) this->m_NPPDst, this->m_NPPDstStep,
                               this->m_NPPRoi, USHORT_THRESH, 
                               (Npp16u) GetThresholdValue<unsigned short>(THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
       )
@@ -106,8 +106,8 @@ template<>
 void CLASS_NAME<float>::RunNPP()
 {
    NPP_CODE(
-         nppiThreshold_Val_32f_C1R( (Ipp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
-                              (Ipp32f*) this->m_NPPDst, this->m_NPPDstStep,
+         nppiThreshold_Val_32f_C1R( (Npp32f*) this->m_NPPSrc, this->m_NPPSrcStep,
+                              (Npp32f*) this->m_NPPDst, this->m_NPPDstStep,
                               this->m_NPPRoi, FLOAT_THRESH, 
                               GetThresholdValue<float>(THRESHOLD_TYPE), GetNppCmpOp(THRESHOLD_TYPE));
       )
