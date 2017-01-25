@@ -116,6 +116,8 @@ kernel void select_channel4(INPUT source, global SCALAR * dest, int src_step, in
 #define NBCHAN
 #endif
 
+#if !defined(NBCHAN) || NBCHAN != 3
+
 #define CONVERT_KERNEL(name, dest_type) \
    kernel void name(INPUT source, global dest_type * dest, int src_step, int dst_step)\
    {\
@@ -176,6 +178,8 @@ SCALE_FLOAT_KERNEL(scale_to_float,  CONCATENATE(float,  NBCHAN))
 #ifdef FP64SUPPORTED
 CONVERT_FLOAT_KERNEL(to_double, CONCATENATE(double, NBCHAN))
 SCALE_FLOAT_KERNEL(scale_to_double, CONCATENATE(double, NBCHAN))
+#endif
+
 #endif
 
 
