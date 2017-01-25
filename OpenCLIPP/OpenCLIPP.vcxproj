@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -69,30 +69,30 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86</LibraryPath>
+    <IncludePath>../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64</LibraryPath>
+    <IncludePath>../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86</LibraryPath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x86;$(CUDA_PATH)\lib\Win32;$(AMDAPPSDKROOT)\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
+    <IncludePath>../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64</LibraryPath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(INTELOCLSDKROOT)\lib\x64;$(CUDA_PATH)\lib\x64;$(AMDAPPSDKROOT)\lib\x86_64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
+    <IncludePath>../include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -106,7 +106,7 @@
       <PrecompiledHeaderOutputFile />
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4251;4350;4365;4510;4512;4514;4610;4668;4710;4711;4820;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4350;4365;4464;4510;4512;4514;4610;4623;4626;4668;4710;4711;4820;5027</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,7 +127,7 @@
       </PrecompiledHeaderOutputFile>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4251;4350;4365;4510;4512;4514;4610;4668;4710;4711;4820;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4350;4365;4464;4510;4512;4514;4610;4623;4626;4668;4710;4711;4820;5027</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,7 +148,7 @@
       <PrecompiledHeaderOutputFile />
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4251;4350;4365;4510;4512;4514;4610;4668;4710;4711;4820;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4350;4365;4464;4510;4512;4514;4610;4623;4626;4668;4710;4711;4820;5027</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -173,7 +173,7 @@
       </PrecompiledHeaderOutputFile>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4251;4350;4365;4510;4512;4514;4610;4668;4710;4711;4820;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4350;4365;4464;4510;4512;4514;4610;4623;4626;4668;4710;4711;4820;5027</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

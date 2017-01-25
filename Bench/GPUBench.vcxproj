@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,25 +26,25 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -71,11 +71,11 @@
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\Win32;$(IPP_LIB32);$(XE_LIB32);$(OPENCV_DIR)\x86\vc11\lib</LibraryPath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\Win32;$(IPP_LIB32);$(XE_LIB32);$(OPENCV_DIR)\x86\vc11\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\x64;$(IPP_LIB64);$(XE_LIB64);$(OPENCV_DIR)\x64\vc11\lib</LibraryPath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\x64;$(IPP_LIB64);$(XE_LIB64);$(OPENCV_DIR)\x64\vc11\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -84,14 +84,14 @@
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\Win32;$(IPP_LIB32);$(XE_LIB32);$(OPENCV_DIR)\x86\vc11\lib</LibraryPath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\Win32;$(IPP_LIB32);$(XE_LIB32);$(OPENCV_DIR)\x86\vc11\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\temp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>../include/;$(IncludePath);$(INCLUDE);$(OPENCV_DIR)\include;$(INTELOCLSDKROOT)\include;$(CUDA_PATH)\include;$(AMDAPPSDKROOT)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\x64;$(IPP_LIB64);$(XE_LIB64);$(OPENCV_DIR)\x64\vc11\lib</LibraryPath>
+    <LibraryPath>$(SolutionDir)\bin\$(Platform)\$(Configuration);$(CUDA_PATH)\lib\x64;$(IPP_LIB64);$(XE_LIB64);$(OPENCV_DIR)\x64\vc11\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

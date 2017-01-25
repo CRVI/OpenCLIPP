@@ -213,14 +213,16 @@ ocipError ocip_API ocipReadImage(ocipImage image)
 ocipError ocip_API ocipReleaseImage(ocipImage image)
 {
    Memory * Mem = (Memory *) image;
-   H( delete Mem )
+   delete Mem;
+   return CL_SUCCESS;
 }
 
 
 ocipError ocip_API ocipReleaseProgram(ocipProgram Program)
 {
    MultiProgram * Pr = (MultiProgram *) Program;
-   H( delete Pr )
+   delete Pr;
+   return CL_SUCCESS;
 }
 
 

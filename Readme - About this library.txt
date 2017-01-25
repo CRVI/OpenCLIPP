@@ -5,7 +5,7 @@ It is designed to be simple to use and to have a low overhead.
 
 How to build the library :
 
-Windows : Use the .sln file with Visual Studio 2012
+Windows : Use the .sln file with Visual Studio 2015
 
 Other platforms : use make with the provided makefiles
    user@machine ~/OpenCLIPP# make

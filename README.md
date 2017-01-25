@@ -21,7 +21,7 @@ OpenCL SDKs are available for download from Intel, AMD and NVIDIA
 How to build
 ------------
 
- - On Windows : Use the .sln file with Visual Studio 2012
+ - On Windows : Use the .sln file with Visual Studio 2015
  - Other platforms : Use make with the provided makefiles:
 ```
 user@machine ~/OpenCLIPP# make

@@ -39,6 +39,10 @@ Rename this file to lodepng.cpp to use it for C++, or to lodepng.c to use it for
 
 #define VERSION_STRING "20131115"
 
+#ifdef _MSC_VER
+#pragma warning ( disable : 4267 4334 )
+#endif
+
 /*
 This source file is built up in the following large parts. The code sections
 with the "LODEPNG_COMPILE_" #defines divide this up further in an intermixed way.

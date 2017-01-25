@@ -22,6 +22,11 @@
 *.lastbuildstate
 *.ilk
 *.opensdf
+*.db
+*.opendb
+*.user
+*.iobj
+*.ipdb
 
 #Visual Studio binary files
 *.exe

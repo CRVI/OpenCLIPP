@@ -35,6 +35,8 @@
 #include "WorkGroup.h"
 
 #include <cmath>
+#include <algorithm>
+
 
 using namespace std;
 

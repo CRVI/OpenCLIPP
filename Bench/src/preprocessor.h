@@ -83,7 +83,7 @@ FOR_EACH_COMMA(function, ...) -> Generates a comma seperated list of each argume
 
 #ifdef _MSC_VER
 
-// Works with Visual Studio 2012
+// Works with Visual Studio 2012 and more recent
 #define __VA_NUM_ARGS(...) _VA_NUM_ARGS((0, __ID(__VA_ARGS__), 8, 7, 6, 5, 4, 3, 2, 1, 0))
 #define __HAS_ARGS(...) _HAS_ARGS((0, __ID(__VA_ARGS__), 1, 1, 1, 1, 1, 1, 1, 1, 0))
 #define _SELECT_N(_0, _1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
