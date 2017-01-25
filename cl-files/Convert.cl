@@ -26,6 +26,12 @@
 
 #define INPUT INPUT_SPACE const TYPE *
 
+#ifdef cl_khr_fp64
+// Some platforms do not support fp64
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#define FP64SUPPORTED
+#endif
+
 #define BEGIN \
    const int gx = get_global_id(0);\
    const int gy = get_global_id(1);\
@@ -158,7 +164,6 @@ CONVERT_KERNEL(to_short,   CONCATENATE(short,  NBCHAN))
 CONVERT_KERNEL(to_uint,    CONCATENATE(uint,   NBCHAN))
 CONVERT_KERNEL(to_int,     CONCATENATE(int,    NBCHAN))
 CONVERT_FLOAT_KERNEL(to_float,  CONCATENATE(float,  NBCHAN))
-CONVERT_FLOAT_KERNEL(to_double, CONCATENATE(double, NBCHAN))
 
 SCALE_KERNEL(scale_to_uchar,  CONCATENATE(uchar,  NBCHAN))
 SCALE_KERNEL(scale_to_char,   CONCATENATE(char,   NBCHAN))
@@ -167,7 +172,12 @@ SCALE_KERNEL(scale_to_short,  CONCATENATE(short,  NBCHAN))
 SCALE_KERNEL(scale_to_uint,   CONCATENATE(uint,   NBCHAN))
 SCALE_KERNEL(scale_to_int,    CONCATENATE(int,    NBCHAN))
 SCALE_FLOAT_KERNEL(scale_to_float,  CONCATENATE(float,  NBCHAN))
+
+#ifdef FP64SUPPORTED
+CONVERT_FLOAT_KERNEL(to_double, CONCATENATE(double, NBCHAN))
 SCALE_FLOAT_KERNEL(scale_to_double, CONCATENATE(double, NBCHAN))
+#endif
+
 
 kernel void to_2channels(INPUT_SPACE SCALAR * source, global TYPE2 * dest, int src_step, int dst_step)
 {
