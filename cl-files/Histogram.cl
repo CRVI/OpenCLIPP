@@ -68,6 +68,9 @@ kernel void histogram_1C(INPUT_SPACE const SCALAR * source, global uint * hist, 
       atom_add(&hist[local_index], local_hist[local_index]);
 }
 
+#ifdef NBCHAN
+#if NBCHAN >= 2
+
 // Histogram on a 4 channel image that has a range of 0-255
 //    hist must be an array of 256*4 32b integers, all initialized to 0
 kernel void histogram_4C(INPUT_SPACE const TYPE * source, global uint * hist, uint src_step)
@@ -124,3 +127,6 @@ kernel void histogram_4C(INPUT_SPACE const TYPE * source, global uint * hist, ui
    }
 
 }
+
+#endif   // NBCHAN >= 2
+#endif   // NBCHAN
