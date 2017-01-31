@@ -159,7 +159,7 @@ void Conversions::ToGray(Image& Source, Image& Dest)
    CheckSizeAndType(Source, Dest);
    Check1Channel(Dest);
 
-   Kernel(to_gray, Source, Dest);
+   Kernel(to_gray, Source, Dest, Source.Step(), Dest.Step());
 }
 
 void Conversions::SelectChannel(Image& Source, Image& Dest, int ChannelNo)
@@ -170,16 +170,16 @@ void Conversions::SelectChannel(Image& Source, Image& Dest, int ChannelNo)
    switch (ChannelNo)
    {
    case 1:
-      Kernel(select_channel1, Source, Dest);
+      Kernel(select_channel1, Source, Dest, Source.Step(), Dest.Step());
       break;
    case 2:
-      Kernel(select_channel2, Source, Dest);
+      Kernel(select_channel2, Source, Dest, Source.Step(), Dest.Step());
       break;
    case 3:
-      Kernel(select_channel3, Source, Dest);
+      Kernel(select_channel3, Source, Dest, Source.Step(), Dest.Step());
       break;
    case 4:
-      Kernel(select_channel4, Source, Dest);
+      Kernel(select_channel4, Source, Dest, Source.Step(), Dest.Step());
       break;
    default:
       throw cl::Error(CL_IMAGE_FORMAT_NOT_SUPPORTED, "Unsupported number of channels");
