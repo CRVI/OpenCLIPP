@@ -33,6 +33,8 @@ namespace OpenCLIPP
 // Histogram must be an array of at least 256 elements
 void Histogram::Histogram1C(Image& Source, uint * Histogram)
 {
+   Check1Channel(Source);
+
    const static int Length = 256;
 
    for (int i = 0; i < Length; i++)
@@ -49,6 +51,9 @@ void Histogram::Histogram1C(Image& Source, uint * Histogram)
 // Histogram must be an array of at least 1024 elements
 void Histogram::Histogram4C(Image& Source, uint * Histogram)
 {
+   if (Source.NbChannels() == 1)
+      throw cl::Error(CL_INVALID_VALUE, "only multi-channel images are allowed");
+
    const static int Length = 256 * 4;
 
    for (int i = 0; i < Length; i++)
