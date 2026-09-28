@@ -200,7 +200,7 @@ Buffer : public IBuffer - Represents a buffer that exist in both the host and th
       Buffer(COpenCL& CL, T * data, size_t length, cl_mem_flags flags = CL_MEM_READ_WRITE);
       
          Allocates memory on the device, stores the address of the data
-         Upon creation, the content of data is not copied and it is not transfered to the device
+         Upon creation, the content of data is not copied and it is not transferred to the device
             CL : A COpenCL instance
             data : The host buffer - pointer must remain valid as long as Read() and Send() may be done on this object
             length : Number of elements to allocate
@@ -258,7 +258,7 @@ Image : public Buffer, public ImageBase - Represents a buffer in the device that
       Image(COpenCL& CL, const SImage& image, void * ImageData, cl_mem_flags flags = CL_MEM_READ_WRITE)
       
          Allocates memory in the device, with enough space to contain the image
-         Upon creation, the content of image is not copied and it is not transfered to the device
+         Upon creation, the content of image is not copied and it is not transferred to the device
             CL : A COpenCL instance
             image : Information about an image - pointer image.Data must remain valid as long as Read() and Send() may be done on this object
                     image can have 1, 2 or 4 channels

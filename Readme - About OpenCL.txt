@@ -9,7 +9,7 @@ A sofware can then read the source of the OpenCL C and give it to OpenCL.
 OpenCL then gives the source to the device driver which compiles it for the desired device.
 Afterward, the software asks OpenCL to send data to the device memory.
 Then the software asks OpenCL to run the kernel with the data.
-After that, the software asks for the result of the computation to be transfered back to the host (to the CPU).
+After that, the software asks for the result of the computation to be transferred back to the host (to the CPU).
 
 Some terminology :
 device         The device used by OpenCL to run the kernels, usually a GPU
@@ -44,7 +44,7 @@ NDRange        A list of numbers representing the size of ranges (Global range a
                The NDRange is usually made of 3 values, so 3 dimentions
                The size of the range is each of the value multiplied together
                For image processing, we use 2 dimentions, which give a range similar to this :
-                  Global : 512, 512, 1  - Which gives a total of 262 144 work items
+                  Global : 512, 512, 1  - Which gives a total of 262144 work items
                   Local  : 16, 16, 1    - Which gives 256 work-items per workgroup
 
 buffer         A segment of memory on the device

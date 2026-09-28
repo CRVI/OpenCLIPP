@@ -118,7 +118,7 @@ Error handling - C
 ------------------
 
 Most functions of the C interface return a ocipError.
-When no error occured, the value returned will be CL_SUCCESS (0). When an error occurs, a negative value will be returned. The error value can be translated to text using ocipGetErrorName().
+When no error occurred, the value returned will be CL_SUCCESS (0). When an error occurs, a negative value will be returned. The error value can be translated to text using ocipGetErrorName().
 
 Similarity with IPP & NPP
 -------------------------
